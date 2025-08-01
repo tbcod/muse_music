@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "30311481836",
+    "project_id": "testmusicmuse-9b3e5",
+    "storage_bucket": "testmusicmuse-9b3e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30311481836:android:d438f6eae9605c94be00c9",
+        "android_client_info": {
+          "package_name": "com.example.music_muse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeTnh6SIbjXFZW1s2IXLf9DWPiLlbUmXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30311481836:android:2e310b63e636dc89be00c9",
+        "android_client_info": {
+          "package_name": "com.example.play_track"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeTnh6SIbjXFZW1s2IXLf9DWPiLlbUmXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

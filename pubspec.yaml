@@ -1,0 +1,102 @@
+name: music_muse
+description: "A new Flutter project."
+#android
+#version: 1.0.1+1001
+#ios
+version: 1.3.4+1
+
+environment:
+  sdk: '>=3.3.2 <4.0.0'
+dependency_overrides:
+  uuid: ^4.4.2
+  js: ^0.7.1
+  web: 1.0.0
+dependencies:
+  flutter_localizations:
+    sdk: flutter
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  flutter_screenutil: ^5.9.3
+  get: ^4.6.6
+  bot_toast: ^4.1.3
+  logger: ^2.3.0
+  path_provider: ^2.1.1
+  app_tracking_transparency: ^2.0.5
+  hive: ^2.2.3
+  uuid: ^4.4.2
+  package_info_plus: ^8.0.0
+  device_info_plus: ^10.1.0
+  android_id: ^0.4.0
+  easy_refresh: ^3.4.0
+  webview_flutter: ^4.2.4
+  flutter_slidable: ^3.1.1
+  flutter_sound: ^9.11.3
+  audio_session: ^0.1.21
+  audio_service: ^0.18.15
+  permission_handler: ^11.3.1
+  file_picker: ^10.1.2
+  appsflyer_sdk: ^6.15.2
+  flutter_media_metadata: ^1.0.0+1
+  audioplayers: ^6.0.0
+  image_picker: ^1.1.2
+  app_settings: ^5.1.1
+  android_intent_plus: ^5.1.0
+  text_scroll: ^0.2.0
+  shared_preferences: ^2.2.1
+  connectivity_plus: ^6.0.3
+  dio: ^5.7.0
+  cached_network_image: ^3.3.1
+  video_player: ^2.9.1
+  extended_wrap: ^0.1.5
+#  al_downloader: ^1.8.4
+  visibility_detector: ^0.4.0+2
+  scroll_to_index: ^3.0.1
+  encrypt: ^5.0.3
+
+  google_mobile_ads: ^6.0.0
+  applovin_max: 4.3.0
+  anythink_sdk:
+    path: plugin/anythink_sdk-1.0.5
+
+  facebook_app_events: 0.19.3
+  firebase_core: ^3.6.0
+  firebase_remote_config: ^5.1.3
+  firebase_crashlytics: ^4.1.3
+  firebase_analytics: ^11.3.3
+  firebase_messaging: ^15.1.3
+#  firebase_performance: ^0.10.0+8
+  flutter_local_notifications: ^18.0.1
+  flutter_rating_bar: ^4.0.1
+  url_launcher: ^6.3.1
+
+
+#  firebase_core: ^2.31.0
+#  firebase_remote_config: ^4.4.5
+#  firebase_crashlytics: ^3.5.5
+#  firebase_analytics: ^10.10.5
+#  firebase_messaging: ^14.9.2
+#  firebase_performance: ^0.9.4+6
+
+
+
+  #flutter packages pub run flutter_launcher_icons:main
+  flutter_launcher_icons: ^0.13.1
+flutter_icons:
+  android: true
+  ios: true
+  image_path_android: "assets/img/logo.png"
+  image_path_ios: "assets/img/logo.png"
+  adaptive_icon_background:  "assets/img/logo_b.png"
+  adaptive_icon_foreground: "assets/img/logo_f.png"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/img/
+    - assets/oimg/

@@ -1,0 +1,116 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace "com.example.music_muse"
+    compileSdk 34
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+//        com.musemusic.offlisten
+        applicationId "com.example.music_muse"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            ndk {
+                abiFilters "armeabi-v7a","arm64-v8a"
+            }
+        }
+
+        debug {
+            signingConfig signingConfigs.release
+            ndk {
+                abiFilters "armeabi-v7a","arm64-v8a","x86"
+            }
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    //max聚合
+    implementation 'com.applovin.mediation:google-ad-manager-adapter:+'
+    implementation 'com.applovin.mediation:google-adapter:+'
+    implementation 'com.applovin.mediation:vungle-adapter:+'
+    implementation 'com.applovin.mediation:facebook-adapter:+'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.applovin.mediation:mintegral-adapter:16.8.61.0'
+    implementation 'com.applovin.mediation:bytedance-adapter:+'
+    implementation 'com.applovin.mediation:unityads-adapter:+'
+
+    //admob聚合
+    implementation  "com.google.ads.mediation:facebook:+"
+    implementation  'com.google.ads.mediation:applovin:+'
+    implementation  'com.google.ads.mediation:vungle:+'
+    implementation  'com.google.ads.mediation:mintegral:+'
+    implementation  'com.google.ads.mediation:pangle:+'
+    implementation  "com.unity3d.ads:unity-ads:+"
+    implementation  "com.google.ads.mediation:unity:+"
+}
