@@ -27,7 +27,7 @@ class LaunchPage extends GetView<LaunchPageController> {
             Container(
               height: 146.w,
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   // color: Colors.red,
                   image: DecorationImage(
                 image: AssetImage("assets/img/all_appbar_bg.png"),
@@ -57,7 +57,7 @@ class LaunchPage extends GetView<LaunchPageController> {
                   style: TextStyle(fontSize: 16.w),
                 ),
 
-                Spacer(),
+                const Spacer(),
                 //进度条
 
                 Text(
@@ -200,7 +200,7 @@ class LaunchPageController extends GetxController {
 
     // seconds = seconds * 1000;
     for (int i = 0; i < seconds * 100; i++) {
-      await Future.delayed(Duration(milliseconds: 10));
+      await Future.delayed(const Duration(milliseconds: 10));
       progress.value += 1 / seconds / 100;
     }
 

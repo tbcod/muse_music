@@ -4,7 +4,6 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/page/main/home.dart';
@@ -33,10 +32,8 @@ class MainPage extends GetView<MainPageController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(
-            action: 'android.intent.action.MAIN',
-            category: "android.intent.category.HOME",
-            flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
+        AndroidIntent intent =
+            const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -54,12 +51,10 @@ class MainPage extends GetView<MainPageController> {
                 controller.nowIndex.value = index;
                 controller.pageC.jumpToPage(index);
               },
-              unselectedItemColor: Color(0xffC4C5D5),
-              selectedItemColor: Color(0xff141414),
-              selectedLabelStyle:
-                  TextStyle(color: Color(0xff141414), fontSize: 12.w),
-              unselectedLabelStyle:
-                  TextStyle(color: Color(0xffC4C5D5), fontSize: 12.w),
+              unselectedItemColor: const Color(0xffC4C5D5),
+              selectedItemColor: const Color(0xff141414),
+              selectedLabelStyle: TextStyle(color: const Color(0xff141414), fontSize: 12.w),
+              unselectedLabelStyle: TextStyle(color: const Color(0xffC4C5D5), fontSize: 12.w),
               items: [
                 BottomNavigationBarItem(
                     icon: Image.asset(
@@ -89,11 +84,8 @@ class MainPage extends GetView<MainPageController> {
         }),
         body: PageView(
           controller: controller.pageC,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            KeepStateView(child: HomePage()),
-            KeepStateView(child: SettingPage())
-          ],
+          physics: const NeverScrollableScrollPhysics(),
+          children: const [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())],
         ),
       ),
     );
@@ -105,20 +97,20 @@ class MainPageController extends GetxController {
   var nowIndex = 0.obs;
 
   StreamSubscription<List<ConnectivityResult>>? subscription;
+
   @override
   void onInit() {
     super.onInit();
     Get.put(PlayPageController());
 
     //预加载广告
+    AdUtils.instance.loadAd('level_h');
     AdUtils.instance.loadAd("behavior");
 
     // Future.delayed(Duration(seconds: 5)).then((_) => Get.off(const UserMain()));
 
     //设置网络监听，成功后打开B面
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) async {
+    subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       var result = await CUtil.instance.checkCloak();
 
       //监听到网络变化重新请求一次

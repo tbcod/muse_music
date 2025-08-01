@@ -6,11 +6,13 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/lang/my_tr.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
@@ -142,7 +144,7 @@ class Application extends GetxService {
 
   initFireBaseOther() async {
     //测试环境异常上报
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       FlutterError.onError = (errorDetails) {
         FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
       };
@@ -153,22 +155,34 @@ class Application extends GetxService {
       };
     }
 
-    if (Env.isUser) {
-      AdUtils.instance.adJson = AdUtils.instance.adJsonRelease;
-      if (GetPlatform.isIOS) {
-        AdUtils.instance.adJson = AdUtils.instance.adJsonIosRelease;
-      }
-      var adData = await AdUtils.instance.initJsonByFireBase();
-      AppLog.e("广告配置");
-      AppLog.e(adData);
-    } else {
-      if (GetPlatform.isIOS) {
-        AdUtils.instance.adJson = AdUtils.instance.adJsonIos;
-      }
-      var adData = await AdUtils.instance.initJsonByFireBase();
-      AppLog.e("广告配置");
-      AppLog.e(adData);
+    if (GetPlatform.isIOS) {
+      AdUtils.instance.adJson = MuseConfig.adJsonIos;
     }
+    var adData = await AdUtils.instance.initJsonByFireBase();
+    AppLog.i("广告配置");
+    AppLog.i(adData);
+
+    if(kDebugMode){
+      AdUtils.instance.adJson = MuseConfig.adJsonIos;
+    }
+
+    // if (MuseConfig.isUser) {
+    //   if (GetPlatform.isIOS) {
+    //     AdUtils.instance.adJson = AdUtils.instance.adJsonIosRelease;
+    //   }else{
+    //     AdUtils.instance.adJson = AdUtils.instance.adJsonRelease;
+    //   }
+    //   var adData = await AdUtils.instance.initJsonByFireBase();
+    //   AppLog.e("广告配置");
+    //   AppLog.e(adData);
+    // } else {
+    //   if (GetPlatform.isIOS) {
+    //     AdUtils.instance.adJson = MuseConfig.adJsonIos;
+    //   }
+    //   var adData = await AdUtils.instance.initJsonByFireBase();
+    //   AppLog.e("广告配置");
+    //   AppLog.e(adData);
+    // }
   }
 
   initAd() {

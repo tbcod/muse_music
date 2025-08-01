@@ -14,8 +14,8 @@ class AppLog {
   }
 
   static void v(dynamic message) {
-    if (!isLog) return;
-    logger.t(message);
+    // if (!isLog) return;
+    // logger.t(message);
   }
 
   static void i(dynamic message) {
@@ -24,18 +24,18 @@ class AppLog {
   }
 
   static void d(dynamic message) {
-    if (!isLog) return;
-    logger.d(message);
+    // if (!isLog) return;
+    // logger.d(message);
   }
 
   static void w(dynamic message) {
-    if (!isLog) return;
-    logger.w(message);
+    // if (!isLog) return;
+    // logger.w(message);
   }
 
   static void e(dynamic message) {
-    if (!isLog) return;
-    logger.e(message);
+    // if (!isLog) return;
+    // logger.e(message);
   }
 
   static void wtf(dynamic message) {

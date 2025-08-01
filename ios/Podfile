@@ -50,21 +50,23 @@ target 'Runner' do
   pod 'AppLovinMediationByteDanceAdapter'
   pod 'AppLovinMediationUnityAdsAdapter'
   pod 'AppLovinMediationFacebookAdapter'
-
+  pod 'AppLovinMediationBidMachineAdapter'
+  pod 'AppLovinMediationMolocoAdapter'
 
 #   pod 'AnyThinkiOS','6.4.39'
 #   pod 'TraminiSDK','6.4.39'
   pod 'TPNiOS','6.4.70'
-  pod 'TPNVungleSDKAdapter','6.4.70'
-  pod 'TPNUnityAdsSDKAdapter','6.4.70'
-  pod 'TPNIronSourceSDKAdapter','6.4.70'
-  pod 'TPNBigoSDKAdapter','6.4.70'
-  pod 'TPNPangleSDKAdapter','6.4.70'
   pod 'TPNFacebookSDKAdapter','6.4.70'
   pod 'TPNAdmobSDKAdapter','6.4.70'
-  pod 'TPNInmobiSDKAdapter','6.4.70'
   pod 'TPNApplovinSDKAdapter','6.4.70'
   pod 'TPNMintegralSDKAdapter','6.4.70'
+  pod 'TPNVungleSDKAdapter','6.4.70'
+  pod 'TPNBigoSDKAdapter','6.4.70'
+
+#   pod 'TPNUnityAdsSDKAdapter','6.4.70'
+#   pod 'TPNIronSourceSDKAdapter','6.4.70'
+#   pod 'TPNPangleSDKAdapter','6.4.70'
+#   pod 'TPNInmobiSDKAdapter','6.4.70'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

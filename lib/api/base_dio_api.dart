@@ -14,8 +14,8 @@ class BaseApi {
 
   BaseApi(String baseHost) {
     dio ??= Dio();
-    dio?.options.connectTimeout = Duration(seconds: 20);
-    dio?.options.receiveTimeout = Duration(seconds: 20);
+    dio?.options.connectTimeout = const Duration(seconds: 20);
+    dio?.options.receiveTimeout = const Duration(seconds: 20);
     dio?.options.baseUrl = baseHost;
 
     //模拟器测试时候添加

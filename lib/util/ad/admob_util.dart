@@ -46,7 +46,7 @@ class AdmobUtils {
     Completer<Ad?> completer = Completer();
 
     view = Container(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
             minWidth: 0, minHeight: 0, maxHeight: 320, maxWidth: 320),
         child: AdWidget(
             ad: NativeAd(
@@ -79,7 +79,7 @@ class AdmobUtils {
                       currency: currencyCode,
                       precision_type: precision.name);
                 }),
-                request: AdRequest())
+                request: const AdRequest())
               ..load()));
 
     return completer.future;

@@ -60,11 +60,11 @@ class MyApp extends GetView {
               BotToastNavigatorObserver()
             ], //2. registered route observer
             theme: ThemeData(
-                scaffoldBackgroundColor: Color(0xfff9f9f9),
+                scaffoldBackgroundColor: const Color(0xfff9f9f9),
                 splashColor: Colors.transparent, // 点击时的高亮效果设置为透明
                 highlightColor: Colors.transparent, // 长按时的扩散效果设置为透明
 
-                textTheme: TextTheme(
+                textTheme: const TextTheme(
                   bodyMedium: TextStyle(height: 1.2),
                 ),
                 bottomSheetTheme: BottomSheetThemeData(
@@ -82,7 +82,8 @@ class MyApp extends GetView {
                         fontWeight: FontWeight.bold),
                     backgroundColor: Colors.transparent)),
             title: Env.appName,
-            home: LaunchPage(),
+            debugShowCheckedModeBanner: false,
+            home: const LaunchPage(),
             locale: MyTranslations.locale,
             fallbackLocale: MyTranslations.fallbackLocale,
             translations: MyTranslations(),
@@ -190,11 +191,11 @@ class AppController extends SuperController {
           try {
             if (Get.find<UserPlayInfoController>().player?.value.isPlaying ??
                 false) {
-              await Future.delayed(Duration(milliseconds: 100));
+              await Future.delayed(const Duration(milliseconds: 100));
               await Get.find<UserPlayInfoController>().player?.play();
-              await Future.delayed(Duration(milliseconds: 100));
+              await Future.delayed(const Duration(milliseconds: 100));
               await Get.find<UserPlayInfoController>().player?.play();
-              await Future.delayed(Duration(milliseconds: 100));
+              await Future.delayed(const Duration(milliseconds: 100));
               await Get.find<UserPlayInfoController>().player?.play();
               EventUtils.instance.addEvent("background_play");
             }

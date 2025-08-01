@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../util/log.dart';

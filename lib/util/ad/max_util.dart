@@ -76,12 +76,12 @@ class MaxUtils {
                     child: Column(
                       children: [
                         Expanded(
-                            child: Container(child: MaxNativeAdMediaView())),
+                            child: Container(child: const MaxNativeAdMediaView())),
                         Container(
                           height: 60,
                           child: Row(
                             children: [
-                              MaxNativeAdIconView(
+                              const MaxNativeAdIconView(
                                 width: 36,
                                 height: 36,
                               ),
@@ -89,7 +89,7 @@ class MaxUtils {
                                   child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  MaxNativeAdTitleView(
+                                  const MaxNativeAdTitleView(
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
@@ -107,7 +107,7 @@ class MaxUtils {
                                   ),
                                 ],
                               )),
-                              MaxNativeAdCallToActionView(
+                              const MaxNativeAdCallToActionView(
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStatePropertyAll(
                                       Color(0xff985CFF)),

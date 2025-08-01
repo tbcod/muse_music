@@ -2,22 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:anythink_sdk/at_index.dart';
-import 'package:anythink_sdk/at_interstitial.dart';
-import 'package:anythink_sdk/at_interstitial_response.dart';
-import 'package:anythink_sdk/at_listener.dart';
-import 'package:anythink_sdk/at_rewarded.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
 import 'package:music_muse/util/ad/topon_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app.dart';
 import '../log.dart';
@@ -33,188 +27,89 @@ class AdUtils {
     return _instance;
   }
 
+  Map<String, dynamic> adJson = {};
+
   //and test
-  Map<String, dynamic> adJson = {
-    "sameinterval": 60,
-    "timeout": 7,
-    "playpointtime": 600,
-    "open": [
-      {
-        "adweight": 2,
-        "adtype": "open",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/9257395921"
-      }
-    ],
-    "behavior": [
-      {
-        "adweight": 3,
-        "adtype": "interstitial",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/1033173712"
-      },
-      {
-        "adweight": 1,
-        "adtype": "interstitial",
-        "adsource": "max",
-        "placementid": "b439448917e51dd1"
-      },
-      {
-        "adweight": 4,
-        "adtype": "rewarded",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/5224354917"
-      },
-      {
-        "adweight": 2,
-        "adtype": "rewarded",
-        "adsource": "max",
-        "placementid": "63fe7352fcdc8ac7"
-      }
-    ],
-  };
-  //ios test
-  Map<String, dynamic> adJsonIos = {
-    "sameinterval": 60,
-    "timeout": 7,
-    "playpointtime": 600,
-    "open": [
-      {
-        "adweight": 2,
-        "adtype": "open",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/5575463023"
-      },
-      {
-        "adweight": 1,
-        "adtype": "interstitial",
-        "adsource": "max",
-        "placementid": "fbd6076120e63535"
-      },
-      {
-        "adweight": 3,
-        "adtype": "interstitial",
-        "adsource": "topon",
-        "placementid": "b1g8t40knh0dqb"
-      }
-    ],
-    "behavior": [
-      {
-        "adweight": 3,
-        "adtype": "interstitial",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/4411468910"
-      },
-      {
-        "adweight": 1,
-        "adtype": "interstitial",
-        "adsource": "max",
-        "placementid": "fbd6076120e63535"
-      },
-      {
-        "adweight": 4,
-        "adtype": "rewarded",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/1712485313"
-      },
-      {
-        "adweight": 2,
-        "adtype": "rewarded",
-        "adsource": "max",
-        "placementid": "7aa2c1ce7a11fe8b"
-      },
-      {
-        "adweight": 8,
-        "adtype": "rewarded",
-        "adsource": "topon",
-        "placementid": "b1g8t40knh0541"
-      },
-      {
-        "adweight": 9,
-        "adtype": "interstitial",
-        "adsource": "topon",
-        "placementid": "b1g8t40knh0dqb"
-      }
-    ],
-    "homenative": [
-      {
-        "adweight": 1,
-        "adtype": "native",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-3940256099942544/3986624511"
-      },
-      // {
-      //   "adweight": 2,
-      //   "adtype": "native",
-      //   "adsource": "topon",
-      //   "placementid": "b1g8t40knh0lt8"
-      // },
-      // {
-      //   "adweight": 2,
-      //   "adtype": "banner",
-      //   "adsource": "topon",
-      //   "placementid": "b1g8t40knh0rb9"
-      // }
-    ]
-  };
+  // Map<String, dynamic> adJson = {
+  //   "sameinterval": 60,
+  //   "timeout": 7,
+  //   "playpointtime": 600,
+  //   "open": [
+  //     {"adweight": 2, "adtype": "open", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/9257395921"}
+  //   ],
+  //   "behavior": [
+  //     {"adweight": 3, "adtype": "interstitial", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/1033173712"},
+  //     {"adweight": 1, "adtype": "interstitial", "adsource": "max", "placementid": "b439448917e51dd1"},
+  //     {"adweight": 4, "adtype": "rewarded", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/5224354917"},
+  //     {"adweight": 2, "adtype": "rewarded", "adsource": "max", "placementid": "63fe7352fcdc8ac7"}
+  //   ],
+  // };
+
+  // //ios test
+  // Map<String, dynamic> adJsonIos = {
+  //   "sameinterval": 60,
+  //   "timeout": 7,
+  //   "playpointtime": 600,
+  //   "open": [
+  //     {"adweight": 2, "adtype": "open", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/5575463023"},
+  //     {"adweight": 1, "adtype": "interstitial", "adsource": "max", "placementid": "fbd6076120e63535"},
+  //     {"adweight": 3, "adtype": "interstitial", "adsource": "topon", "placementid": "b1g8t40knh0dqb"}
+  //   ],
+  //   "behavior": [
+  //     {"adweight": 3, "adtype": "interstitial", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/4411468910"},
+  //     {"adweight": 1, "adtype": "interstitial", "adsource": "max", "placementid": "fbd6076120e63535"},
+  //     {"adweight": 4, "adtype": "rewarded", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/1712485313"},
+  //     {"adweight": 2, "adtype": "rewarded", "adsource": "max", "placementid": "7aa2c1ce7a11fe8b"},
+  //     {"adweight": 8, "adtype": "rewarded", "adsource": "topon", "placementid": "b1g8t40knh0541"},
+  //     {"adweight": 9, "adtype": "interstitial", "adsource": "topon", "placementid": "b1g8t40knh0dqb"}
+  //   ],
+  //   "homenative": [
+  //     {"adweight": 1, "adtype": "native", "adsource": "admob", "placementid": "ca-app-pub-3940256099942544/3986624511"},
+  //     // {
+  //     //   "adweight": 2,
+  //     //   "adtype": "native",
+  //     //   "adsource": "topon",
+  //     //   "placementid": "b1g8t40knh0lt8"
+  //     // },
+  //     // {
+  //     //   "adweight": 2,
+  //     //   "adtype": "banner",
+  //     //   "adsource": "topon",
+  //     //   "placementid": "b1g8t40knh0rb9"
+  //     // }
+  //   ]
+  // };
+
   //and
-  Map<String, dynamic> adJsonRelease = {
-    "sameinterval": 60,
-    "timeout": 7,
-    "playpointtime": 600,
-    "open": [],
-    "behavior": [],
-  };
+  // Map<String, dynamic> adJsonRelease = {
+  //   "sameinterval": 60,
+  //   "timeout": 7,
+  //   "playpointtime": 600,
+  //   "open": [],
+  //   "behavior": [],
+  // };
+
   //ios
-  Map<String, dynamic> adJsonIosRelease = {
-    "sameinterval": 60,
-    "timeout": 7,
-    "playpointtime": 600,
-    "open": [
-      {
-        "adweight": 2,
-        "adtype": "open",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-5737687418229244/3411461191"
-      }
-    ],
-    "behavior": [
-      {
-        "adweight": 4,
-        "adtype": "rewarded",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-5737687418229244/4724542864"
-      },
-      {
-        "adweight": 2,
-        "adtype": "rewarded",
-        "adsource": "max",
-        "placementid": "6b7f8cfc9167499f"
-      },
-      {
-        "adweight": 3,
-        "adtype": "interstitial",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-5737687418229244/3270503151"
-      },
-      {
-        "adweight": 1,
-        "adtype": "interstitial",
-        "adsource": "max",
-        "placementid": "15eb7d0b57d6656c"
-      }
-    ],
-    "homenative": [
-      {
-        "adweight": 1,
-        "adtype": "native",
-        "adsource": "admob",
-        "placementid": "ca-app-pub-5737687418229244/3689560112"
-      }
-    ]
-  };
+  // Map<String, dynamic> adJsonIosRelease = {
+  //   "sameinterval": 60,
+  //   "timeout": 7,
+  //   "playpointtime": 600,
+  //   "open": [
+  //     {"adweight": 2, "adtype": "open", "adsource": "admob", "placementid": "ca-app-pub-5737687418229244/3411461191"}
+  //   ],
+  //   "behavior": [
+  //     {"adweight": 4, "adtype": "rewarded", "adsource": "admob", "placementid": "ca-app-pub-5737687418229244/4724542864"},
+  //     {"adweight": 2, "adtype": "rewarded", "adsource": "max", "placementid": "6b7f8cfc9167499f"},
+  //     {"adweight": 3, "adtype": "interstitial", "adsource": "admob", "placementid": "ca-app-pub-5737687418229244/3270503151"},
+  //     {"adweight": 1, "adtype": "interstitial", "adsource": "max", "placementid": "15eb7d0b57d6656c"}
+  //   ],
+  //   "homenative": [
+  //     {"adweight": 1, "adtype": "native", "adsource": "admob", "placementid": "ca-app-pub-5737687418229244/3689560112"}
+  //   ]
+  // };
 
   DateTime? lastShowTime;
+
   //是否超过广告间隔
   Future<bool> canShow() async {
     if (lastShowTime == null) {
@@ -225,7 +120,7 @@ class AdUtils {
 
     Duration temp = nowTime.difference(lastShowTime!);
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
-    AppLog.e("广告间隔\n${lastShowTime}\n${nowTime}\n${temp.inSeconds}---${wait}");
+    AppLog.i("广告间隔\n$lastShowTime\n$nowTime\n${temp.inSeconds}---$wait");
 
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
       return true;
@@ -252,8 +147,8 @@ class AdUtils {
     try {
       await FirebaseRemoteConfig.instance.setConfigSettings(
         RemoteConfigSettings(
-          fetchTimeout: Duration(seconds: 15),
-          minimumFetchInterval: Duration(seconds: 30),
+          fetchTimeout: const Duration(seconds: 15),
+          minimumFetchInterval: const Duration(seconds: 30),
         ),
       );
 
@@ -304,9 +199,15 @@ class AdUtils {
 
   //已加载的广告，key为广告id，显示后移除对应广告
   var loadedAdMap = {};
+
   //load
   loadAd(String key, {LoadCallback? onLoad}) {
-    AppLog.e("开始加载广告$key");
+
+    // if(key != 'level_h'){
+    //   loadAd('level_h', onLoad: onLoad);
+    // }
+
+
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告$key");
       return;
@@ -323,6 +224,8 @@ class AdUtils {
       return bl.compareTo(al);
     });
 
+    AppLog.i("开始加载广告$key");
+
     //循环加载广告
     for (var item in configList) {
       String type = item["adtype"];
@@ -333,10 +236,7 @@ class AdUtils {
         //如果已经加载了并且没有超时就跳过
         int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
         //缓存过期时间
-        if (timeMs <
-            DateTime.now()
-                .subtract(Duration(minutes: 55))
-                .millisecondsSinceEpoch) {
+        if (timeMs < DateTime.now().subtract(const Duration(minutes: 55)).millisecondsSinceEpoch) {
           //已过期,删除广告重新加载
           //销毁广告后删除
 
@@ -352,12 +252,14 @@ class AdUtils {
         }
       }
 
+      AppLog.i("广告开始加载：$key， $source, $type, $ad_id");
+
       if (source == "admob") {
         //加载admob广告
         if (type == "open") {
           AppOpenAd.load(
             adUnitId: ad_id,
-            request: AdRequest(),
+            request: const AdRequest(),
             adLoadCallback: AppOpenAdLoadCallback(onAdLoaded: (ad) {
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
@@ -366,8 +268,7 @@ class AdUtils {
                 "data": item,
                 "admob_ad": ad,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation":
-                    Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
               if (onLoad != null) {
@@ -378,8 +279,9 @@ class AdUtils {
         } else if (type == "interstitial") {
           InterstitialAd.load(
             adUnitId: ad_id,
-            request: AdRequest(),
+            request: const AdRequest(),
             adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -387,8 +289,7 @@ class AdUtils {
                 "data": item,
                 "admob_ad": ad,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation":
-                    Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
               if (onLoad != null) {
@@ -399,8 +300,9 @@ class AdUtils {
         } else if (type == "rewarded") {
           RewardedAd.load(
             adUnitId: ad_id,
-            request: AdRequest(),
+            request: const AdRequest(),
             rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -408,8 +310,7 @@ class AdUtils {
                 "data": item,
                 "admob_ad": ad,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation":
-                    Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
               if (onLoad != null) {
@@ -423,6 +324,7 @@ class AdUtils {
         if (type == "open") {
           AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(
               onAdLoadedCallback: (ad) {
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -430,14 +332,12 @@ class AdUtils {
                   "data": item,
                   "admob_ad": ad,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
-                  "orientation":
-                      Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                  "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
                 };
               },
               onAdLoadFailedCallback: (adId, e) {
                 if (onLoad != null) {
-                  onLoad(adId, false,
-                      AdError(e.code.value, e.waterfall.toString(), e.message));
+                  onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
               },
               onAdDisplayedCallback: (ad) {},
@@ -448,6 +348,7 @@ class AdUtils {
         } else if (type == "interstitial") {
           AppLovinMAX.setInterstitialListener(InterstitialListener(
               onAdLoadedCallback: (ad) {
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -455,14 +356,12 @@ class AdUtils {
                   "data": item,
                   "admob_ad": ad,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
-                  "orientation":
-                      Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                  "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
                 };
               },
               onAdLoadFailedCallback: (adId, e) {
                 if (onLoad != null) {
-                  onLoad(adId, false,
-                      AdError(e.code.value, e.waterfall.toString(), e.message));
+                  onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
               },
               onAdDisplayedCallback: (ad) {},
@@ -473,6 +372,7 @@ class AdUtils {
         } else if (type == "rewarded") {
           AppLovinMAX.setRewardedAdListener(RewardedAdListener(
               onAdLoadedCallback: (ad) {
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -480,14 +380,12 @@ class AdUtils {
                   "data": item,
                   "admob_ad": ad,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
-                  "orientation":
-                      Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                  "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
                 };
               },
               onAdLoadFailedCallback: (adId, e) {
                 if (onLoad != null) {
-                  onLoad(adId, false,
-                      AdError(e.code.value, e.waterfall.toString(), e.message));
+                  onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
               },
               onAdDisplayedCallback: (ad) {},
@@ -503,12 +401,12 @@ class AdUtils {
           TopOnUtils.instance.interstitialStream = null;
 
           AppLog.e("加载topon插屏");
-          TopOnUtils.instance.interstitialStream =
-              ATListenerManager.interstitialEventHandler.listen((e) {
-            if (e.interstatus ==
-                InterstitialStatus.interstitialAdDidFinishLoading) {
+          TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
+            if (e.interstatus == InterstitialStatus.interstitialAdDidFinishLoading) {
               //加载成功
-              AppLog.e("topon插屏加载成功");
+              // AppLog.e("topon插屏加载成功");
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+
               if (onLoad != null) {
                 onLoad(e.placementID, true, null);
               }
@@ -516,33 +414,29 @@ class AdUtils {
                 "data": item,
                 "admob_ad": null,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation":
-                    Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
-            } else if (e.interstatus ==
-                InterstitialStatus.interstitialAdFailToLoadAD) {
+            } else if (e.interstatus == InterstitialStatus.interstitialAdFailToLoadAD) {
               //加载失败
               AppLog.e("topon插屏加载失败:${e.requestMessage}");
               if (onLoad != null) {
-                onLoad(
-                    e.placementID, false, AdError(-101, "", e.requestMessage));
+                onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
               }
             }
           });
-          ATInterstitialManager.loadInterstitialAd(
-              placementID: ad_id, extraMap: {});
+          ATInterstitialManager.loadInterstitialAd(placementID: ad_id, extraMap: {});
         } else if (type == "rewarded") {
           TopOnUtils.instance.rewardedStream?.cancel();
           TopOnUtils.instance.rewardedStream = null;
 
           AppLog.e("加载topon激励");
-          TopOnUtils.instance.rewardedStream =
-              ATListenerManager.rewardedVideoEventHandler.listen((e) {
-            if (e.rewardStatus ==
-                RewardedStatus.rewardedVideoDidFinishLoading) {
+          TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
+            if (e.rewardStatus == RewardedStatus.rewardedVideoDidFinishLoading) {
               //加载成功
               //加载成功
-              AppLog.e("topon激励加载成功");
+              // AppLog.e("topon激励加载成功");
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+
               if (onLoad != null) {
                 onLoad(e.placementID, true, null);
               }
@@ -550,16 +444,13 @@ class AdUtils {
                 "data": item,
                 "admob_ad": null,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation":
-                    Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
-            } else if (e.rewardStatus ==
-                RewardedStatus.rewardedVideoDidFailToLoad) {
+            } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToLoad) {
               //加载失败
               AppLog.e("topon激励加载失败:${e.requestMessage}");
               if (onLoad != null) {
-                onLoad(
-                    e.placementID, false, AdError(-101, "", e.requestMessage));
+                onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
               }
             }
           });
@@ -570,14 +461,14 @@ class AdUtils {
   }
 
   bool adIsShowing = false;
-  showAd(String key, {ShowCallback? onShow}) async {
+
+  Future<bool> showAd(String key, {ShowCallback? onShow}) async {
     //TODO 测试不显示广告
     // if (onShow != null) {
     //   onShow.onShowFail!("", AdError(-1, "", "show key error"));
     // }
     // return false;
 
-    AppLog.e("开始显示广告");
 
     if (adIsShowing) {
       if (onShow != null) {
@@ -586,13 +477,6 @@ class AdUtils {
       return false;
     }
 
-    if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告");
-      if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "show key error"));
-      }
-      return false;
-    }
 
     if (Get.find<Application>().isAppBack == true) {
       AppLog.e("app在后台");
@@ -602,12 +486,10 @@ class AdUtils {
       return false;
     }
 
-    final List<ConnectivityResult> connectivityResult =
-        await (Connectivity().checkConnectivity());
+    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
     AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
-        !connectivityResult.contains(ConnectivityResult.mobile)) {
+    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
@@ -626,9 +508,25 @@ class AdUtils {
     // }
 
     if (!await canShow()) {
-      AppLog.e("广告间隔未到");
+      AppLog.i("广告间隔未到, $key");
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "ad interval has not expired"));
+      }
+      return false;
+    }
+
+    if (key != "level_h") {
+      bool isHighSuc = await showAd("level_h", onShow: onShow);
+      if (isHighSuc) {
+        return true;
+      }
+    }
+
+
+    if (!adJson.containsKey(key)) {
+      AppLog.e("没有对应广告");
+      if (onShow != null) {
+        onShow.onShowFail!("", AdError(-1, "", "show key error"));
       }
       return false;
     }
@@ -648,6 +546,8 @@ class AdUtils {
 
     //循环判断广告是否加载
 
+    AppLog.i("开始显示广告:$key");
+
     var isShowAd = false;
     for (var item in configList) {
       String type = item["adtype"];
@@ -666,8 +566,7 @@ class AdUtils {
         if (type == "open") {
           AppOpenAd? openAd = loadedItem["admob_ad"];
           //设置显示事件
-          openAd?.fullScreenContentCallback =
-              FullScreenContentCallback(onAdClicked: (ad) {
+          openAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
             if (onShow != null) {
               onShow.onClick!(ad.adUnitId);
             }
@@ -700,13 +599,10 @@ class AdUtils {
             }
           });
           //设置收益事件
-          openAd?.onPaidEvent = (Ad ad, double valueMicros,
-              PrecisionType precision, String currencyCode) {
+          openAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-                ad_network:
-                    ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
-                        "",
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
                 ad_format: "open",
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
@@ -721,8 +617,7 @@ class AdUtils {
         } else if (type == "interstitial") {
           InterstitialAd? interstitialAd = loadedItem["admob_ad"];
           //设置显示事件
-          interstitialAd?.fullScreenContentCallback =
-              FullScreenContentCallback(onAdClicked: (ad) {
+          interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
             if (onShow != null) {
               onShow.onClick!(ad.adUnitId);
             }
@@ -755,13 +650,10 @@ class AdUtils {
             }
           });
           //设置收益事件
-          interstitialAd?.onPaidEvent = (Ad ad, double valueMicros,
-              PrecisionType precision, String currencyCode) {
+          interstitialAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-                ad_network:
-                    ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
-                        "",
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
                 ad_format: "interstitial",
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
@@ -776,8 +668,7 @@ class AdUtils {
         } else if (type == "rewarded") {
           RewardedAd? rewardedAd = loadedItem["admob_ad"];
           //设置显示事件
-          rewardedAd?.fullScreenContentCallback =
-              FullScreenContentCallback(onAdClicked: (ad) {
+          rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
             if (onShow != null) {
               onShow.onClick!(ad.adUnitId);
             }
@@ -810,13 +701,10 @@ class AdUtils {
             }
           });
           //设置收益事件
-          rewardedAd?.onPaidEvent = (Ad ad, double valueMicros,
-              PrecisionType precision, String currencyCode) {
+          rewardedAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-                ad_network:
-                    ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
-                        "",
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
                 ad_format: "rewarded",
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
@@ -825,8 +713,7 @@ class AdUtils {
                 currency: currencyCode,
                 precision_type: precision.name);
           };
-          rewardedAd?.show(
-              onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+          rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
             //用户看完激励广告
           });
           isShowAd = true;
@@ -840,8 +727,7 @@ class AdUtils {
 
           if (isReady ?? false) {
             //重新设置显示监听
-            AppLovinMAX.setAppOpenAdListener(
-                AppOpenAdListener(onAdLoadedCallback: (ad) {
+            AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(onAdLoadedCallback: (ad) {
               //已经加载成功，无需回调此方法
             }, onAdLoadFailedCallback: (adId, e) {
               //已经加载成功，无需回调此方法
@@ -853,8 +739,7 @@ class AdUtils {
             }, onAdDisplayFailedCallback: (ad, e) {
               loadedAdMap.remove(ad.adUnitId);
               if (onShow != null) {
-                onShow.onShowFail!(ad.adUnitId,
-                    AdError(e.code.value, e.waterfall.toString(), e.message));
+                onShow.onShowFail!(ad.adUnitId, AdError(e.code.value, e.waterfall.toString(), e.message));
               }
             }, onAdClickedCallback: (ad) {
               if (onShow != null) {
@@ -896,8 +781,7 @@ class AdUtils {
 
           if (isReady ?? false) {
             //重新设置显示监听
-            AppLovinMAX.setInterstitialListener(
-                InterstitialListener(onAdLoadedCallback: (ad) {
+            AppLovinMAX.setInterstitialListener(InterstitialListener(onAdLoadedCallback: (ad) {
               //已经加载成功，无需回调此方法
             }, onAdLoadFailedCallback: (adId, e) {
               //已经加载成功，无需回调此方法
@@ -909,8 +793,7 @@ class AdUtils {
             }, onAdDisplayFailedCallback: (ad, e) {
               loadedAdMap.remove(ad.adUnitId);
               if (onShow != null) {
-                onShow.onShowFail!(ad.adUnitId,
-                    AdError(e.code.value, e.waterfall.toString(), e.message));
+                onShow.onShowFail!(ad.adUnitId, AdError(e.code.value, e.waterfall.toString(), e.message));
               }
             }, onAdClickedCallback: (ad) {
               if (onShow != null) {
@@ -952,8 +835,7 @@ class AdUtils {
 
           if (isReady ?? false) {
             //重新设置显示监听
-            AppLovinMAX.setRewardedAdListener(
-                RewardedAdListener(onAdLoadedCallback: (ad) {
+            AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
               //已经加载成功，无需回调此方法
             }, onAdLoadFailedCallback: (adId, e) {
               //已经加载成功，无需回调此方法
@@ -965,8 +847,7 @@ class AdUtils {
             }, onAdDisplayFailedCallback: (ad, e) {
               loadedAdMap.remove(ad.adUnitId);
               if (onShow != null) {
-                onShow.onShowFail!(ad.adUnitId,
-                    AdError(e.code.value, e.waterfall.toString(), e.message));
+                onShow.onShowFail!(ad.adUnitId, AdError(e.code.value, e.waterfall.toString(), e.message));
               }
             }, onAdClickedCallback: (ad) {
               if (onShow != null) {
@@ -1010,23 +891,18 @@ class AdUtils {
         //增加topon
 
         if (type == "interstitial") {
-          var isReady = await ATInterstitialManager.hasInterstitialAdReady(
-              placementID: ad_id);
+          var isReady = await ATInterstitialManager.hasInterstitialAdReady(placementID: ad_id);
           if (isReady) {
             TopOnUtils.instance.interstitialStream?.cancel();
             TopOnUtils.instance.interstitialStream = null;
 
-            TopOnUtils.instance.interstitialStream =
-                ATListenerManager.interstitialEventHandler.listen((e) {
-              if (e.interstatus ==
-                  InterstitialStatus.interstitialFailedToShow) {
+            TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
+              if (e.interstatus == InterstitialStatus.interstitialFailedToShow) {
                 //展示失败
                 if (onShow != null) {
-                  onShow.onShowFail!(
-                      e.placementID, AdError(-102, "", e.requestMessage));
+                  onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
                 }
-              } else if (e.interstatus ==
-                  InterstitialStatus.interstitialDidShowSucceed) {
+              } else if (e.interstatus == InterstitialStatus.interstitialDidShowSucceed) {
                 //展示
                 adIsShowing = true;
                 if (onShow != null) {
@@ -1044,8 +920,7 @@ class AdUtils {
                     ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
                     currency: revenueData["currency"] ?? "USD",
                     precision_type: revenueData["precision"] ?? "");
-              } else if (e.interstatus ==
-                  InterstitialStatus.interstitialAdDidClose) {
+              } else if (e.interstatus == InterstitialStatus.interstitialAdDidClose) {
                 //关闭
                 adIsShowing = false;
                 //设置显示时间以判断广告间隔
@@ -1064,24 +939,21 @@ class AdUtils {
             ATInterstitialManager.showInterstitialAd(placementID: ad_id);
             loadedAdMap.remove(ad_id);
             isShowAd = true;
+            break;
           }
         } else if (type == "rewarded") {
-          var isReady =
-              await ATRewardedManager.rewardedVideoReady(placementID: ad_id);
+          var isReady = await ATRewardedManager.rewardedVideoReady(placementID: ad_id);
           if (isReady) {
             TopOnUtils.instance.rewardedStream?.cancel();
             TopOnUtils.instance.rewardedStream = null;
 
-            TopOnUtils.instance.rewardedStream =
-                ATListenerManager.rewardedVideoEventHandler.listen((e) {
+            TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
               if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToPlay) {
                 //展示失败
                 if (onShow != null) {
-                  onShow.onShowFail!(
-                      e.placementID, AdError(-102, "", e.requestMessage));
+                  onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
                 }
-              } else if (e.rewardStatus ==
-                  RewardedStatus.rewardedVideoDidStartPlaying) {
+              } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidStartPlaying) {
                 //展示
                 adIsShowing = true;
                 if (onShow != null) {
@@ -1099,8 +971,7 @@ class AdUtils {
                     ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
                     currency: revenueData["currency"] ?? "USD",
                     precision_type: revenueData["precision"] ?? "");
-              } else if (e.rewardStatus ==
-                  RewardedStatus.rewardedVideoDidClose) {
+              } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidClose) {
                 //关闭
                 adIsShowing = false;
                 //设置显示时间以判断广告间隔
@@ -1119,6 +990,7 @@ class AdUtils {
             ATRewardedManager.showRewardedVideo(placementID: ad_id);
             loadedAdMap.remove(ad_id);
             isShowAd = true;
+            break;
           }
         }
       }
@@ -1139,21 +1011,22 @@ class AdUtils {
 class MyNativeAdView extends GetView<MyNativeAdViewController> {
   final String adKey;
   final String positionKey;
+
   @override
   String? get tag => positionKey;
-  const MyNativeAdView(
-      {super.key, required this.adKey, required this.positionKey});
+
+  const MyNativeAdView({super.key, required this.adKey, required this.positionKey});
 
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => MyNativeAdViewController(adKey, positionKey), tag: tag);
-    return Container(
-        alignment: Alignment.center, child: Obx(() => controller.adView.value));
+    return Container(alignment: Alignment.center, child: Obx(() => controller.adView.value));
   }
 }
 
 class MyNativeAdViewController extends GetxController {
   MyNativeAdViewController(this.adKey, this.positionKey);
+
   var adKey = "";
   var positionKey = "";
 
@@ -1173,12 +1046,10 @@ class MyNativeAdViewController extends GetxController {
       return;
     }
 
-    final List<ConnectivityResult> connectivityResult =
-        await (Connectivity().checkConnectivity());
+    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
     AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
-        !connectivityResult.contains(ConnectivityResult.mobile)) {
+    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
       return;
     }
 
@@ -1208,8 +1079,7 @@ class MyNativeAdViewController extends GetxController {
       var isOk = false;
       if (source == "admob") {
         if (type == "native") {
-          var ad = await AdmobUtils.instance
-              .loadNativeAd(ad_id, key, positionKey, adView);
+          var ad = await AdmobUtils.instance.loadNativeAd(ad_id, key, positionKey, adView);
           if (ad != null) {
             loadType = 1;
             isOk = true;
@@ -1220,22 +1090,19 @@ class MyNativeAdViewController extends GetxController {
         if (type == "native") {
           // var ad= await AdmobUtils.instance
           //     .loadNativeAd(ad_id, key, positionKey, adView);
-          var isLoadMaxAd =
-              await MaxUtils.instance.loadNativeAd(ad_id, positionKey, adView);
+          var isLoadMaxAd = await MaxUtils.instance.loadNativeAd(ad_id, positionKey, adView);
           if (isLoadMaxAd) {
             loadType = 2;
           }
         }
       } else if (source == "topon") {
         if (type == "native") {
-          var isLoadOk = await TopOnUtils.instance
-              .loadNativeAd(ad_id, positionKey, adView);
+          var isLoadOk = await TopOnUtils.instance.loadNativeAd(ad_id, positionKey, adView);
           if (isLoadOk) {
             loadType = 3;
           }
         } else if (type == "banner") {
-          var isLoadOk = await TopOnUtils.instance
-              .loadBannerAd(ad_id, positionKey, adView);
+          var isLoadOk = await TopOnUtils.instance.loadBannerAd(ad_id, positionKey, adView);
           if (isLoadOk) {
             loadType = 3;
           }
@@ -1282,6 +1149,5 @@ class ShowCallback {
   final OnClick? onClick;
   final OnShowFail? onShowFail;
 
-  const ShowCallback(
-      {this.onShow, this.onClose, this.onClick, this.onShowFail});
+  const ShowCallback({this.onShow, this.onClose, this.onClick, this.onShowFail});
 }
