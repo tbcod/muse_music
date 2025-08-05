@@ -186,7 +186,7 @@ class AppController extends SuperController {
           AdUtils.instance.showAd("open");
         } else if (state == AppState.background) {
           Get.find<Application>().isAppBack = true;
-          AppLog.e("后台");
+          // AppLog.i("后台");
           //判断是否在播放
           try {
             if (Get.find<UserPlayInfoController>().player?.value.isPlaying ??
@@ -218,7 +218,7 @@ class AppController extends SuperController {
 
   @override
   void onPaused() async {
-    AppLog.e("-切换到后台");
+    AppLog.i("-切换到后台");
     // try {
     //   if (Get.find<UserPlayInfoController>().player?.value.isPlaying ?? false) {
     //     await Future.delayed(Duration(milliseconds: 100));

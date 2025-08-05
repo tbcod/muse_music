@@ -17,9 +17,9 @@ class NativeUtils {
     // return;
 
     var jsonStr = FirebaseRemoteConfig.instance.getString("musicmuse_fabo_id");
-    AppLog.e("云控fb");
+    // AppLog.e("云控fb");
     if (jsonStr.isEmpty) {
-      AppLog.e("云控fb为空");
+      // AppLog.e("云控fb为空");
       return;
     }
 

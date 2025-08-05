@@ -59,8 +59,8 @@ class MyDialogUtils {
         .inHours;
     if (lastHours < 24) {
       // AppLog.e(lastHours);
-      AppLog.e("${DateTime.fromMillisecondsSinceEpoch(ms)}\n${DateTime.now()}");
-      AppLog.e("今天已经弹过，不显示好评弹窗");
+      // AppLog.e("${DateTime.fromMillisecondsSinceEpoch(ms)}\n${DateTime.now()}");
+      // AppLog.e("今天已经弹过，不显示好评弹窗");
       return;
     }
 

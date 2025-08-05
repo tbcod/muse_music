@@ -15,7 +15,8 @@ class EventUtils {
   Future addEvent(String id, {Map<String, Object>? data}) async {
     //TODO 测试时候不处理事件
     // return;
-    AppLog.e("tbaevent----\nname:$id\ndata:$data\n\n");
+
+    // AppLog.i("tbaevent name:$id,data:$data");
 
     id = "mm_$id";
     //事件上报接口

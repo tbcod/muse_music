@@ -72,12 +72,12 @@ class BaseApi extends GetConnect {
 
       // return response;
       // debugPrint(jsonEncode(body));
-      AppLog.d(
-          "url: ${response.request?.url} ,\n method: $method ,\n header: ${response.request?.headers} ,\n param：${jsonEncode(body)}");
-      AppLog.w(response.statusText);
-      AppLog.w(response.statusCode);
+      // AppLog.d(
+      //     "url: ${response.request?.url} ,\n method: $method ,\n header: ${response.request?.headers} ,\n param：${jsonEncode(body)}");
+      // AppLog.w(response.statusText);
+      // AppLog.w(response.statusCode);
       if (response.isOk) {
-        AppLog.d("${response.request?.url} \n请求成功");
+        // AppLog.d("${response.request?.url} \n请求成功");
         // AppLog.d(response.body);
         // AppLog.d(
         //     "${response.request?.url} \n请求成功：\n${response.body},\ncode:${response.statusCode}");
@@ -114,7 +114,7 @@ class BaseApi extends GetConnect {
         }
         return data;
       } else {
-        AppLog.d(
+        AppLog.e(
             "${response.request?.url} \n请求失败：\n${response.body},\ncode:${response.statusCode}");
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);

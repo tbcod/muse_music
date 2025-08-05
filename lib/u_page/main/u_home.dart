@@ -47,10 +47,7 @@ class UserHome extends GetView<UserHomeController> {
     Get.lazyPut(() => UserHomeController());
 
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -58,17 +55,14 @@ class UserHome extends GetView<UserHomeController> {
           title: GestureDetector(
             onTap: () {
               EventUtils.instance.addEvent("home_search");
-              EventUtils.instance
-                  .addEvent("search_click", data: {"from": "home"});
-              Get.to(UserSearch());
+              EventUtils.instance.addEvent("search_click", data: {"from": "home"});
+              Get.to(const UserSearch());
             },
             child: Container(
               height: 44.w,
               width: double.infinity,
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Color(0xffA995FF), width: 1.5.w),
-                  borderRadius: BorderRadius.circular(22.w)),
+                  color: Colors.white, border: Border.all(color: const Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
               child: Row(
                 children: [
                   SizedBox(
@@ -76,20 +70,15 @@ class UserHome extends GetView<UserHomeController> {
                   ),
                   Text(
                     "Search for music/artist/playlist".tr,
-                    style: TextStyle(
-                        fontSize: 12.w,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff141414).withOpacity(0.56)),
+                    style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: const Color(0xff141414).withOpacity(0.56)),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Container(
                     height: 28.w,
                     width: 42.w,
                     padding: EdgeInsets.symmetric(vertical: 4.w),
                     margin: EdgeInsets.only(right: 8.w),
-                    decoration: BoxDecoration(
-                        color: Color(0xffA995FF),
-                        borderRadius: BorderRadius.circular(14.w)),
+                    decoration: BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
                     child: Image.asset(
                       "assets/oimg/icon_search.png",
                       width: 20.w,
@@ -131,22 +120,18 @@ class UserHome extends GetView<UserHomeController> {
                               type: type,
                               data: childList,
                               title: item["title"],
-                              onMoreClick: item["title"] == "Artist".tr &&
-                                      Get.find<Application>().typeSo == "ytm"
+                              onMoreClick: item["title"] == "Artist".tr && Get.find<Application>().typeSo == "ytm"
                                   ? () {
                                       //跳转到全部歌手
-                                      Get.to(UserMoreArtist());
+                                      Get.to(const UserMoreArtist());
                                     }
                                   : null);
                         },
                         separatorBuilder: (_, i) {
                           if (i == 2) {
                             return Container(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 8.w, horizontal: 16.w),
-                              child: MyNativeAdView(
-                                  adKey: "homenative",
-                                  positionKey: "HomeNative"),
+                              margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w),
+                              child: const MyNativeAdView(adKey: "homenative", positionKey: "HomeNative"),
                             );
                           }
 
@@ -171,8 +156,7 @@ class UserHome extends GetView<UserHomeController> {
                 SizedBox(
                   height: 8.w,
                 ),
-                Text("No network".tr,
-                    style: TextStyle(fontSize: 16.w, color: Colors.black)),
+                Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
                 ElevatedButton(
                     onPressed: () {
                       controller.bindYoutubeMusicData();
@@ -186,11 +170,7 @@ class UserHome extends GetView<UserHomeController> {
     );
   }
 
-  getBigItem(
-      {required String type,
-      required List data,
-      required String title,
-      VoidCallback? onMoreClick}) {
+  getBigItem({required String type, required List data, required String title, VoidCallback? onMoreClick}) {
     if (type.isEmpty) {
       type = data.first?["type"];
     }
@@ -210,25 +190,20 @@ class UserHome extends GetView<UserHomeController> {
                 title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 20.w,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5),
+                style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5),
               )),
               // Spacer(),
               onMoreClick != null
                   ? InkWell(
                       onTap: () {
                         onMoreClick();
-                        EventUtils.instance.addEvent("home_artist",
-                            data: {"click_type": "more"});
+                        EventUtils.instance.addEvent("home_artist", data: {"click_type": "more"});
                       },
                       child: Row(
                         children: [
                           Text(
                             "More".tr,
-                            style: TextStyle(
-                                fontSize: 12.w, color: Color(0xffa6a6a6)),
+                            style: TextStyle(fontSize: 12.w, color: const Color(0xffa6a6a6)),
                           ),
                           SizedBox(
                             width: 4.w,
@@ -275,17 +250,13 @@ class UserHome extends GetView<UserHomeController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck = childItem["videoId"] ==
-                          Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
                           AppLog.e(childItem);
-                          EventUtils.instance.addEvent("home_model",
-                              data: {"click_type": "play", "title": title});
+                          EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>().setDataAndPlayItem(
-                              [childItem], childItem,
-                              clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
                         child: Container(
@@ -297,8 +268,7 @@ class UserHome extends GetView<UserHomeController> {
                                   width: 248.w,
                                   height: 140.w,
                                   clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6.w)),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
@@ -332,12 +302,8 @@ class UserHome extends GetView<UserHomeController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: isCheck
-                                        ? Color(0xffA491F7)
-                                        : Colors.black,
-                                    fontSize: 14.w,
-                                    fontWeight: FontWeight.w500),
+                                style:
+                                    TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -359,8 +325,7 @@ class UserHome extends GetView<UserHomeController> {
                   },
                   itemCount: data.length),
             );
-          } else if (type == "MUSIC_VIDEO_TYPE_ATV" ||
-              type == "MUSIC_VIDEO_TYPE_UGC") {
+          } else if (type == "MUSIC_VIDEO_TYPE_ATV" || type == "MUSIC_VIDEO_TYPE_UGC") {
             //小的歌曲列表
 
             var isRec = title == "Listen now";
@@ -380,13 +345,10 @@ class UserHome extends GetView<UserHomeController> {
                         clipBehavior: Clip.hardEdge,
                         padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [
-                                  Color(0xffE9E9FF),
-                                  Color(0xffffffff),
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter),
+                            gradient: const LinearGradient(colors: [
+                              Color(0xffE9E9FF),
+                              Color(0xffffffff),
+                            ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(12.w),
                                 bottomLeft: Radius.circular(12.w),
@@ -398,49 +360,33 @@ class UserHome extends GetView<UserHomeController> {
                             return InkWell(
                               onTap: () {
                                 if (isRec) {
-                                  EventUtils.instance.addEvent("home_song",
-                                      data: {"click_type": "play"});
+                                  EventUtils.instance.addEvent("home_song", data: {"click_type": "play"});
                                 } else {
-                                  EventUtils.instance.addEvent("home_model",
-                                      data: {
-                                        "click_type": "play",
-                                        "title": title
-                                      });
+                                  EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                                 }
 
                                 AppLog.e(subItem);
                                 var plist = List.of(data);
                                 var pItem = Map.of(subItem);
 
-                                Get.find<UserPlayInfoController>()
-                                    .setDataAndPlayItem([pItem], pItem,
-                                        clickType: "home", loadNextData: true);
+                                Get.find<UserPlayInfoController>().setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
 
                                 // Get.to(UserPlayInfo());
                               },
                               child: Obx(
                                 () {
-                                  var isCheck = subItem["videoId"] ==
-                                      Get.find<UserPlayInfoController>()
-                                          .nowData["videoId"];
+                                  var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                                   return Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.w, vertical: 8.w),
+                                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
                                     decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(12.w),
-                                        color: isCheck
-                                            ? Color(0xfff7f7f7)
-                                            : Colors.transparent),
+                                        borderRadius: BorderRadius.circular(12.w), color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
                                     child: Row(
                                       children: [
                                         Container(
                                           width: 54.w,
                                           height: 54.w,
                                           clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6.w)),
+                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                           child: NetImageView(
                                             imgUrl: subItem["cover"],
                                             fit: BoxFit.cover,
@@ -451,17 +397,14 @@ class UserHome extends GetView<UserHomeController> {
                                         ),
                                         Expanded(
                                             child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               subItem["title"],
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                  color: isCheck
-                                                      ? Color(0xff8569FF)
-                                                      : Colors.black,
+                                                  color: isCheck ? const Color(0xff8569FF) : Colors.black,
                                                   fontSize: 14.w,
                                                   fontWeight: FontWeight.w500),
                                             ),
@@ -471,18 +414,13 @@ class UserHome extends GetView<UserHomeController> {
                                             Row(
                                               children: [
                                                 Obx(() {
-                                                  var isLike = LikeUtil
-                                                      .instance.allVideoMap
-                                                      .containsKey(
-                                                          subItem["videoId"]);
+                                                  var isLike = LikeUtil.instance.allVideoMap.containsKey(subItem["videoId"]);
                                                   if (isLike) {
                                                     return Container(
                                                       width: 16.w,
                                                       height: 16.w,
-                                                      margin: EdgeInsets.only(
-                                                          right: 4.w),
-                                                      child: Image.asset(
-                                                          "assets/oimg/icon_like_on.png"),
+                                                      margin: EdgeInsets.only(right: 4.w),
+                                                      child: Image.asset("assets/oimg/icon_like_on.png"),
                                                     );
                                                   }
 
@@ -492,17 +430,11 @@ class UserHome extends GetView<UserHomeController> {
                                                     child: Text(
                                                   subItem["subtitle"] ?? "",
                                                   maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       fontSize: 12.w,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: isCheck
-                                                          ? Color(0xff8569FF)
-                                                          : Colors.black
-                                                              .withOpacity(
-                                                                  0.75)),
+                                                      fontWeight: FontWeight.w400,
+                                                      color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
                                                 ))
                                               ],
                                             ),
@@ -511,25 +443,15 @@ class UserHome extends GetView<UserHomeController> {
                                         SizedBox(
                                           width: 12.w,
                                         ),
-                                        if (FirebaseRemoteConfig.instance
-                                                .getString(
-                                                    "musicmuse_off_switch") ==
-                                            "on")
+                                        if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on")
                                           Obx(() {
                                             //获取下载状态
                                             var videoId = subItem["videoId"];
 
-                                            if (DownloadUtils
-                                                .instance.allDownLoadingData
-                                                .containsKey(videoId)) {
+                                            if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
                                               //有添加过下载
-                                              var state = DownloadUtils.instance
-                                                      .allDownLoadingData[
-                                                  videoId]["state"];
-                                              double progress = DownloadUtils
-                                                      .instance
-                                                      .allDownLoadingData[
-                                                  videoId]["progress"];
+                                              var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+                                              double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
 
                                               // AppLog.e(
                                               //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
@@ -538,42 +460,33 @@ class UserHome extends GetView<UserHomeController> {
                                                 //下载中\下载暂停
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance
-                                                        .remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
                                                     width: 32.w,
                                                     alignment: Alignment.center,
-                                                    padding:
-                                                        EdgeInsets.all(6.w),
+                                                    padding: EdgeInsets.all(6.w),
                                                     child: Container(
                                                         width: 20.w,
                                                         height: 20.w,
                                                         // padding: EdgeInsets.all(5.w),
-                                                        child:
-                                                            CircularProgressIndicator(
+                                                        child: CircularProgressIndicator(
                                                           value: progress,
                                                           strokeWidth: 1.5,
-                                                          backgroundColor:
-                                                              Color(0xffA995FF)
-                                                                  .withOpacity(
-                                                                      0.35),
-                                                          color:
-                                                              Color(0xffA995FF),
+                                                          backgroundColor: const Color(0xffA995FF).withOpacity(0.35),
+                                                          color: const Color(0xffA995FF),
                                                         )),
                                                   ),
                                                 );
                                               } else if (state == 2) {
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance
-                                                        .remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
-                                                    padding:
-                                                        EdgeInsets.all(6.w),
+                                                    padding: EdgeInsets.all(6.w),
                                                     child: Image.asset(
                                                       "assets/oimg/icon_download_ok.png",
                                                       width: 20.w,
@@ -587,23 +500,12 @@ class UserHome extends GetView<UserHomeController> {
                                             return InkWell(
                                               onTap: () {
                                                 if (isRec) {
-                                                  EventUtils.instance.addEvent(
-                                                      "home_song",
-                                                      data: {
-                                                        "click_type": "offline"
-                                                      });
+                                                  EventUtils.instance.addEvent("home_song", data: {"click_type": "offline"});
                                                 } else {
-                                                  EventUtils.instance.addEvent(
-                                                      "home_model",
-                                                      data: {
-                                                        "click_type": "offline",
-                                                        "title": title
-                                                      });
+                                                  EventUtils.instance.addEvent("home_model", data: {"click_type": "offline", "title": title});
                                                 }
 
-                                                DownloadUtils.instance.download(
-                                                    videoId, subItem,
-                                                    clickType: "home");
+                                                DownloadUtils.instance.download(videoId, subItem, clickType: "home");
                                               },
                                               child: Container(
                                                 height: 50.w,
@@ -621,9 +523,7 @@ class UserHome extends GetView<UserHomeController> {
                                         // ),
                                         InkWell(
                                           onTap: () {
-                                            MoreSheetUtil.instance
-                                                .showVideoMoreSheet(subItem,
-                                                    clickType: "home");
+                                            MoreSheetUtil.instance.showVideoMoreSheet(subItem, clickType: "home");
                                           },
                                           child: Container(
                                             height: 50.w,
@@ -631,8 +531,7 @@ class UserHome extends GetView<UserHomeController> {
                                             child: Container(
                                               width: 20.w,
                                               height: 20.w,
-                                              child: Image.asset(
-                                                  "assets/oimg/icon_more.png"),
+                                              child: Image.asset("assets/oimg/icon_more.png"),
                                             ),
                                           ),
                                         )
@@ -663,12 +562,10 @@ class UserHome extends GetView<UserHomeController> {
                     var childItem = data[i];
                     return GestureDetector(
                       onTap: () {
-                        EventUtils.instance.addEvent("home_model",
-                            data: {"click_type": "play", "title": title});
+                        EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                         AppLog.e(childItem);
 
-                        EventUtils.instance.addEvent("det_playlist_show",
-                            data: {"from": "home"});
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
                         Get.to(UserPlayListInfo(), arguments: childItem);
                       },
                       child: Container(
@@ -680,8 +577,7 @@ class UserHome extends GetView<UserHomeController> {
                                 width: 140.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -697,8 +593,7 @@ class UserHome extends GetView<UserHomeController> {
                             ),
                             Text(
                               childItem["title"],
-                              style: TextStyle(
-                                  fontSize: 14.w, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -725,11 +620,9 @@ class UserHome extends GetView<UserHomeController> {
                     var childItem = data[i];
                     return GestureDetector(
                       onTap: () {
-                        EventUtils.instance.addEvent("home_model",
-                            data: {"click_type": "play", "title": title});
+                        EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent("det_playlist_show",
-                            data: {"from": "home"});
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
                         Get.to(UserPlayListInfo(), arguments: childItem);
                       },
                       child: Container(
@@ -741,8 +634,7 @@ class UserHome extends GetView<UserHomeController> {
                                 width: 140.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -758,8 +650,7 @@ class UserHome extends GetView<UserHomeController> {
                             ),
                             Text(
                               "${childItem["title"]}",
-                              style: TextStyle(
-                                  fontSize: 14.w, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -786,13 +677,11 @@ class UserHome extends GetView<UserHomeController> {
                     var childItem = data[i];
                     return GestureDetector(
                       onTap: () {
-                        EventUtils.instance.addEvent("home_artist",
-                            data: {"click_type": "details"});
+                        EventUtils.instance.addEvent("home_artist", data: {"click_type": "details"});
 
                         AppLog.e(childItem);
 
-                        EventUtils.instance.addEvent("det_artist_show",
-                            data: {"form": "home_artist"});
+                        EventUtils.instance.addEvent("det_artist_show", data: {"form": "home_artist"});
 
                         if (Get.find<Application>().typeSo == "yt") {
                           //跳转youtube频道
@@ -801,7 +690,7 @@ class UserHome extends GetView<UserHomeController> {
                           map["browseId"] = map["youtubeId"];
 
                           AppLog.e(map);
-                          Get.to(UserYoutubeChannel(), arguments: map);
+                          Get.to(const UserYoutubeChannel(), arguments: map);
                           return;
                         }
 
@@ -810,9 +699,7 @@ class UserHome extends GetView<UserHomeController> {
                       child: Container(
                         width: 100.w,
                         height: 160.w,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50.w)),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(50.w)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -823,8 +710,7 @@ class UserHome extends GetView<UserHomeController> {
                                 width: 68.w,
                                 height: 68.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(34.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -845,9 +731,7 @@ class UserHome extends GetView<UserHomeController> {
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 14.w,
-                                    fontWeight: FontWeight.w500),
+                                style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                             )
                           ],
@@ -873,11 +757,9 @@ class UserHome extends GetView<UserHomeController> {
                     var childItem = data[i];
                     return GestureDetector(
                       onTap: () {
-                        EventUtils.instance.addEvent("home_model",
-                            data: {"click_type": "play", "title": title});
+                        EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent("det_playlist_show",
-                            data: {"from": "home"});
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
 
                         var itemMap = Map.of(childItem);
 
@@ -896,8 +778,7 @@ class UserHome extends GetView<UserHomeController> {
                                 width: 140.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -913,10 +794,7 @@ class UserHome extends GetView<UserHomeController> {
                             ),
                             Text(
                               childItem["title"],
-                              style: TextStyle(
-                                  height: 1.2,
-                                  fontSize: 14.w,
-                                  fontWeight: FontWeight.w500),
+                              style: TextStyle(height: 1.2, fontSize: 14.w, fontWeight: FontWeight.w500),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -950,32 +828,28 @@ class UserHome extends GetView<UserHomeController> {
                       onTap: () {
                         if (childType == -1) {
                           //我喜欢的
-                          EventUtils.instance.addEvent("home_recom",
-                              data: {"click_type": "collection"});
+                          EventUtils.instance.addEvent("home_recom", data: {"click_type": "collection"});
 
-                          Get.to(UserLikeSong(
+                          Get.to(const UserLikeSong(
                             isFormHome: true,
                           ));
                         } else if (childType == -2) {
                           //我下载的
-                          EventUtils.instance.addEvent("home_recom",
-                              data: {"click_type": "offline"});
-                          Get.to(UserDownloadSong(
+                          EventUtils.instance.addEvent("home_recom", data: {"click_type": "offline"});
+                          Get.to(const UserDownloadSong(
                             isFormHome: true,
                           ));
                         } else {
                           //本地和网络歌单
-                          EventUtils.instance.addEvent("home_recom",
-                              data: {"click_type": "details"});
-                          EventUtils.instance.addEvent("det_playlist_show",
-                              data: {"from": "home"});
+                          EventUtils.instance.addEvent("home_recom", data: {"click_type": "details"});
+                          EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
                           if (childType == 1) {
                             AppLog.e(childItem);
                             Get.to(UserPlayListInfo(), arguments: childItem);
                             // Get.to(UserPlayListInfo(),
                             //     arguments: {"browseId": childItem["id"]});
                           } else {
-                            Get.to(UserLocPlayListInfo(), arguments: childItem);
+                            Get.to(const UserLocPlayListInfo(), arguments: childItem);
                           }
                         }
                       },
@@ -989,8 +863,7 @@ class UserHome extends GetView<UserHomeController> {
                               width: 88.w,
                               height: 88.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.w)),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w)),
                               child: Builder(builder: (childC) {
                                 if (childType == -1 || childType == -2) {
                                   return Image.asset(
@@ -1015,9 +888,7 @@ class UserHome extends GetView<UserHomeController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 14.w,
-                                    fontWeight: FontWeight.w500),
+                                style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                             )
                           ],
@@ -1032,8 +903,7 @@ class UserHome extends GetView<UserHomeController> {
                   },
                   itemCount: data.length),
             );
-          } else if (type == "LOCKUP_CONTENT_TYPE_ALBUM" ||
-              type == "LOCKUP_CONTENT_TYPE_PLAYLIST") {
+          } else if (type == "LOCKUP_CONTENT_TYPE_ALBUM" || type == "LOCKUP_CONTENT_TYPE_PLAYLIST") {
             //youtube的歌单
             return Container(
               height: 185.w,
@@ -1061,8 +931,7 @@ class UserHome extends GetView<UserHomeController> {
                                 width: 140.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -1078,8 +947,7 @@ class UserHome extends GetView<UserHomeController> {
                             ),
                             Text(
                               childItem["title"],
-                              style: TextStyle(
-                                  fontSize: 14.w, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -1105,17 +973,13 @@ class UserHome extends GetView<UserHomeController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck = childItem["videoId"] ==
-                          Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
                           AppLog.e(childItem);
-                          EventUtils.instance.addEvent("home_model",
-                              data: {"click_type": "play", "title": title});
+                          EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>().setDataAndPlayItem(
-                              [childItem], childItem,
-                              clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
                         child: Container(
@@ -1127,8 +991,7 @@ class UserHome extends GetView<UserHomeController> {
                                   width: 248.w,
                                   height: 140.w,
                                   clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6.w)),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
@@ -1162,12 +1025,8 @@ class UserHome extends GetView<UserHomeController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: isCheck
-                                        ? Color(0xffA491F7)
-                                        : Colors.black,
-                                    fontSize: 14.w,
-                                    fontWeight: FontWeight.w500),
+                                style:
+                                    TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -1253,12 +1112,12 @@ class UserHomeController extends GetxController with StateMixin {
     super.onReady();
 
     IdfaUtil.instance.showIdfaDialog();
-    Future.delayed(Duration(seconds: 10)).then((e) {
+    Future.delayed(const Duration(seconds: 10)).then((e) {
       IdfaUtil.instance.showIdfaDialog();
     });
 
     //检查导量弹窗
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
   }
@@ -1293,16 +1152,13 @@ class UserHomeController extends GetxController with StateMixin {
     //   "clickTrackingParams": "xxx"
     //}
 
-    Get.find<Application>().visitorData =
-        result.data["responseContext"]?["visitorData"] ?? "";
-    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-                ["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
+    Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
+    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
             ["continuations"]?[0]?["nextContinuationData"] ??
         {};
 
-    List bigList = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-            ["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
-        ["contents"];
+    List bigList =
+        result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["contents"];
 
     // AppLog.e(bigList);
 
@@ -1311,19 +1167,13 @@ class UserHomeController extends GetxController with StateMixin {
     var moreId = "";
     for (Map item in bigList) {
       //大标题
-      var bigTitle = item["musicCarouselShelfRenderer"]?["header"]
-                  ?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]
-              ["text"] ??
-          "";
+      var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
 
       List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
 
       //more id
-      moreId = item["musicCarouselShelfRenderer"]?["header"]
-                          ?["musicCarouselShelfBasicHeaderRenderer"]
-                      ?["moreContentButton"]?["buttonRenderer"]
-                  ?["navigationEndpoint"]?["watchPlaylistEndpoint"]
-              ?["playlistId"] ??
+      moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]
+              ?["navigationEndpoint"]?["watchPlaylistEndpoint"]?["playlistId"] ??
           "";
 
       List realChildList = [];
@@ -1336,93 +1186,52 @@ class UserHomeController extends GetxController with StateMixin {
 
         if (childItem.containsKey("musicResponsiveListItemRenderer")) {
           //音乐
-          List flexColumns = childItem["musicResponsiveListItemRenderer"]
-                  ?["flexColumns"] ??
-              [];
-          var musicType = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ["watchEndpointMusicSupportedConfigs"]
-              ["watchEndpointMusicConfig"]["musicVideoType"];
+          List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
+          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+              ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
           type = musicType;
 
           //标题
-          var childItemTitle = flexColumns[0]
-                      ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                  ["runs"][0]["text"] ??
-              "";
-          var childItemSubTitle = flexColumns[1]
-                      ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                  ["runs"][0]["text"] ??
-              "";
+          var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+          var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
           //id
-          var videoId = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ?["videoId"] ??
-              "";
-          var playlistId = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+          var videoId =
+              flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
+          var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
                   ?["playlistId"] ??
               "";
 
           //封面
-          var childItemCover = childItem["musicResponsiveListItemRenderer"]
-                      ?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
-                  ["thumbnails"]?[0]?["url"] ??
-              "";
+          var childItemCover =
+              childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
 
           if (type.isNotEmpty) {
-            realChildList.add({
-              "title": childItemTitle,
-              "subtitle": childItemSubTitle,
-              "cover": childItemCover,
-              "type": type,
-              "videoId": videoId
-            });
+            realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
           }
 
           continue;
         } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
           //歌单
           //歌单、专辑、歌手
-          var childItemType = childItem["musicTwoRowItemRenderer"]["title"]
-                          ["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
-                      ["browseEndpointContextSupportedConfigs"]
-                  ?["browseEndpointContextMusicConfig"]?["pageType"] ??
+          var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
+                  ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
               "";
           type = childItemType;
 
           //标题
-          var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]
-                  ["runs"][0]["text"] ??
-              "";
-          List childItemSubTitleList =
-              childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
-          String childItemSubTitle = childItemSubTitleList
-              .map((e) => e["text"] ?? "")
-              .toList()
-              .join("");
+          var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
+          List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
+          String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
           //id
-          var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"]
-                  [0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ??
-              "";
+          var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
 
           //封面
-          var childItemCover = childItem["musicTwoRowItemRenderer"]
-                  ?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]
-              ["thumbnails"][1]["url"];
+          var childItemCover =
+              childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
 
           if (type.isNotEmpty) {
-            realChildList.add({
-              "title": childItemTitle,
-              "subtitle": childItemSubTitle,
-              "cover": childItemCover,
-              "type": type,
-              "browseId": browseId
-            });
+            realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
           }
         } else {
           //歌单
@@ -1432,12 +1241,7 @@ class UserHomeController extends GetxController with StateMixin {
       }
 
       if (realChildList.isNotEmpty) {
-        realList.add({
-          "title": bigTitle,
-          "list": realChildList,
-          "moreId": moreId,
-          "type": type
-        });
+        realList.add({"title": bigTitle, "list": realChildList, "moreId": moreId, "type": type});
       }
     }
 
@@ -1495,31 +1299,24 @@ class UserHomeController extends GetxController with StateMixin {
       return;
     }
 
-    BaseModel result =
-        await ApiMain.instance.getData("FEmusic_home", nextData: nextData);
+    BaseModel result = await ApiMain.instance.getData("FEmusic_home", nextData: nextData);
 
     try {
-      nextData = result.data["continuationContents"]["sectionListContinuation"]
-          ["continuations"][0]["nextContinuationData"];
+      nextData = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"]?[0]?["nextContinuationData"];
     } catch (e) {
       AppLog.e("没有更多数据");
       AppLog.e(e);
       nextData = {};
     }
 
-    List bigList = result.data["continuationContents"]
-            ?["sectionListContinuation"]?["contents"] ??
-        [];
+    List bigList = result.data["continuationContents"]?["sectionListContinuation"]?["contents"] ?? [];
 
     List realList = [];
 
     var moreId = "";
     for (Map item in bigList) {
       //大标题
-      var bigTitle = item["musicCarouselShelfRenderer"]?["header"]
-                  ?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]
-              ["text"] ??
-          "";
+      var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
 
       // moreId = item["musicCarouselShelfRenderer"]?["header"]
       //                     ?["musicCarouselShelfBasicHeaderRenderer"]
@@ -1535,59 +1332,35 @@ class UserHomeController extends GetxController with StateMixin {
       //判断类型
       var type = "";
 
-      AppLog.e("$bigTitle:共有${childList.length}条小item");
+      // AppLog.e("$bigTitle:共有${childList.length}条小item");
 
       for (Map childItem in childList) {
         // AppLog.e("当前类型：${childItem.keys}");
 
         if (childItem.containsKey("musicResponsiveListItemRenderer")) {
           //音乐
-          List flexColumns = childItem["musicResponsiveListItemRenderer"]
-                  ?["flexColumns"] ??
-              [];
-          var musicType = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ["watchEndpointMusicSupportedConfigs"]
-              ["watchEndpointMusicConfig"]["musicVideoType"];
+          List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
+          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+              ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
           type = musicType;
 
           //标题
-          var childItemTitle = flexColumns[0]
-                      ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                  ["runs"][0]["text"] ??
-              "";
-          var childItemSubTitle = flexColumns[1]
-                      ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                  ["runs"][0]["text"] ??
-              "";
+          var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+          var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
           //id
-          var videoId = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ?["videoId"] ??
-              "";
-          var playlistId = flexColumns[0]
-                          ["musicResponsiveListItemFlexColumnRenderer"]["text"]
-                      ["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+          var videoId =
+              flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
+          var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
                   ?["playlistId"] ??
               "";
 
           //封面
-          var childItemCover = childItem["musicResponsiveListItemRenderer"]
-                      ?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
-                  ["thumbnails"]?[0]?["url"] ??
-              "";
+          var childItemCover =
+              childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
 
           if (type.isNotEmpty) {
-            realChildList.add({
-              "title": childItemTitle,
-              "subtitle": childItemSubTitle,
-              "cover": childItemCover,
-              "type": type,
-              "videoId": videoId
-            });
+            realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
           }
 
           continue;
@@ -1603,87 +1376,56 @@ class UserHomeController extends GetxController with StateMixin {
 
           //标题
           try {
-            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]
-                            ["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
-                        ["browseEndpointContextSupportedConfigs"]
-                    ?["browseEndpointContextMusicConfig"]?["pageType"] ??
+            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
+                    ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
                 "";
 
             type = childItemType;
 
-            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]
-                    ["runs"][0]["text"] ??
-                "";
-            List childItemSubTitleList =
-                childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
-            String childItemSubTitle = childItemSubTitleList
-                .map((e) => e["text"] ?? "")
-                .toList()
-                .join("");
+            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
+            List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
+            String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
 
             //id
-            var browseId = childItem["musicTwoRowItemRenderer"]?["title"]
-                        ["runs"][0]["navigationEndpoint"]["browseEndpoint"]
-                    ["browseId"] ??
-                "";
+            var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
 
             //封面
-            var childItemCover = childItem["musicTwoRowItemRenderer"]
-                    ?["thumbnailRenderer"]["musicThumbnailRenderer"]
-                ["thumbnail"]["thumbnails"][1]["url"];
+            var childItemCover =
+                childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
 
             if (type.isNotEmpty) {
-              realChildList.add({
-                "title": childItemTitle,
-                "subtitle": childItemSubTitle,
-                "cover": childItemCover,
-                "type": type,
-                "browseId": browseId
-              });
+              realChildList
+                  .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
             }
           } catch (e) {
             // AppLog.e(e);
             // AppLog.e("出错的item");
             // AppLog.e(childItem);
 
-            var childItemType = childItem["musicTwoRowItemRenderer"]
-                            ["navigationEndpoint"]?["watchEndpoint"]
-                        ["watchEndpointMusicSupportedConfigs"]
+            var childItemType = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]?["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
                     ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
                 "";
 
             type = childItemType;
 
-            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]
-                    ["runs"][0]["text"] ??
-                "";
+            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
             // List childItemSubTitleList =
             //     childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
             // String childItemSubTitle = childItemSubTitleList
             //     .map((e) => e["text"] ?? "")
             //     .toList()
             //     .join("");
-            String childItemSubTitle = childItem["musicTwoRowItemRenderer"]
-                ?["subtitle"]["runs"][0]["text"];
+            String childItemSubTitle = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"][0]["text"];
 
             //id
-            var videoId = childItem["musicTwoRowItemRenderer"]
-                    ["navigationEndpoint"]["watchEndpoint"]["videoId"] ??
-                "";
+            var videoId = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
 
             //封面
-            var childItemCover = childItem["musicTwoRowItemRenderer"]
-                    ?["thumbnailRenderer"]["musicThumbnailRenderer"]
-                ["thumbnail"]["thumbnails"][0]["url"];
+            var childItemCover =
+                childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
 
             if (type.isNotEmpty) {
-              realChildList.add({
-                "title": childItemTitle,
-                "subtitle": childItemSubTitle,
-                "cover": childItemCover,
-                "type": type,
-                "videoId": videoId
-              });
+              realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
             }
           }
         } else {
@@ -1694,12 +1436,7 @@ class UserHomeController extends GetxController with StateMixin {
       }
 
       if (realChildList.isNotEmpty) {
-        realList.add({
-          "title": bigTitle,
-          "list": realChildList,
-          "moreId": moreId,
-          "type": type
-        });
+        realList.add({"title": bigTitle, "list": realChildList, "moreId": moreId, "type": type});
       }
     }
 
@@ -1716,12 +1453,7 @@ class UserHomeController extends GetxController with StateMixin {
 
     var historySongList = List.of(HistoryUtil.instance.songHistoryList);
 
-    var historySongData = {
-      "title": "Listen now".tr,
-      "list": historySongList,
-      "moreId": "",
-      "type": "MUSIC_VIDEO_TYPE_ATV"
-    };
+    var historySongData = {"title": "Listen now".tr, "list": historySongList, "moreId": "", "type": "MUSIC_VIDEO_TYPE_ATV"};
     netList[0] = historySongData;
 
     var myPlaylist = [];
@@ -1730,11 +1462,7 @@ class UserHomeController extends GetxController with StateMixin {
     var hasLikeList = LikeUtil.instance.allVideoMap.isNotEmpty;
 
     if (hasLikeList) {
-      myPlaylist.add({
-        "title": "Liked songs".tr,
-        "icon": "assets/oimg/icon_like_list.png",
-        "type": -1
-      });
+      myPlaylist.add({"title": "Liked songs".tr, "icon": "assets/oimg/icon_like_list.png", "type": -1});
     }
 
     //获取所有下载完成歌曲
@@ -1747,14 +1475,8 @@ class UserHomeController extends GetxController with StateMixin {
     //     .getString(
     //     "musicmuse_off_switch") ==
     //     "on")
-    if (hasDownloadList &&
-        FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") ==
-            "on") {
-      myPlaylist.add({
-        "title": "Local songs".tr,
-        "icon": "assets/oimg/icon_local.png",
-        "type": -2
-      });
+    if (hasDownloadList && FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on") {
+      myPlaylist.add({"title": "Local songs".tr, "icon": "assets/oimg/icon_local.png", "type": -2});
     }
 
     //添加自建或者收藏歌单
@@ -1779,24 +1501,14 @@ class UserHomeController extends GetxController with StateMixin {
     //添加历史歌单
     myPlaylist.addAll(homePlaylist);
 
-    var myPlaylistData = {
-      "title": "My Playlist".tr,
-      "list": myPlaylist,
-      "moreId": "",
-      "type": "My_Playlist"
-    };
+    var myPlaylistData = {"title": "My Playlist".tr, "list": myPlaylist, "moreId": "", "type": "My_Playlist"};
 
     netList[1] = myPlaylistData;
 
     //默认6个歌手
     List artistList = decodeList(locArtist);
 
-    var artistData = {
-      "title": "Artist".tr,
-      "list": artistList,
-      "moreId": "",
-      "type": "MUSIC_PAGE_TYPE_ARTIST"
-    };
+    var artistData = {"title": "Artist".tr, "list": artistList, "moreId": "", "type": "MUSIC_PAGE_TYPE_ARTIST"};
 
     netList[2] = artistData;
 
@@ -1848,12 +1560,7 @@ class UserHomeController extends GetxController with StateMixin {
       // ];
     }
 
-    var topData = {
-      "title": "Top Chart".tr,
-      "list": topList,
-      "moreId": "",
-      "type": "MUSIC_PAGE_TYPE_TOP_CHART"
-    };
+    var topData = {"title": "Top Chart".tr, "list": topList, "moreId": "", "type": "MUSIC_PAGE_TYPE_TOP_CHART"};
     netList[3] = topData;
 
     netList.refresh();
@@ -1900,26 +1607,20 @@ class UserHomeController extends GetxController with StateMixin {
     }
 
     AppLog.e("开始请求");
-    BaseModel result =
-        await ApiMain.instance.getYoutubeData("UC-9-kyTW8ZkZNDHQJ6FgpwQ");
+    BaseModel result = await ApiMain.instance.getYoutubeData("UC-9-kyTW8ZkZNDHQJ6FgpwQ");
 
-    Get.find<Application>().visitorData =
-        result.data["responseContext"]?["visitorData"] ?? "";
+    Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
 
-    List oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]
-                ?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]
-            ?["contents"] ??
-        [];
+    List oldList =
+        result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ?? [];
     if (oldList.isEmpty) {
-      oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]
-                  ?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]
-              ?["contents"] ??
-          [];
+      oldList =
+          result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]?["contents"] ?? [];
     }
     var realList = FormatMyData.instance.getYoutubeHomeList(oldList);
-    AppLog.e("首页youtube数据");
-    AppLog.e(oldList);
-    AppLog.e(realList);
+    // AppLog.e("首页youtube数据");
+    // AppLog.e(oldList);
+    // AppLog.e(realList);
 
     if (netList.length > 5) {
       //先删除本地的

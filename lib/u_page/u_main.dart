@@ -145,6 +145,7 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
+    AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("behavior");
 
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()

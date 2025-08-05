@@ -29,8 +29,8 @@ class TbaIos extends BaseApi {
 
   Future<BaseModel> postData(TbaType type,
       {Map<String, dynamic>? eventData, String? eventId}) async {
-    AppLog.e("事件上报：${type.name}:${eventId ?? ""}");
-    AppLog.e("事件数据：$eventData");
+    // AppLog.e("事件上报：${type.name}:${eventId ?? ""}");
+    // AppLog.e("事件数据：$eventData");
 
     //通用参数
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -235,8 +235,8 @@ class TbaIos extends BaseApi {
     }
     isPostError = true;
     var box = await Hive.openBox("tbaErrorData");
-    AppLog.e("上报上次未成功的tba");
-    AppLog.e(data.length);
+    // AppLog.e("上报上次未成功的tba");
+    // AppLog.e(data.length);
 
     if (data.length > 1000) {
       //太多了不上报
@@ -252,8 +252,8 @@ class TbaIos extends BaseApi {
           body: bodyMap,
           contentType: "application/json");
       if (httpData.code == HttpCode.success) {
-        AppLog.e("上次失败的上报成功$i");
-        AppLog.e(bodyMap["botanist"]["auriga"] ?? "");
+        // AppLog.e("上次失败的上报成功$i");
+        // AppLog.e(bodyMap["botanist"]["auriga"] ?? "");
 
         await box.delete(bodyMap["botanist"]["auriga"] ?? "");
       }

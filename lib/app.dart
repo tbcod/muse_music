@@ -22,6 +22,7 @@ import 'package:music_muse/util/ad/topon_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -62,12 +63,14 @@ class Application extends GetxService {
         systemNavigationBarIconBrightness: Brightness.dark));
 
     final sp = await SharedPreferences.getInstance();
+
     //设置设备的uuid,每次重新安装后不一样
     userAppUuid = sp.getString("userAppUuid") ?? "";
     if (userAppUuid.isEmpty) {
       userAppUuid = const Uuid().v4();
       await sp.setString("userAppUuid", userAppUuid);
     }
+    RemoteUtil.shareInstance.init();
 
     //设置语言
     var lastLangCode = sp.getString("lastLangCode") ?? "";
@@ -155,16 +158,18 @@ class Application extends GetxService {
       };
     }
 
-    if (GetPlatform.isIOS) {
-      AdUtils.instance.adJson = MuseConfig.adJsonIos;
-    }
-    var adData = await AdUtils.instance.initJsonByFireBase();
-    AppLog.i("广告配置");
-    AppLog.i(adData);
+    // if (GetPlatform.isIOS) {
+    //   AdUtils.instance.adJson = MuseConfig.adJsonIos;
+    // }
+    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 
-    if(kDebugMode){
-      AdUtils.instance.adJson = MuseConfig.adJsonIos;
-    }
+    // var adData = await AdUtils.instance.initFirebaseRemoteSdk();
+    // AppLog.i("广告配置");
+    // AppLog.i(adData);
+
+    // if(kDebugMode){
+    //   AdUtils.instance.adJson = MuseConfig.adJsonIos;
+    // }
 
     // if (MuseConfig.isUser) {
     //   if (GetPlatform.isIOS) {

@@ -44,7 +44,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
       children: [
         Positioned.fill(
             child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: Colors.white,
               image: DecorationImage(
                   image: AssetImage("assets/oimg/all_page_bg.png"),
@@ -105,7 +105,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                 ),
 
                 Expanded(
-                    child: Container(
+                    child: SizedBox(
                   width: double.infinity,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +114,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                       //视频
 
                       Expanded(
-                          child: Obx(() => controller.isLoaded.value
+                          child: Obx(() => controller.isLoaded.value && controller.player != null
                               ? Container(
                                   width: double.infinity,
                                   height: double.infinity,
@@ -122,12 +122,10 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   //设置最高高度
                                   child: AspectRatio(
                                     aspectRatio: controller.videoAspectRatio,
-                                    child: Container(
-                                      child: VideoPlayer(controller.player!),
-                                    ),
+                                    child: VideoPlayer(controller.player!),
                                   ),
                                 )
-                              : Container(
+                              : const SizedBox(
                                   width: double.infinity,
                                   height: double.infinity,
                                   child: Center(
@@ -183,7 +181,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
-                        child: Container(
+                        child: SizedBox(
                           width: 32.w,
                           height: 32.w,
                           child: Obx(() => Image.asset(
@@ -202,7 +200,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                         width: 35.w,
                       ),
                       Obx(() => InkWell(
-                            child: Container(
+                            child: SizedBox(
                               width: 32.w,
                               height: 32.w,
                               child: Image.asset(
@@ -238,7 +236,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                       ),
                       Obx(() => controller.isLoaded.value
                           ? Obx(() => InkWell(
-                                child: Container(
+                                child: SizedBox(
                                   width: 48.w,
                                   height: 48.w,
                                   child: Image.asset(controller.isPlaying.value
@@ -268,16 +266,16 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   controller.isPlaying.toggle();
                                 },
                               ))
-                          : Container(
+                          : SizedBox(
                               width: 48.w,
                               height: 48.w,
-                              child: CircularProgressIndicator())),
+                              child: const CircularProgressIndicator())),
                       SizedBox(
                         width: 35.w,
                       ),
                       Obx(() {
                         return InkWell(
-                          child: Container(
+                          child: SizedBox(
                             width: 32.w,
                             height: 32.w,
                             child: Image.asset(
@@ -310,7 +308,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                         width: 35.w,
                       ),
                       InkWell(
-                        child: Container(
+                        child: SizedBox(
                           width: 32.w,
                           height: 32.w,
                           child: Obx(() => Image.asset(
@@ -342,7 +340,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Column(
                       children: [
-                        Obx(() => Container(
+                        Obx(() => SizedBox(
                               height: 20.w,
                               // color: Colors.red,
                               child: SliderTheme(
@@ -353,9 +351,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     // trackMargin: EdgeInsets.all(0),
                                     allowedInteraction:
                                         SliderInteraction.tapAndSlide,
-                                    tickMarkShape: RoundSliderTickMarkShape(
+                                    tickMarkShape: const RoundSliderTickMarkShape(
                                         tickMarkRadius: 4),
-                                    thumbShape: RoundSliderThumbShape(
+                                    thumbShape: const RoundSliderThumbShape(
                                         enabledThumbRadius: 5,
                                         disabledThumbRadius: 5)),
                                 child: Slider(
@@ -378,12 +376,12 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   //   controller._playerSubscription?.pause();
                                   // },
 
-                                  activeColor: Color(0xff7453FF),
+                                  activeColor: const Color(0xff7453FF),
                                   // secondaryTrackValue: maxBuffering / duration,
                                   // secondaryActiveColor:
                                   //     Color(0xff8C48FF).withOpacity(0.35),
                                   inactiveColor:
-                                      Color(0xff7453FF).withOpacity(0.2),
+                                      const Color(0xff7453FF).withOpacity(0.2),
                                 ),
                               ),
                             )),
@@ -396,14 +394,14 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     controller.playTime.value,
                                     style: TextStyle(
                                         fontSize: 10.w,
-                                        color: Color(0xff141414)
+                                        color: const Color(0xff141414)
                                             .withOpacity(0.75)),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Text(controller.maxTime.value,
                                       style: TextStyle(
                                           fontSize: 10.w,
-                                          color: Color(0xff141414)
+                                          color: const Color(0xff141414)
                                               .withOpacity(0.75))),
                                 ],
                               ),
@@ -494,8 +492,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                       value: progress,
                                       strokeWidth: 2,
                                       backgroundColor:
-                                          Color(0xffA995FF).withOpacity(0.35),
-                                      color: Color(0xffA995FF),
+                                          const Color(0xffA995FF).withOpacity(0.35),
+                                      color: const Color(0xffA995FF),
                                     )),
                               );
                             } else if (state == 2) {
@@ -588,7 +586,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   height: 8.w,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(4.w),
-                                      color: Color(0xff9279FE)),
+                                      color: const Color(0xff9279FE)),
                                 ),
                                 Container(
                                   width: 4.w,
@@ -597,8 +595,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                           colors: [
-                                        Color(0xff9279FE),
-                                        Color(0xff9279FE).withOpacity(0),
+                                        const Color(0xff9279FE),
+                                        const Color(0xff9279FE).withOpacity(0),
                                       ],
                                           begin: Alignment.topCenter,
                                           end: Alignment.bottomCenter)),
@@ -610,7 +608,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   decoration: BoxDecoration(
                                       color: Colors.white,
                                       border: Border.all(
-                                          color: Color(0xff876CFF), width: 2.w),
+                                          color: const Color(0xff876CFF), width: 2.w),
                                       borderRadius:
                                           BorderRadius.circular(36.w)),
                                   alignment: Alignment.center,
@@ -673,9 +671,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                                 value: progress,
                                                 strokeWidth: 2,
                                                 backgroundColor:
-                                                    Color(0xffA995FF)
+                                                    const Color(0xffA995FF)
                                                         .withOpacity(0.35),
-                                                color: Color(0xffA995FF),
+                                                color: const Color(0xffA995FF),
                                               )),
                                         );
                                       } else if (state == 2) {
@@ -733,7 +731,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               width: 240.w,
                               height: 72.w,
                               padding: EdgeInsets.symmetric(horizontal: 20.w),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
                                           Assets.oimgImgDownloadGuide))),
@@ -804,7 +802,7 @@ class UserPlayInfoController extends GetxController {
     super.onInit();
 
     final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.music());
+    await session.configure(const AudioSessionConfiguration.music());
     await session.setActive(true);
 
     session.interruptionEventStream.listen((event) async {
@@ -918,7 +916,7 @@ class UserPlayInfoController extends GetxController {
                       // checkShowDownloadGuide();
                       await Get.bottomSheet(
                           Container(
-                            child: UserPlayInfo(),
+                            child: const UserPlayInfo(),
                             // padding: EdgeInsets.only(
                             //     top: Get.mediaQuery.padding.top),
                           ),
@@ -931,10 +929,10 @@ class UserPlayInfoController extends GetxController {
                       padding: EdgeInsets.symmetric(horizontal: 24.w),
                       margin: EdgeInsets.symmetric(horizontal: 8.w),
                       decoration: BoxDecoration(
-                          color: Color(0xffF1F1FF),
+                          color: const Color(0xffF1F1FF),
                           boxShadow: [
                             BoxShadow(
-                                color: Color(0xff474747).withOpacity(0.06),
+                                color: const Color(0xff474747).withOpacity(0.06),
                                 blurRadius: 5.w,
                                 spreadRadius: 2.w)
                           ],
@@ -968,7 +966,7 @@ class UserPlayInfoController extends GetxController {
                           //按钮
                           Obx(() => isLoaded.value
                               ? Obx(() => InkWell(
-                                    child: Container(
+                                    child: SizedBox(
                                       width: 32.w,
                                       height: 32.w,
                                       child: Image.asset(isPlaying.value
@@ -1018,14 +1016,14 @@ class UserPlayInfoController extends GetxController {
                                   width: 32.w,
                                   height: 32.w,
                                   padding: EdgeInsets.all(5.w),
-                                  child: CircularProgressIndicator())),
+                                  child: const CircularProgressIndicator())),
 
                           SizedBox(
                             width: 6.w,
                           ),
                           Obx(() {
                             return InkWell(
-                              child: Container(
+                              child: SizedBox(
                                 width: 32.w,
                                 height: 32.w,
                                 child: Image.asset(
@@ -1064,8 +1062,8 @@ class UserPlayInfoController extends GetxController {
                       child: Obx(() => LinearProgressIndicator(
                             minHeight: 2.w,
                             borderRadius: BorderRadius.circular(1.w),
-                            backgroundColor: Color(0xff141414).withOpacity(0.2),
-                            color: Color(0xff141414).withOpacity(0.75),
+                            backgroundColor: const Color(0xff141414).withOpacity(0.2),
+                            color: const Color(0xff141414).withOpacity(0.75),
                             value: sliderValue.value,
                           )))
                 ],
@@ -1140,7 +1138,7 @@ class UserPlayInfoController extends GetxController {
     // checkShowDownloadGuide();
     await Get.bottomSheet(
         Container(
-          child: UserPlayInfo(),
+          child: const UserPlayInfo(),
           // padding: EdgeInsets.only(top: Get.mediaQuery.padding.top),
         ),
         isScrollControlled: true);
@@ -1404,7 +1402,7 @@ class UserPlayInfoController extends GetxController {
         player?.value.duration != null &&
         isOpenShowBar == false) {
       var lastp = player?.value.position ?? Duration.zero;
-      var lastd = player?.value.duration ?? Duration(milliseconds: 1);
+      var lastd = player?.value.duration ?? const Duration(milliseconds: 1);
       var playP = lastp.inMilliseconds / lastd.inMilliseconds;
       var timeNum = 0;
       if (playP < 0.01) {
@@ -1427,7 +1425,7 @@ class UserPlayInfoController extends GetxController {
 
     if (!isAutoNext && !isOpenShowBar) {
       AdUtils.instance.showAd("behavior");
-      Future.delayed(Duration(milliseconds: 500)).then((_) {
+      Future.delayed(const Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();
       });
@@ -1843,7 +1841,7 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -1912,7 +1910,7 @@ class UserPlayInfoController extends GetxController {
           ],
         ),
       ),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
       barrierColor: Colors.black.withOpacity(0.43),
     );
   }
@@ -1924,7 +1922,7 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -1975,13 +1973,13 @@ class UserPlayInfoController extends GetxController {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(24.w),
                                 border: Border.all(
-                                    color: Color(0xff824EFF).withOpacity(0.75),
+                                    color: const Color(0xff824EFF).withOpacity(0.75),
                                     width: 2.w)),
                             child: Text(
                               "Cancel".tr,
                               style: TextStyle(
                                   fontSize: 14.w,
-                                  color: Color(0xff824EFF).withOpacity(0.75)),
+                                  color: const Color(0xff824EFF).withOpacity(0.75)),
                             ),
                           ))),
                   SizedBox(
@@ -2016,7 +2014,7 @@ class UserPlayInfoController extends GetxController {
                             height: 48.w,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: Color(0xff824EFF).withOpacity(0.5),
+                              color: const Color(0xff824EFF).withOpacity(0.5),
                               borderRadius: BorderRadius.circular(24.w),
                             ),
                             child: Text(
@@ -2039,7 +2037,7 @@ class UserPlayInfoController extends GetxController {
       ),
       isScrollControlled: true,
       // barrierColor: Colors.black.withOpacity(0.43),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
     );
   }
 
@@ -2052,7 +2050,7 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -2109,11 +2107,11 @@ class UserPlayInfoController extends GetxController {
           ],
         ),
       ),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
       barrierColor: Colors.black.withOpacity(0.43),
     );
 
-    Future.delayed(Duration(seconds: 1)).then((_) {
+    Future.delayed(const Duration(seconds: 1)).then((_) {
       listIndexC.scrollToIndex(nowIndex,
           preferPosition: AutoScrollPosition.begin);
     });
@@ -2121,7 +2119,7 @@ class UserPlayInfoController extends GetxController {
 
   Future savePlayList(String title) async {
     var box = await Hive.openBox(DBKey.myPlayListData);
-    var id = Uuid().v8();
+    var id = const Uuid().v8();
 
     //获取是否使用名字
     var nameList = box.values.map((e) => e["title"]).toList();
@@ -2180,7 +2178,7 @@ class UserPlayInfoController extends GetxController {
         height: 70.w,
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: 58.w,
               height: 54.w,
               child: Stack(
@@ -2192,7 +2190,7 @@ class UserPlayInfoController extends GetxController {
                       height: 48.w,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2.w),
-                          color: Color(0xffE0E0EF)),
+                          color: const Color(0xffE0E0EF)),
                     ),
                   ),
 
@@ -2249,7 +2247,7 @@ class UserPlayInfoController extends GetxController {
               onTap: () {
                 MoreSheetUtil.instance.showPlaylistMoreSheet(item);
               },
-              child: Container(
+              child: SizedBox(
                 width: 20.w,
                 height: 20.w,
                 child: Image.asset("assets/oimg/icon_more.png"),
@@ -2290,7 +2288,7 @@ class UserPlayInfoController extends GetxController {
           child: Container(
             height: 62.w,
             width: double.infinity,
-            color: isCheck ? Color(0xfff4f4f4) : Colors.transparent,
+            color: isCheck ? const Color(0xfff4f4f4) : Colors.transparent,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.w),
             child: Row(
               children: [
@@ -2320,7 +2318,7 @@ class UserPlayInfoController extends GetxController {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          color: isCheck ? Color(0xff8569FF) : Colors.black),
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black),
                     ),
                     SizedBox(
                       height: 10.w,
@@ -2332,7 +2330,7 @@ class UserPlayInfoController extends GetxController {
                       style: TextStyle(
                           fontSize: 12.w,
                           color: isCheck
-                              ? Color(0xff8569FF)
+                              ? const Color(0xff8569FF)
                               : Colors.black.withOpacity(0.75)),
                     )
                   ],
@@ -2405,7 +2403,7 @@ class UserPlayInfoController extends GetxController {
       // checkShowDownloadGuide();
       Get.bottomSheet(
               Container(
-                child: UserPlayInfo(),
+                child: const UserPlayInfo(),
                 // padding: EdgeInsets.only(top: Get.mediaQuery.padding.top),
               ),
               isScrollControlled: true)

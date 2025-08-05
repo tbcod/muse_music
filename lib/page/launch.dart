@@ -165,6 +165,8 @@ class LaunchPageController extends GetxController {
     AppLog.e("不是第一次启动或者开关打开了，即将加载广告");
     sp.setBool("isFirstLoadAd", false);
 
+
+    AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
       AppLog.e("启动页加载广告结果$isOk");
       AppLog.e("$adId");
@@ -222,7 +224,7 @@ class LaunchPageController extends GetxController {
       if (!Env.isUser) {
         EventUtils.instance.addEvent("enter_home");
         EventUtils.instance.addEvent("home_source");
-        Get.off(const UserMain());
+        Get.offAll(const UserMain());
         return;
       }
 
@@ -233,13 +235,13 @@ class LaunchPageController extends GetxController {
       if (isOpenUser) {
         EventUtils.instance.addEvent("enter_home");
         EventUtils.instance.addEvent("home_source");
-        Get.off(const UserMain());
+        Get.offAll(const UserMain());
         return;
       }
       EventUtils.instance.addEvent("enter_home");
       EventUtils.instance.addEvent("home_no");
 
-      Get.off(isOpenUser ? const UserMain() : const MainPage());
+      Get.offAll(isOpenUser ? const UserMain() : const MainPage());
     }
   }
 }

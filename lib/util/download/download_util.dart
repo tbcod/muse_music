@@ -56,7 +56,7 @@ class DownloadUtils {
         .toList()
         .toString();
 
-    AppLog.e("需要重新下载的数据${needDownloadData.length}");
+    // AppLog.e("需要重新下载的数据${needDownloadData.length}");
     // AppLog.e(needDownloadData
     //     .map((e) {
     //       return e["videoId"];
@@ -468,7 +468,7 @@ class DownloadUtils {
       // AppLog.e("缓存$count/$total");
 
       if (count == total) {
-        AppLog.e("缓存完成");
+        // AppLog.e("缓存完成");
         //下载完成
         allCacheData[videoId]["state"] = 2;
         allCacheData[videoId]["path"] = fileName;

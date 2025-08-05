@@ -109,8 +109,8 @@ class TbaUtils {
       required String ad_pre_ecpm,
       required String currency,
       required String precision_type}) async {
-    AppLog.e("广告收益原值:$ad_pre_ecpm");
-    AppLog.e("广告来源:$ad_network");
+    AppLog.i("广告收益原值:$ad_pre_ecpm，$ad_format,$ad_source, $ad_network, $ad_unit_id");
+    // AppLog.e("广告来源:$ad_network");
 
     double ecpm = double.tryParse(ad_pre_ecpm) ?? 0;
     if (GetPlatform.isIOS) {

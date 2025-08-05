@@ -2,21 +2,25 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:anythink_sdk/at_index.dart';
-import 'package:applovin_max/applovin_max.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
 import 'package:music_muse/util/ad/topon_util.dart';
+import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
+import 'package:applovin_max/applovin_max.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart' as admob;
 
 import '../../app.dart';
 import '../log.dart';
 import '../native_util.dart';
 import '../tba/event_util.dart';
+import 'view/full_admob_native_page.dart';
 
 class AdUtils {
   AdUtils._internal();
@@ -27,7 +31,9 @@ class AdUtils {
     return _instance;
   }
 
-  Map<String, dynamic> adJson = {};
+  // Map<String, dynamic> adJson = {};
+
+  Map<String, dynamic> get adJson => RemoteUtil.shareInstance.adJson;
 
   //and test
   // Map<String, dynamic> adJson = {
@@ -110,6 +116,8 @@ class AdUtils {
 
   DateTime? lastShowTime;
 
+  var bannerNativeAdClicked = false.obs;
+
   //是否超过广告间隔
   Future<bool> canShow() async {
     if (lastShowTime == null) {
@@ -120,7 +128,7 @@ class AdUtils {
 
     Duration temp = nowTime.difference(lastShowTime!);
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
-    AppLog.i("广告间隔\n$lastShowTime\n$nowTime\n${temp.inSeconds}---$wait");
+    AppLog.i("广告间隔,$lastShowTime,$nowTime, ${temp.inSeconds}---$wait");
 
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
       return true;
@@ -131,83 +139,78 @@ class AdUtils {
 
   //设置上次显示广告时间
   Future setShowTime() async {
-    AppLog.e("保存关闭广告时间");
+    // AppLog.e("保存关闭广告时间");
 
     lastShowTime = DateTime.now();
     // var sp = await SharedPreferences.getInstance();
     // await sp.setInt("lastShowAdMs", DateTime.now().millisecondsSinceEpoch);
   }
 
-  //获取firebase广告配置
-  Future<Map> initJsonByFireBase() async {
-    // return adJson;
-
-    var tempTime = DateTime.now();
-    //获取云控字段
-    try {
-      await FirebaseRemoteConfig.instance.setConfigSettings(
-        RemoteConfigSettings(
-          fetchTimeout: const Duration(seconds: 15),
-          minimumFetchInterval: const Duration(seconds: 30),
-        ),
-      );
-
-      var isOk = await FirebaseRemoteConfig.instance.fetchAndActivate();
-      //初始化facebook
-      NativeUtils.instance.initFacebook();
-      var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-      EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
-      //使用json
-      var jsonString = FirebaseRemoteConfig.instance.getString(
-        GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and",
-      );
-      AppLog.e("获取云控广告");
-      AppLog.e(jsonString);
-
-      Map oldMap = jsonDecode(jsonString);
-      //map key转为小写
-      adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
-    } catch (e) {
-      AppLog.e(e);
-    }
-
-    FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
-      var tempTime = DateTime.now();
-
-      var isOk = await FirebaseRemoteConfig.instance.activate();
-
-      if (isOk) {
-        var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-        EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
-      }
-
-      // Use the new config values here.
-      var jsonString1 = FirebaseRemoteConfig.instance.getString(
-        GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and",
-      );
-      Map oldMap1 = jsonDecode(jsonString1);
-      AppLog.e(oldMap1);
-      //map key转为小写
-      adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
-    });
-
-    // var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-    //
-    // EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
-    return adJson;
-  }
+  //
+  // //获取firebase广告配置
+  // Future<Map> initJsonByFireBase() async {
+  //   // return adJson;
+  //
+  //   var tempTime = DateTime.now();
+  //   //获取云控字段
+  //   try {
+  //     await FirebaseRemoteConfig.instance.setConfigSettings(
+  //       RemoteConfigSettings(
+  //         fetchTimeout: const Duration(seconds: 15),
+  //         minimumFetchInterval: const Duration(seconds: 30),
+  //       ),
+  //     );
+  //
+  //     var isOk = await FirebaseRemoteConfig.instance.fetchAndActivate();
+  //     //初始化facebook
+  //     NativeUtils.instance.initFacebook();
+  //     var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
+  //     EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
+  //     //使用json
+  //     var jsonString = FirebaseRemoteConfig.instance.getString(
+  //       GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and",
+  //     );
+  //     AppLog.e("获取云控广告");
+  //     AppLog.e(jsonString);
+  //
+  //     Map oldMap = jsonDecode(jsonString);
+  //     //map key转为小写
+  //     adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
+  //   } catch (e) {
+  //     AppLog.e(e);
+  //   }
+  //
+  //   FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
+  //     var tempTime = DateTime.now();
+  //
+  //     var isOk = await FirebaseRemoteConfig.instance.activate();
+  //
+  //     if (isOk) {
+  //       var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
+  //       EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
+  //     }
+  //
+  //     // Use the new config values here.
+  //     var jsonString1 = FirebaseRemoteConfig.instance.getString(
+  //       GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and",
+  //     );
+  //     Map oldMap1 = jsonDecode(jsonString1);
+  //     AppLog.e(oldMap1);
+  //     //map key转为小写
+  //     adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
+  //   });
+  //
+  //   // var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
+  //   //
+  //   // EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
+  //   return adJson;
+  // }
 
   //已加载的广告，key为广告id，显示后移除对应广告
   var loadedAdMap = {};
 
   //load
   loadAd(String key, {LoadCallback? onLoad}) {
-
-    // if(key != 'level_h'){
-    //   loadAd('level_h', onLoad: onLoad);
-    // }
-
-
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告$key");
       return;
@@ -224,7 +227,7 @@ class AdUtils {
       return bl.compareTo(al);
     });
 
-    AppLog.i("开始加载广告$key");
+    AppLog.i("开始加载广告:$key");
 
     //循环加载广告
     for (var item in configList) {
@@ -318,6 +321,58 @@ class AdUtils {
               }
             }),
           );
+        } else if (type == "native") {
+          NativeAd nativeAd = NativeAd(
+            adUnitId: ad_id,
+            request: const AdRequest(),
+            // factoryId: "",
+            listener: admob.NativeAdListener(onAdLoaded: (ad) async {
+              AdUtils.instance.loadedAdMap[ad_id] = {
+                "data": item,
+                "admob_ad": ad,
+                "timeMs": DateTime.now().millisecondsSinceEpoch,
+                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+              };
+            }, onAdFailedToLoad: (ad, e) {
+              ad.dispose();
+              if (onLoad != null) {
+                onLoad(ad_id, false, e);
+              }
+            }, onAdClicked: (ad) {
+              // Global.instance.bannerNativeAdClicked.value = true;
+              bannerNativeAdClicked.refresh();
+              // showBlock?.onClick?.call();
+            }, onAdImpression: (ad) {
+              adIsShowing = true;
+              AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
+              // showBlock?.onShowSuccess?.call();
+            }, onAdClosed: (ad) {
+              // showBlock?.onClose?.call();
+              //关闭
+              // adIsShowing = false;
+              // //设置显示时间以判断广告间隔
+              // setShowTime();
+              // //重新加载一轮广告
+              // loadAd(key);
+            }, onAdWillDismissScreen: (ad) {
+              // AppLog.i("原生广告onAdWillDismissScreen:${ad.adUnitId}");
+            }, onAdOpened: (ad) {
+              AppLog.i("原生广告onAdOpened:${ad.adUnitId}");
+              adIsShowing = true;
+            }, onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
+              TbaUtils.instance.postAd(
+                  ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
+                  ad_format: "native",
+                  ad_source: "admob",
+                  ad_unit_id: ad.adUnitId,
+                  ad_pos_id: key,
+                  ad_pre_ecpm: valueMicros.toString(),
+                  currency: currencyCode,
+                  precision_type: precision.name);
+            }),
+            nativeTemplateStyle: NativeTemplateStyle(templateType: TemplateType.medium, cornerRadius: 8),
+          );
+          nativeAd.load();
         }
       } else if (source == "max") {
         //加载max广告
@@ -400,7 +455,7 @@ class AdUtils {
           TopOnUtils.instance.interstitialStream?.cancel();
           TopOnUtils.instance.interstitialStream = null;
 
-          AppLog.e("加载topon插屏");
+          // AppLog.e("加载topon插屏");
           TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
             if (e.interstatus == InterstitialStatus.interstitialAdDidFinishLoading) {
               //加载成功
@@ -429,7 +484,7 @@ class AdUtils {
           TopOnUtils.instance.rewardedStream?.cancel();
           TopOnUtils.instance.rewardedStream = null;
 
-          AppLog.e("加载topon激励");
+          // AppLog.e("加载topon激励");
           TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
             if (e.rewardStatus == RewardedStatus.rewardedVideoDidFinishLoading) {
               //加载成功
@@ -469,14 +524,12 @@ class AdUtils {
     // }
     // return false;
 
-
     if (adIsShowing) {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "ad is showing"));
       }
       return false;
     }
-
 
     if (Get.find<Application>().isAppBack == true) {
       AppLog.e("app在后台");
@@ -488,7 +541,7 @@ class AdUtils {
 
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
-    AppLog.e("广告网络：$connectivityResult");
+    // AppLog.e("广告网络：$connectivityResult");
     if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
@@ -515,13 +568,15 @@ class AdUtils {
       return false;
     }
 
+    AppLog.i("准备展示广告, $key");
+
     if (key != "level_h") {
       bool isHighSuc = await showAd("level_h", onShow: onShow);
+      AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
         return true;
       }
     }
-
 
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告");
@@ -718,6 +773,32 @@ class AdUtils {
           });
           isShowAd = true;
           break;
+        } else if (type == 'native') {
+          NativeAd? ad = loadedItem["admob_ad"];
+          if (ad != null) {
+            Get.bottomSheet(
+              FullAdmobNativePage(
+                ad: ad,
+                onClose: () async {
+                  adIsShowing = false;
+                  setShowTime();
+                  await ad.dispose();
+                  loadedAdMap.remove(ad.adUnitId);
+                  loadAd(key);
+                  if (onShow != null) {
+                    onShow.onClose!(ad.adUnitId);
+                  }
+                },
+              ),
+              isScrollControlled: true,
+              enableDrag: false,
+              isDismissible: false,
+              backgroundColor: Colors.black,
+              useRootNavigator: true,
+            );
+            isShowAd = true;
+            break;
+          }
         }
       } else if (source == "max") {
         //Max广告
@@ -1042,7 +1123,7 @@ class MyNativeAdViewController extends GetxController {
 
     var adJson = AdUtils.instance.adJson;
     if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告");
+      AppLog.e("没有对应广告:$key");
       return;
     }
 
