@@ -83,7 +83,7 @@ class MyDialogUtils {
 
     var importCode = FirebaseRemoteConfig.instance.getInt("musicmuse_import");
 
-    AppLog.e("导量:$importCode");
+    // AppLog.e("导量:$importCode");
     if (importCode == 0) {
       return;
     }

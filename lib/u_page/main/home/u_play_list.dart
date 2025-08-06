@@ -40,7 +40,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
       body: controller.obxPage((state) =>
           NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification notification) {
-              AppLog.e(notification.metrics.pixels);
+              // AppLog.e(notification.metrics.pixels);
 
               var offset = notification.metrics.pixels;
               controller.showTitle.value = offset > 100.w;

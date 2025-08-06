@@ -50,8 +50,7 @@ class Application extends GetxService {
   var isAppBack = false;
 
   Future<Application> init() async {
-    PaintingBinding.instance.imageCache.maximumSizeBytes =
-        1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
     //竖屏
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     //沉浸状态栏
@@ -71,6 +70,10 @@ class Application extends GetxService {
       await sp.setString("userAppUuid", userAppUuid);
     }
     RemoteUtil.shareInstance.init();
+
+    if (visitorData.isEmpty) {
+      visitorData = sp.getString("visitorData") ?? "";
+    }
 
     //设置语言
     var lastLangCode = sp.getString("lastLangCode") ?? "";
@@ -111,6 +114,7 @@ class Application extends GetxService {
   }
 
   AppsflyerSdk? appsflyerSdk;
+
   initAppsflyer() async {
     if (!Env.isUser) {
       return;
@@ -147,16 +151,16 @@ class Application extends GetxService {
 
   initFireBaseOther() async {
     //测试环境异常上报
-    if (!MuseConfig.isUser) {
-      FlutterError.onError = (errorDetails) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-      };
-      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
-    }
+    // if (!MuseConfig.isUser) {
+    //   FlutterError.onError = (errorDetails) {
+    //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    //   };
+    //   // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    //   PlatformDispatcher.instance.onError = (error, stack) {
+    //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    //     return true;
+    //   };
+    // }
 
     // if (GetPlatform.isIOS) {
     //   AdUtils.instance.adJson = MuseConfig.adJsonIos;
@@ -240,8 +244,7 @@ class Application extends GetxService {
     }
 
     AppLog.e("开始初始化推送");
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission();
+    NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
     AppLog.e(settings.authorizationStatus.name);
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -259,8 +262,7 @@ class Application extends GetxService {
       print(e);
     }
 
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
       //点击消息进入
@@ -282,20 +284,16 @@ class Application extends GetxService {
   }
 
   Future initLocPush() async {
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    final InitializationSettings initializationSettings =
-        const InitializationSettings(iOS: DarwinInitializationSettings());
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final InitializationSettings initializationSettings = const InitializationSettings(iOS: DarwinInitializationSettings());
 
-    var d =
-        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    var d = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
     if (d != null) {
       EventUtils.instance.addEvent("push_click");
     }
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse:
-            (NotificationResponse notificationResponse) async {
+        onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
       // 处理用户点击通知后的回调逻辑，例如打开对应的页面等，按需编写逻辑
       EventUtils.instance.addEvent("push_click");
     });
@@ -346,8 +344,7 @@ class Application extends GetxService {
           presentSound: true,
         )),
         matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         androidScheduleMode: AndroidScheduleMode.exact);
   }
 }

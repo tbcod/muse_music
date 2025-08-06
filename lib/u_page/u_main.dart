@@ -151,7 +151,7 @@ class UserMainController extends GetxController {
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> result) async {
-      AppLog.e("网络变化${result}");
+      // AppLog.e("网络变化${result}");
 
       //网络变化
       if (result.contains(ConnectivityResult.wifi)) {

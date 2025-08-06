@@ -93,7 +93,7 @@ class TbaUtils {
   }
 
   Future<BaseModel> postSession() async {
-    AppLog.e("上报session");
+    // AppLog.e("上报session");
     if (GetPlatform.isIOS) {
       return await TbaIos.instance.postData(TbaType.session);
     }

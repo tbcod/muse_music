@@ -93,7 +93,7 @@ class UserHome extends GetView<UserHomeController> {
         body: controller.obxView(
             (state) => EasyRefresh.builder(
                 onRefresh: () async {
-                  Get.find<Application>().visitorData = "";
+                  // Get.find<Application>().visitorData = "";
                   await controller.bindYoutubeMusicData();
                   await controller.reloadHistory();
                 },
@@ -1134,7 +1134,7 @@ class UserHomeController extends GetxController with StateMixin {
       change("", status: RxStatus.loading());
     }
 
-    AppLog.e("开始请求");
+    AppLog.i("开始请求Music");
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
@@ -1152,7 +1152,15 @@ class UserHomeController extends GetxController with StateMixin {
     //   "clickTrackingParams": "xxx"
     //}
 
-    Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
+    if(Get.find<Application>().visitorData.isEmpty){
+      String visitorData = result.data["responseContext"]?["visitorData"] ?? "";
+      if(visitorData.isNotEmpty){
+        Get.find<Application>().visitorData = visitorData;
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString("visitorData", visitorData);
+      }
+    }
+
     nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
             ["continuations"]?[0]?["nextContinuationData"] ??
         {};
@@ -1259,6 +1267,7 @@ class UserHomeController extends GetxController with StateMixin {
       // ToastUtil.showToast(msg: errorText);
 
       //不支持music的地区，使用youtube
+      AppLog.e("music列表空");
       await bindYoutubeData();
 
       // if (netList.length < 5) {
@@ -1302,7 +1311,8 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getData("FEmusic_home", nextData: nextData);
 
     try {
-      nextData = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"]?[0]?["nextContinuationData"];
+      nextData = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"]?[0]?["nextContinuationData"] ?? {};
+      AppLog.i("nextData:${nextData.keys}");
     } catch (e) {
       AppLog.e("没有更多数据");
       AppLog.e(e);
@@ -1606,7 +1616,7 @@ class UserHomeController extends GetxController with StateMixin {
       change("", status: RxStatus.loading());
     }
 
-    AppLog.e("开始请求");
+    AppLog.i("开始请求Youtube");
     BaseModel result = await ApiMain.instance.getYoutubeData("UC-9-kyTW8ZkZNDHQJ6FgpwQ");
 
     Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
@@ -1618,7 +1628,7 @@ class UserHomeController extends GetxController with StateMixin {
           result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]?["contents"] ?? [];
     }
     var realList = FormatMyData.instance.getYoutubeHomeList(oldList);
-    // AppLog.e("首页youtube数据");
+    AppLog.i("首页youtube数据, ${realList.length}");
     // AppLog.e(oldList);
     // AppLog.e(realList);
 

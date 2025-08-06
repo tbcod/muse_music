@@ -171,7 +171,7 @@ class AppController extends SuperController {
       (state) async {
         if (state == AppState.foreground) {
           Get.find<Application>().isAppBack = false;
-          AppLog.e("前台");
+          AppLog.i("进入前台");
           TbaUtils.instance.postSession();
 
           //判断新老用户

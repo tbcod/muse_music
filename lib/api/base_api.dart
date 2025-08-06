@@ -28,8 +28,8 @@ class BaseApi extends GetConnect {
   }) async {
     CancelFunc? cancelFunc;
 
-    AppLog.v(
-        "请求前url: ${(httpClient.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body");
+    // AppLog.i(
+    //     "请求前url: ${(httpClient.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body");
 
     // var connectivityResult = await Connectivity().checkConnectivity();
     // if (connectivityResult != ConnectivityResult.wifi &&
@@ -115,7 +115,7 @@ class BaseApi extends GetConnect {
         return data;
       } else {
         AppLog.e(
-            "${response.request?.url} \n请求失败：\n${response.body},\ncode:${response.statusCode}");
+            "请求失败：${response.request?.url} \n${response.body},\ncode:${response.statusCode}");
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);
         }

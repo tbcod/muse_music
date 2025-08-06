@@ -101,7 +101,7 @@ class DownloadUtils {
       AppLog.e("error");
       return {};
     }
-    AppLog.e("返回的缓存数据:\n${result.data["streamingData"]?["formats"] ?? {}}");
+    // AppLog.e("返回的缓存数据:\n${result.data["streamingData"]?["formats"] ?? {}}");
 
     //获取url
     // var url = result.data["streamingData"]?["formats"]?.first?["url"] ?? "";
@@ -434,7 +434,7 @@ class DownloadUtils {
       if (url.isEmpty) {
         return;
       }
-      AppLog.e("缓存获取url==$url");
+      // AppLog.e("缓存获取url==$url");
 
       //添加到下载列表
       allCacheData[videoId] = {
