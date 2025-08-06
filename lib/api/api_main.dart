@@ -449,11 +449,11 @@ class ApiMain extends BaseApi {
         "clientName": "WEB_REMIX",
         "clientVersion": _webRemixVersion,
         "platform": "DESKTOP",
-        "originalUrl": "https://music.youtube.com/"
+        "originalUrl": "https://music.youtube.com/",
       }
     };
     if (Get.find<Application>().visitorData.isNotEmpty) {
-      content["visitorData"] = Get.find<Application>().visitorData;
+      content["client"]["visitorData"] = Get.find<Application>().visitorData;
     }
     return content;
   }
