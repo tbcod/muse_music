@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/app.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/ext/state_ext.dart';
@@ -94,7 +95,7 @@ class UserHome extends GetView<UserHomeController> {
             (state) => EasyRefresh.builder(
                 onRefresh: () async {
                   // Get.find<Application>().visitorData = "";
-                  await controller.bindYoutubeMusicData();
+                  await controller.bindYoutubeMusicData(source: "drop_down");
                   await controller.reloadHistory();
                 },
                 triggerAxis: Axis.vertical,
@@ -134,9 +135,10 @@ class UserHome extends GetView<UserHomeController> {
                               child: const MyNativeAdView(adKey: "homenative", positionKey: "HomeNative"),
                             );
                           }
-
+                          Map item = controller.netList[i];
+                          List childList = item["list"] ?? [];
                           return SizedBox(
-                            height: 16.w,
+                            height: item.isEmpty || childList.isEmpty ? 0 : 16.w,
                           );
                         },
                         itemCount: controller.netList.length),
@@ -159,7 +161,7 @@ class UserHome extends GetView<UserHomeController> {
                 Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
                 ElevatedButton(
                     onPressed: () {
-                      controller.bindYoutubeMusicData();
+                      controller.bindYoutubeMusicData(source: "click_bottomtab");
                     },
                     child: Text("Reload".tr)),
               ],
@@ -1054,7 +1056,7 @@ class UserHome extends GetView<UserHomeController> {
           AppLog.e(data);
 
           return Container(
-            height: 100.w,
+            height: 0,
             color: Colors.red,
           );
           // return Container(
@@ -1125,7 +1127,7 @@ class UserHomeController extends GetxController with StateMixin {
   var nextData = {};
 
   //第一次接口
-  Future bindYoutubeMusicData() async {
+  Future bindYoutubeMusicData({required String source}) async {
     //TODO 测试youtube数据
     // await bindYoutubeData();
     // return;
@@ -1135,9 +1137,12 @@ class UserHomeController extends GetxController with StateMixin {
     }
 
     AppLog.i("开始请求Music");
+    EventUtils.instance.addEvent("home_refresh_and", data: {"source": source});
+
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
+      EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
       if (netList.length < 5) {
         change("", status: RxStatus.error());
         // TbaUtils.instance.postUserData({"mm_type_so": "no"});
@@ -1146,19 +1151,19 @@ class UserHomeController extends GetxController with StateMixin {
       return;
     }
 
+    EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "suc"});
+
     //下一页数据
     //{
     //   "continuation": "xx",
     //   "clickTrackingParams": "xxx"
     //}
 
-    if(Get.find<Application>().visitorData.isEmpty){
-      String visitorData = result.data["responseContext"]?["visitorData"] ?? "";
-      if(visitorData.isNotEmpty){
-        Get.find<Application>().visitorData = visitorData;
-        SharedPreferences sp = await SharedPreferences.getInstance();
-        sp.setString("visitorData", visitorData);
-      }
+    String visitorData = result.data["responseContext"]?["visitorData"] ?? "";
+    if (visitorData.isNotEmpty) {
+      Get.find<Application>().visitorData = visitorData;
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      sp.setString("visitorData", visitorData);
     }
 
     nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
@@ -1311,11 +1316,11 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getData("FEmusic_home", nextData: nextData);
 
     try {
-      nextData = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"]?[0]?["nextContinuationData"] ?? {};
-      AppLog.i("nextData:${nextData.keys}");
+      List list = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"] ?? [];
+      nextData = list.firstOrNull?["nextContinuationData"] ?? {};
+      AppLog.i("获取FEmusic_home next:${nextData.keys}");
     } catch (e) {
-      AppLog.e("没有更多数据");
-      AppLog.e(e);
+      AppLog.e("获取FEmusic_home下一页出错了:${e.toString()}");
       nextData = {};
     }
 
@@ -1324,133 +1329,148 @@ class UserHomeController extends GetxController with StateMixin {
     List realList = [];
 
     var moreId = "";
-    for (Map item in bigList) {
-      //大标题
-      var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
 
-      // moreId = item["musicCarouselShelfRenderer"]?["header"]
-      //                     ?["musicCarouselShelfBasicHeaderRenderer"]
-      //                 ?["moreContentButton"]?["buttonRenderer"]
-      //             ?["navigationEndpoint"]?["watchPlaylistEndpoint"]
-      //         ?["playlistId"] ??
-      //     "";
+    try {
+      for (Map item in bigList) {
+        //大标题
+        var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
 
-      List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
+        // moreId = item["musicCarouselShelfRenderer"]?["header"]
+        //                     ?["musicCarouselShelfBasicHeaderRenderer"]
+        //                 ?["moreContentButton"]?["buttonRenderer"]
+        //             ?["navigationEndpoint"]?["watchPlaylistEndpoint"]
+        //         ?["playlistId"] ??
+        //     "";
 
-      List realChildList = [];
+        List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
 
-      //判断类型
-      var type = "";
+        List realChildList = [];
 
-      // AppLog.e("$bigTitle:共有${childList.length}条小item");
+        //判断类型
+        var type = "";
 
-      for (Map childItem in childList) {
-        // AppLog.e("当前类型：${childItem.keys}");
+        // AppLog.e("$bigTitle:共有${childList.length}条小item");
 
-        if (childItem.containsKey("musicResponsiveListItemRenderer")) {
-          //音乐
-          List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-              ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+        for (Map childItem in childList) {
+          // AppLog.i("当前类型：${childItem.keys}");
 
-          type = musicType;
+          if (childItem.containsKey("musicResponsiveListItemRenderer")) {
+            //音乐
+            List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
+            if (flexColumns.isEmpty) continue;
+            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
+                ["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
-          //标题
-          var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
-          var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
-          //id
-          var videoId =
-              flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
-          var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ?["playlistId"] ??
-              "";
+            type = musicType;
 
-          //封面
-          var childItemCover =
-              childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
-
-          if (type.isNotEmpty) {
-            realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
-          }
-
-          continue;
-        } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
-          //歌单
-          //歌单、专辑、歌手
-
-          // if (type == "MUSIC_PAGE_TYPE_ALBUM") {
-          //   //专辑特殊处理
-          //   AppLog.e("专辑列表");
-          //   AppLog.e(childItem);
-          // }
-
-          //标题
-          try {
-            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
-                    ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
-                "";
-
-            type = childItemType;
-
-            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
-            List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
-            String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
-
+            //标题
+            var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+            var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
             //id
-            var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
+            var videoId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
+                    ["watchEndpoint"]?["videoId"] ??
+                "";
+            var playlistId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
+                    ["watchEndpoint"]?["playlistId"] ??
+                "";
 
             //封面
             var childItemCover =
-                childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
-
-            if (type.isNotEmpty) {
-              realChildList
-                  .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
-            }
-          } catch (e) {
-            // AppLog.e(e);
-            // AppLog.e("出错的item");
-            // AppLog.e(childItem);
-
-            var childItemType = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]?["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
-                    ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
-                "";
-
-            type = childItemType;
-
-            var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
-            // List childItemSubTitleList =
-            //     childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
-            // String childItemSubTitle = childItemSubTitleList
-            //     .map((e) => e["text"] ?? "")
-            //     .toList()
-            //     .join("");
-            String childItemSubTitle = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"][0]["text"];
-
-            //id
-            var videoId = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
-
-            //封面
-            var childItemCover =
-                childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+                childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
 
             if (type.isNotEmpty) {
               realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
             }
+
+            continue;
+          } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
+            //歌单
+            //歌单、专辑、歌手
+
+            // if (type == "MUSIC_PAGE_TYPE_ALBUM") {
+            //   //专辑特殊处理
+            //   AppLog.e("专辑列表");
+            //   AppLog.e(childItem);
+            // }
+
+            //标题
+            try {
+              // List runs = childItem["musicTwoRowItemRenderer"]["title"]["runs"] ?? [];
+              // if (runs.isEmpty) continue;
+              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
+                      ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
+                  "";
+
+              type = childItemType;
+
+              var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
+              List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
+              String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
+
+              //id
+              var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
+
+              //封面
+              List thumbnails =
+                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+              var childItemCover;
+              if (thumbnails.isEmpty) {
+                childItemCover = thumbnails.lastOrNull?["url"];
+              } else {
+                childItemCover = "https://i.ytimg.com/vi/$browseId/default.jpg";
+              }
+              if (type.isNotEmpty) {
+                realChildList
+                    .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
+              }
+            } catch (e) {
+              AppLog.e("解析出错的item:$e");
+              // AppLog.e("出错的item");
+              // AppLog.e(childItem);
+
+              var childItemType = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]?["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
+                      ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
+                  "";
+
+              type = childItemType;
+
+              var childItemTitle = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["text"] ?? "";
+              // List childItemSubTitleList =
+              //     childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
+              // String childItemSubTitle = childItemSubTitleList
+              //     .map((e) => e["text"] ?? "")
+              //     .toList()
+              //     .join("");
+              String childItemSubTitle = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"][0]["text"];
+
+              //id
+              var videoId = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
+
+              //封面
+              var childItemCover =
+                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+
+              if (type.isNotEmpty) {
+                realChildList
+                    .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
+              }
+            }
+          } else {
+            //歌单
+            AppLog.e("不支持的类型");
+            AppLog.e(childItem.keys);
           }
-        } else {
-          //歌单
-          AppLog.e("不支持的类型");
-          AppLog.e(childItem.keys);
+        }
+        if (realChildList.isNotEmpty) {
+          realList.add({"title": bigTitle, "list": realChildList, "moreId": moreId, "type": type});
         }
       }
-
-      if (realChildList.isNotEmpty) {
-        realList.add({"title": bigTitle, "list": realChildList, "moreId": moreId, "type": type});
-      }
+    } catch (e) {
+      AppLog.e("解析出错啦：$e");
     }
 
     netList.addAll(realList);
+
     // ToastUtil.showToast(msg: "下一页请求成功");
 
     bindYoutubeMusicNextData();
@@ -1516,11 +1536,13 @@ class UserHomeController extends GetxController with StateMixin {
     netList[1] = myPlaylistData;
 
     //默认6个歌手
-    List artistList = decodeList(locArtist);
+    // List artistList = decodeList(locArtist);
 
-    var artistData = {"title": "Artist".tr, "list": artistList, "moreId": "", "type": "MUSIC_PAGE_TYPE_ARTIST"};
+    // var artistData = {"title": "Artist".tr, "list": artistList, "moreId": "", "type": "MUSIC_PAGE_TYPE_ARTIST"};
+    //
+    // netList[2] = artistData;
 
-    netList[2] = artistData;
+    netList[2] = {};
 
     //默认排行
     // 美国当地
@@ -1597,7 +1619,7 @@ class UserHomeController extends GetxController with StateMixin {
       change("", status: RxStatus.success());
 
       // TbaUtils.instance.postUserData({"mm_type_so": "ytm"});
-      bindYoutubeMusicData();
+      bindYoutubeMusicData(source: "open_cool");
       Get.find<UserPlayInfoController>().showLastPlayBar();
       return;
     }
@@ -1607,7 +1629,7 @@ class UserHomeController extends GetxController with StateMixin {
     netList.add({});
     netList.add({});
 
-    bindYoutubeMusicData();
+    bindYoutubeMusicData(source: "open_cool");
     Get.find<UserPlayInfoController>().showLastPlayBar();
   }
 

@@ -73,6 +73,7 @@ class Application extends GetxService {
 
     if (visitorData.isEmpty) {
       visitorData = sp.getString("visitorData") ?? "";
+      // visitorData = 'CgtaOU84b01JNDlJbyiFuszEBjIKCgJKUBIEGgAgDg%3D%3D';
     }
 
     //设置语言

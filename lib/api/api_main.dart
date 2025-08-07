@@ -4,20 +4,26 @@ import 'dart:math';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:music_muse/api/base_api.dart';
+
+// import 'package:music_muse/api/base_api.dart';
 import 'package:music_muse/app.dart';
 import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
+import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/toast.dart';
-export 'base_api.dart';
+
+import 'base_dio_api.dart';
+// export 'base_api.dart';
 
 class ApiMain extends BaseApi {
   ApiMain._internal() : super("");
   static final ApiMain _instance = ApiMain._internal();
 
   Map<String, dynamic> playbackMap = {};
+
+  bool isFirstRequest = true;
 
   static ApiMain get instance {
     return _instance;
@@ -74,11 +80,11 @@ class ApiMain extends BaseApi {
       url += "&continuation=$continuation&type=next&itct=$itct";
     }
 
-    AppLog.i("请求首页数据: ${(httpClient.baseUrl ?? "") + url}, header: $_header , param：$body");
-
     var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     if (result.code == HttpCode.success) {
       //请求成功
+      AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
+
       EventUtils.instance.addEvent("source_get");
     }
 
@@ -284,15 +290,6 @@ class ApiMain extends BaseApi {
         "playbackContext": {
           "contentPlaybackContext": {
             "html5Preference": "HTML5_PREF_WANTS",
-            "referer": "https://music.youtube.com/",
-            "vis": 1,
-            "autoplay": true,
-            "autonav": true,
-            "autoCaptionsDefaultOn": false
-          },
-          "devicePlaybackCapabilities": {
-            "supportXhr": true,
-            "supportsVp9Encoding": true,
           }
         },
       };
@@ -304,52 +301,86 @@ class ApiMain extends BaseApi {
         body['playlistId'] = playlistId;
       }
 
+      Map<String, dynamic> header = _header;
+      header["Origin"] = "https://music.youtube.com/watch?v=$videoId&list=$playlistId";
       var url = "https://music.youtube.com/youtubei/v1/player?prettyPrint=false";
-      var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+      var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
       final data = result.data;
       final playbackUrl = data?["playbackTracking"]?["videostatsPlaybackUrl"]?['baseUrl'];
       final watchTimeUrl = data?["playbackTracking"]?["videostatsWatchtimeUrl"]?['baseUrl'];
-      AppLog.i("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$_header");
-      // AppLog.i("postYoutubePlaybackInfo watchTimeUrl:$watchTimeUrl, body:$body, $_header");
-      if (playbackUrl == null || watchTimeUrl == null) return;
+      AppLog.i("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
+      if (playbackUrl == null || watchTimeUrl == null) {
+        final playabilityStatus = data?["playabilityStatus"]?["status"];
+        final reason = data?["playabilityStatus"]?["reason"];
+        AppLog.e("playabilityStatus:$playabilityStatus,$reason");
+        return;
+      }
       playbackMap[videoId] = {"playlistId": playlistId, "playbackUrl": playbackUrl, "watchTimeUrl": watchTimeUrl, "cpn": cnp};
     }
 
     final info = playbackMap[videoId];
     if (info != null) {
       double et = (controller.player?.value.position.inMilliseconds ?? 0) / 1000;
+      et = double.parse(et.toStringAsFixed(3));
       if (et <= 0.001) {
         et = 0.001;
       }
       double st = info['positionSec'] ?? 0;
       if (st > et) {
-        return;
+        st = 0;
       }
+      st = double.parse(st.toStringAsFixed(3));
       info['positionSec'] = et;
       if (!isWatchOnly) {
-        await _postPlaybackUrl(info['playbackUrl'], playlistId: info['playlistId'], cmt: et, cpn: info['cpn'] ?? cnp);
+        await _postPlaybackUrl(
+          info['playbackUrl'],
+          vid: videoId,
+          playlistId: info['playlistId'],
+          cmt: et,
+          cpn: info['cpn'] ?? cnp,
+        );
+        await Future.delayed(Duration(seconds: 1 + Random().nextInt(5)));
+        _postWatchTime(
+          info['watchTimeUrl'],
+          vid: videoId,
+          playlistId: info['playlistId'],
+          isPlaying: controller.isPlaying.isTrue,
+          st: st,
+          et: et,
+          cpn: info['cpn'] ?? cnp,
+        );
       } else {
-        _postWatchTime(info['watchTimeUrl'], playlistId: info['playlistId'], st: st, et: et, cpn: info['cpn'] ?? cnp);
+        _postWatchTime(
+          info['watchTimeUrl'],
+          vid: videoId,
+          playlistId: info['playlistId'],
+          isPlaying: controller.isPlaying.isTrue,
+          st: st,
+          et: et,
+          cpn: info['cpn'] ?? cnp,
+        );
+      }
+      if (isFirstRequest) {
+        isFirstRequest = false;
+        Future.delayed(const Duration(seconds: 2)).then((v) {
+          UserHomeController controller = Get.find<UserHomeController>();
+          controller.bindYoutubeMusicData(source:"visitor_play");
+        });
       }
     }
   }
 
-//UG2M_4YDaSgS8mVI
-//qiPN2z1uzGROFbTt
-//T9VDhD-I17X9aTsu
-  Future _postPlaybackUrl(String? url, {required String cpn, String? playlistId, required double cmt}) async {
+  Future _postPlaybackUrl(String? url, {required String cpn, required String vid, String? playlistId, required double cmt}) async {
     if (url == null || !url.contains("http")) return;
     url = url.replaceFirst("s.youtube.com", "music.youtube.com");
-    url = url.replaceAll("&fexp=&",
-        "&fexp=v1%2C24004644%2C27005591%2C53408%2C34656%2C106030%2C18644%2C14869%2C75925%2C26895%2C9252%2C3479%2C12457%2C573%2C23206%2C15179%2C2%2C51819%2C2795%2C20480%2C3727%2C591%2C5345%2C700%2C64%2C4324%2C2314%2C3082%2C5385%2C1563%2C13228%2C4176%2C1863%2C487%2C2644%2C375%2C723%2C3306%2C868%2C1059%2C7110%2C3008%2C529%2C1696%2C684%2C2210%2C855%2C336%2C2300%2C6515%2C648%2C636%2C1461%2C2739&");
     String path = "&cpn=$cpn"
         "&ver=2"
-        // "&c=WEB_REMIX"
-        "&c=ANDROID_MUSIC"
-        "&hl=$_hl2"
-        "&cr=$_gl"
+        "&c=WEB_REMIX"
+        // "&c=ANDROID_MUSIC"
         "&volume=100"
         "&cmt=$cmt"
+        "&hl=$_hl"
+        "&cr=$_gl"
         "&muted=0";
     if (playlistId != null && playlistId.isNotEmpty) {
       if (playlistId.startsWith("VL")) {
@@ -360,28 +391,30 @@ class ApiMain extends BaseApi {
     }
     url = url + path;
 
-    BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: _header);
+    Map<String, dynamic> header = _header;
+    header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
+    BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
 
     AppLog.i("postPlaybackUrl:$url, result:${result.code}");
   }
 
-  _postWatchTime(String? url, {required String cpn, String? playlistId, required double st, required double et}) async {
+  _postWatchTime(String? url,
+      {required String cpn, required String vid, String? playlistId, bool isPlaying = true, required double st, required double et}) async {
     if (url == null || !url.contains("http")) return;
     url = url.replaceFirst("s.youtube.com", "music.youtube.com");
-    url = url.replaceAll("&fexp=", "");
     var path = "&cpn=$cpn"
         "&ver=2"
+        "&cver=$_webRemixVersion"
         "&c=WEB_REMIX"
         "&cplatform=DESKTOP"
-        "&cver=$_webRemixVersion"
         "&volume=100"
-        "&hl=$_hl2"
-        "&cr=$_gl"
         "&cmt=$et"
-        "&muted=0"
-        "&state=playing"
+        "&state=${isPlaying ? 'paused' : 'playing'}"
         "&st=$st" //开始时间
-        "&et=$et"; //结束时间
+        "&et=$et"
+        "&hl=$_hl"
+        "&cr=$_gl"
+        "&muted=0"; //结束时间
 
     if (playlistId != null && playlistId.isNotEmpty) {
       if (playlistId.startsWith("VL")) {
@@ -392,19 +425,19 @@ class ApiMain extends BaseApi {
     }
     url = url + path;
 
-    BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: _header);
+    Map<String, dynamic> header = _header;
+    header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
+    BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
 
-    AppLog.i("postWatchTime:$url, result:${result.code}");
+    // AppLog.i("postWatchTime:$url, result:${result.code}");
   }
 
-  Map<String, String> get _header {
-    Map<String, String> header = {
-      "X-Youtube-Client-Name": '67',
+  Map<String, dynamic> get _header {
+    Map<String, dynamic> header = {
+      "X-Youtube-Client-Name": 67,
       "X-Youtube-Client-Version": _webRemixVersion,
       "Referer": "https://music.youtube.com/",
-      "Origin": "https://music.youtube.com"
-      // "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-      // "X-Youtube-Bootstrap-Logged-In": "false"
+      "Origin": "https://music.youtube.com",
     };
     if (Get.find<Application>().visitorData.isNotEmpty) {
       header["X-Goog-Visitor-Id"] = Get.find<Application>().visitorData;
@@ -413,29 +446,15 @@ class ApiMain extends BaseApi {
   }
 
   String get _hl {
-    final locale = WidgetsBinding.instance.window.locale;
-    return "en";
-    if (locale.countryCode == null) {
-      return locale.languageCode;
-    }
-    return locale.toString();
-    return "${locale.languageCode}-${locale.countryCode}";
-  }
-
-  String get _hl2 {
-    final locale = WidgetsBinding.instance.window.locale;
-    if (locale.countryCode == null) {
-      return locale.languageCode;
-    }
-    return locale.toString();
-    // return "${locale.languageCode}_${locale.countryCode}";
+    return MyTranslations.locale.languageCode;
   }
 
   String get _gl {
+    // return MyTranslations.locale.countryCode?.toUpperCase() ?? 'US';
     final locale = WidgetsBinding.instance.window.locale;
     final c = locale.countryCode ?? 'US';
     if (c == "CN") {
-      return "JP";
+      return "US";
     }
     return c;
   }
@@ -443,7 +462,6 @@ class ApiMain extends BaseApi {
   Map<String, dynamic> get _webRemixContext {
     Map<String, dynamic> content = {
       "client": {
-        // "hl": MyTranslations.locale.languageCode,
         "hl": _hl,
         "gl": _gl,
         "clientName": "WEB_REMIX",

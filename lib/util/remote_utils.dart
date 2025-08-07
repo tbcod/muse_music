@@ -55,7 +55,7 @@ class RemoteUtil {
           GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and",
         );
         Map oldMap1 = jsonDecode(jsonString1);
-        AppLog.e(oldMap1);
+        AppLog.i(oldMap1);
         //map key转为小写
         _adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
       });

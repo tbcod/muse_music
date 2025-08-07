@@ -54,7 +54,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
     }
 
     _streamSubscription = AdUtils.instance.bannerNativeAdClicked.listen((val) {
-      Future.delayed(const Duration(milliseconds: 500)).then((v) {
+      Future.delayed(const Duration(milliseconds: 1000)).then((v) {
         _closeType.value = CloseType.normal;
         _curSec.value = -1;
       });

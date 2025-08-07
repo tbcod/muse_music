@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/u_library.dart';

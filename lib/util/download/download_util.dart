@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/tba/event_util.dart';
@@ -417,7 +418,7 @@ class DownloadUtils {
       //没有添加过下载
       //获取url
 
-      AppLog.e("缓存获取url");
+      // AppLog.e("缓存获取url");
       // var url = await getDownloadUrl(videoId, true);
       Map vData = await getCacheMap(videoId);
       if (vData.isEmpty) {
@@ -455,11 +456,11 @@ class DownloadUtils {
     String? path = allCacheData[videoId]["path"];
 
     if (path != null && (await File("${dic.path}/$path").exists())) {
-      AppLog.e("已经缓存");
+      // AppLog.e("已经缓存");
       return;
     }
 
-    AppLog.e("开始缓存$url");
+    // AppLog.e("开始缓存$url");
 
     var fileName = "${Uuid().v8()}.mp4";
 

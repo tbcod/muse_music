@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 
 import 'package:music_muse/main.dart';
 import 'package:music_muse/util/log.dart';

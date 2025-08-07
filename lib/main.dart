@@ -134,7 +134,7 @@ class AppController extends SuperController {
       await sp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
       //安装上报
       TbaUtils.instance.postInstall().then((value) {
-        AppLog.e("安装上报:${value.toJson()}");
+        // AppLog.e("安装上报:${value.toJson()}");
         sp.setBool("isPostInstall", true);
         TbaUtils.instance.postUserData({"mm_new_user": "new"});
       });

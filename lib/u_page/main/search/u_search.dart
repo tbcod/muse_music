@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/app.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/ext/state_ext.dart';

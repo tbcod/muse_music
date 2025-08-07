@@ -212,9 +212,11 @@ class TbaIos extends BaseApi {
     //请求失败的下次一起提交
 
     if (result.code != HttpCode.success) {
-      // AppLog.e("上报请求失败");
+      AppLog.e("TBA上报请求失败, ${result.message}");
       // AppLog.e(logId);
     } else {
+      // AppLog.i("TBA上报成功, $generalMap");
+
       //请求成功了，先删除本次的
       await box.delete(logId);
 

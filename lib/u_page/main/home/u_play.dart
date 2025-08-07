@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/generated/assets.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/download/download_util.dart';
@@ -791,7 +792,7 @@ class UserPlayInfoController extends GetxController {
       return;
     }
     timer?.cancel();
-    timer = Timer.periodic(const Duration(seconds: 30), (Timer t) {
+    timer = Timer.periodic(const Duration(milliseconds: 28888), (Timer t) {
       if (!_isTimerPaused) {
         ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
       }
@@ -1291,7 +1292,7 @@ class UserPlayInfoController extends GetxController {
       var cacheDic = await getTemporaryDirectory();
       Map? cacheData = DownloadUtils.instance.allCacheData[nowData["videoId"]];
       if (cacheData?["path"] != null && (await File("${cacheDic.path}/${cacheData!["path"]}").exists())) {
-        AppLog.e("播放缓存歌曲$downloadPath");
+        // AppLog.e("播放缓存歌曲$downloadPath");
 
         //有缓存
         //播放本地文件
@@ -1309,11 +1310,11 @@ class UserPlayInfoController extends GetxController {
         player = VideoPlayerController.file(File(cachePath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       } else {
         //请求播放数据
-        AppLog.e("请求播放数据");
+        // AppLog.e("请求播放数据");
 
         var lasthttpvideoId = nowData["videoId"];
         var result = await ApiMain.instance.getVideoInfo(nowData["videoId"]);
-        AppLog.e(result.data);
+        // AppLog.e(result.data);
 
         if (result.code != HttpCode.success) {
           // ToastUtil.showToast(msg: result.message ?? "error");

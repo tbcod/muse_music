@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
+import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/util/log.dart';

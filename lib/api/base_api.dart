@@ -123,7 +123,7 @@ class BaseApi extends GetConnect {
             code: response.statusCode ?? -1, message: "httpError".tr);
       }
     } catch (e) {
-      AppLog.e(e);
+      AppLog.e("请求失败:$e");
 
       if (toastError) {
         ToastUtil.showToast(msg: "httpError".tr);
