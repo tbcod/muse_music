@@ -21,6 +21,8 @@ import '../native_util.dart';
 import '../tba/event_util.dart';
 import 'view/full_admob_native_page.dart';
 
+enum AdScene { play, download, search, openCool,openHot }
+
 class AdUtils {
   AdUtils._internal();
 
@@ -516,7 +518,7 @@ class AdUtils {
 
   bool adIsShowing = false;
 
-  Future<bool> showAd(String key, {ShowCallback? onShow}) async {
+  Future<bool> showAd(String key, {required AdScene adScene, ShowCallback? onShow}) async {
     //TODO 测试不显示广告
     // if (onShow != null) {
     //   onShow.onShowFail!("", AdError(-1, "", "show key error"));
@@ -570,7 +572,7 @@ class AdUtils {
     AppLog.i("准备展示广告, $key");
 
     if (key != "level_h") {
-      bool isHighSuc = await showAd("level_h", onShow: onShow);
+      bool isHighSuc = await showAd("level_h",adScene: adScene, onShow: onShow);
       AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
         return true;

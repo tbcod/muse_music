@@ -13,6 +13,7 @@ import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/format_data.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
@@ -1363,6 +1364,7 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   void getSearchList(String str) async {
+
     BaseModel result = await ApiMain.instance.getSearchList(str);
     if (result.code == HttpCode.success) {
       //解析搜索联想词
@@ -1433,6 +1435,7 @@ class UserSearchController extends GetxController with StateMixin {
     //收起键盘
     Get.focusScope?.unfocus();
 
+
     await Future.delayed(Duration(milliseconds: 500));
 
     EventUtils.instance.addEvent("search_content", data: {"content": str});
@@ -1440,6 +1443,8 @@ class UserSearchController extends GetxController with StateMixin {
     LoadingUtil.showLoading();
     //保存搜索历史记录
     saveHistory(str);
+
+    AdUtils.instance.showAd("behavior",adScene: AdScene.search);
 
     if (Get.find<Application>().typeSo == "yt") {
       //youtube的搜索

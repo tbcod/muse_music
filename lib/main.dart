@@ -183,7 +183,7 @@ class AppController extends SuperController {
           TbaUtils.instance
               .postUserData({"mm_new_user": isNewUser ? "new" : "old"});
 
-          AdUtils.instance.showAd("open");
+          AdUtils.instance.showAd("open",adScene: AdScene.openHot);
         } else if (state == AppState.background) {
           Get.find<Application>().isAppBack = true;
           // AppLog.i("后台");

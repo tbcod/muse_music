@@ -183,7 +183,7 @@ class LaunchPageController extends GetxController {
         }
 
         //显示广告
-        AdUtils.instance.showAd("open",
+        AdUtils.instance.showAd("open",adScene: AdScene.openCool,
             onShow: ShowCallback(onShowFail: (adId, e) {
               toMainPage();
             }, onClose: (adId) {

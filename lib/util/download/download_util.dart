@@ -161,7 +161,7 @@ class DownloadUtils {
     }
 
     if (showAd) {
-      AdUtils.instance.showAd("behavior");
+      AdUtils.instance.showAd("behavior",adScene: AdScene.download);
       //好评引导
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导

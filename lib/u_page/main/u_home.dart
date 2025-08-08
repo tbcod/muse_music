@@ -180,6 +180,22 @@ class UserHome extends GetView<UserHomeController> {
     if (data.isEmpty) {
       return Container();
     }
+
+    List types = [
+      "MUSIC_VIDEO_TYPE_OMV",
+      "MUSIC_VIDEO_TYPE_ATV",
+      "MUSIC_VIDEO_TYPE_UGC",
+      "MUSIC_PAGE_TYPE_PLAYLIST",
+      "MUSIC_PAGE_TYPE_ALBUM",
+      "MUSIC_PAGE_TYPE_ARTIST",
+      "MUSIC_PAGE_TYPE_TOP_CHART",
+      "My_Playlist",
+      "LOCKUP_CONTENT_TYPE_ALBUM",
+      "LOCKUP_CONTENT_TYPE_PLAYLIST",
+      "Video"
+    ];
+    if (!types.contains(type)) return Container();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -222,25 +238,7 @@ class UserHome extends GetView<UserHomeController> {
             ],
           ),
         ),
-        SizedBox(
-          height: 10.w,
-        ),
-
-        // Container(
-        //     height: 100.w,
-        //     child: ListView.separated(
-        //         scrollDirection: Axis.horizontal,
-        //         itemBuilder: (_, i) {
-        //           return Container(
-        //               width: 100.w, height: 100.w, color: Colors.red);
-        //         },
-        //         separatorBuilder: (_, i) {
-        //           return Container(
-        //             width: 10.w,
-        //           );
-        //         },
-        //         itemCount: 10))
-
+        SizedBox(height: 10.w),
         Builder(builder: (c) {
           if (type == "MUSIC_VIDEO_TYPE_OMV") {
             //大的视频音乐
@@ -329,9 +327,7 @@ class UserHome extends GetView<UserHomeController> {
             );
           } else if (type == "MUSIC_VIDEO_TYPE_ATV" || type == "MUSIC_VIDEO_TYPE_UGC") {
             //小的歌曲列表
-
             var isRec = title == "Listen now";
-
             return Container(
               height: 226.w,
               child: ListView.separated(
@@ -816,7 +812,6 @@ class UserHome extends GetView<UserHomeController> {
             //自定义歌曲
           } else if (type == "My_Playlist") {
             //自定义歌单
-
             return Container(
               height: 130.w,
               child: ListView.separated(
@@ -1052,41 +1047,40 @@ class UserHome extends GetView<UserHomeController> {
             );
           }
 
-          AppLog.e(type);
-          AppLog.e(data);
+          AppLog.e("view item type:$type,$title, $data");
 
           return Container(
             height: 0,
             color: Colors.red,
           );
-          // return Container(
-          //   height: 200.w,
-          //   child: ListView.separated(
-          //       scrollDirection: Axis.horizontal,
-          //       itemBuilder: (_, i) {
-          //         var childItem = data[i];
-          //
-          //         return Column(
-          //           children: [
-          //             Container(
-          //               width: 100.w,
-          //               height: 100.w,
-          //               child: NetImageView(
-          //                 imgUrl: childItem["cover"] ?? "",
-          //               ),
-          //             ),
-          //             // Text(childItem["title"]),
-          //             Text(childItem["subtitle"]),
-          //           ],
-          //         );
-          //       },
-          //       separatorBuilder: (_, i) {
-          //         return SizedBox(
-          //           width: 10.w,
-          //         );
-          //       },
-          //       itemCount: data.length),
-          // );
+          return Container(
+            height: 200.w,
+            child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (_, i) {
+                  var childItem = data[i];
+
+                  return Column(
+                    children: [
+                      Container(
+                        width: 100.w,
+                        height: 100.w,
+                        child: NetImageView(
+                          imgUrl: childItem["cover"] ?? "",
+                        ),
+                      ),
+                      // Text(childItem["title"]),
+                      Text(childItem["subtitle"]),
+                    ],
+                  );
+                },
+                separatorBuilder: (_, i) {
+                  return SizedBox(
+                    width: 10.w,
+                  );
+                },
+                itemCount: data.length),
+          );
         })
       ],
     );
@@ -1413,18 +1407,16 @@ class UserHomeController extends GetxController with StateMixin {
               //封面
               List thumbnails =
                   childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
-              var childItemCover;
-              if (thumbnails.isEmpty) {
+              var childItemCover = "";
+              if (thumbnails.isNotEmpty) {
                 childItemCover = thumbnails.lastOrNull?["url"];
-              } else {
-                childItemCover = "https://i.ytimg.com/vi/$browseId/default.jpg";
               }
               if (type.isNotEmpty) {
                 realChildList
                     .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
               }
             } catch (e) {
-              AppLog.e("解析出错的item:$e");
+              // AppLog.e("解析出错的item:$e");
               // AppLog.e("出错的item");
               // AppLog.e(childItem);
 

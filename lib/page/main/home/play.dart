@@ -590,7 +590,7 @@ class PlayPageController extends GetxService {
     if (isPlaying.value) {
       await player.pause();
     }
-    AdUtils.instance.showAd("behavior",
+    AdUtils.instance.showAd("behavior",adScene: AdScene.play,
         onShow: ShowCallback(onShowFail: (adId, e) {
           AppLog.e(e);
           realPlay(index);

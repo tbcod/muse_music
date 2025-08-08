@@ -1244,7 +1244,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (!isAutoNext && !isOpenShowBar) {
-      AdUtils.instance.showAd("behavior");
+      AdUtils.instance.showAd("behavior", adScene: AdScene.play);
       Future.delayed(const Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();
