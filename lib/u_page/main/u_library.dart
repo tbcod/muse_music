@@ -130,9 +130,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                     : Container())
                           ],
                         ))),
-                    if (FirebaseRemoteConfig.instance
-                            .getString("musicmuse_off_switch") !=
-                        "off")
+                    if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
                       Obx(() => InkWell(
                           onTap: () {
                             DownloadUtils.instance.removeNewState();

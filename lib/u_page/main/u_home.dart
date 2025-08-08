@@ -441,7 +441,7 @@ class UserHome extends GetView<UserHomeController> {
                                         SizedBox(
                                           width: 12.w,
                                         ),
-                                        if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on")
+                                        if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
                                           Obx(() {
                                             //获取下载状态
                                             var videoId = subItem["videoId"];
@@ -1497,7 +1497,7 @@ class UserHomeController extends GetxController with StateMixin {
     //     .getString(
     //     "musicmuse_off_switch") ==
     //     "on")
-    if (hasDownloadList && FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on") {
+    if (hasDownloadList && FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off") {
       myPlaylist.add({"title": "Local songs".tr, "icon": "assets/oimg/icon_local.png", "type": -2});
     }
 

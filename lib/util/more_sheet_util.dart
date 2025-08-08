@@ -32,24 +32,19 @@ class MoreSheetUtil {
     return _instance;
   }
 
-  showVideoMoreSheet(Map item,
-      {bool isPlayPage = false, required String clickType}) async {
+  showVideoMoreSheet(Map item, {bool isPlayPage = false, required String clickType}) async {
     //不显示播放控件
     Get.find<UserPlayInfoController>().hideFloatingWidget();
 
     //判断当前播放是否是这首歌
 
-    var isCheck = item["videoId"] ==
-        Get.find<UserPlayInfoController>().nowData["videoId"];
+    var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
 
     await Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,8 +65,7 @@ class MoreSheetUtil {
                               width: 40.w,
                               height: 40.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(2.w)),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
                               child: NetImageView(
                                 imgUrl: item["cover"],
                                 fit: BoxFit.cover,
@@ -85,8 +79,7 @@ class MoreSheetUtil {
                               item["title"],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 14.w, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                             ))
                           ],
                         ),
@@ -99,16 +92,11 @@ class MoreSheetUtil {
                         top: 12.w,
                         child: InkWell(
                             onTap: () {
-                              if (clickType == "net_playlist" ||
-                                  clickType == "loc_playlist") {
-                                EventUtils.instance.addEvent(
-                                    "det_playlist_click",
-                                    data: {"detail_click": "return"});
+                              if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                                EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "return"});
                               }
-                              if (clickType == "artist_more_song" ||
-                                  clickType == "artist") {
-                                EventUtils.instance.addEvent("det_artist_click",
-                                    data: {"detail_click": "return"});
+                              if (clickType == "artist_more_song" || clickType == "artist") {
+                                EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "return"});
                               }
 
                               Get.back();
@@ -133,21 +121,15 @@ class MoreSheetUtil {
 
             //下载
 
-            if (FirebaseRemoteConfig.instance
-                    .getString("musicmuse_off_switch") ==
-                "on")
+            if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
               Column(
                 children: [
                   Obx(() {
                     var videoId = item["videoId"];
 
-                    var state = DownloadUtils
-                            .instance.allDownLoadingData[videoId]?["state"] ??
-                        0;
+                    var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"] ?? 0;
 
-                    double progress = DownloadUtils.instance
-                            .allDownLoadingData[videoId]?["progress"] ??
-                        0;
+                    double progress = DownloadUtils.instance.allDownLoadingData[videoId]?["progress"] ?? 0;
 
                     if (state == 1 || state == 3) {
                       //下载中
@@ -168,8 +150,7 @@ class MoreSheetUtil {
                                     child: CircularProgressIndicator(
                                       value: progress,
                                       strokeWidth: 1.5,
-                                      backgroundColor:
-                                          Color(0xffA995FF).withOpacity(0.35),
+                                      backgroundColor: Color(0xffA995FF).withOpacity(0.35),
                                       color: Color(0xffA995FF),
                                     )),
                                 SizedBox(
@@ -197,8 +178,7 @@ class MoreSheetUtil {
                                 Container(
                                   width: 24.w,
                                   height: 24.w,
-                                  child: Image.asset(
-                                      "assets/oimg/icon_download_ok.png"),
+                                  child: Image.asset("assets/oimg/icon_download_ok.png"),
                                 ),
                                 SizedBox(
                                   width: 16.w,
@@ -215,8 +195,7 @@ class MoreSheetUtil {
 
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.download(item["videoId"], item,
-                              clickType: clickType);
+                          DownloadUtils.instance.download(item["videoId"], item, clickType: clickType);
                         },
                         child: Container(
                             height: 40.w,
@@ -227,8 +206,7 @@ class MoreSheetUtil {
                                 Container(
                                   width: 24.w,
                                   height: 24.w,
-                                  child: Image.asset(
-                                      "assets/oimg/icon_download_black.png"),
+                                  child: Image.asset("assets/oimg/icon_download_black.png"),
                                 ),
                                 SizedBox(
                                   width: 16.w,
@@ -260,15 +238,11 @@ class MoreSheetUtil {
                     LikeUtil.instance.unlikeVideo(item["videoId"]);
                   }
 
-                  if (clickType == "net_playlist" ||
-                      clickType == "loc_playlist") {
-                    EventUtils.instance.addEvent("det_playlist_click",
-                        data: {"detail_click": "like_song"});
+                  if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                    EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "like_song"});
                   }
-                  if (clickType == "artist_more_song" ||
-                      clickType == "artist") {
-                    EventUtils.instance.addEvent("det_artist_click",
-                        data: {"detail_click": "like_song"});
+                  if (clickType == "artist_more_song" || clickType == "artist") {
+                    EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "like_song"});
                   }
                 },
                 child: Container(
@@ -280,9 +254,7 @@ class MoreSheetUtil {
                       Container(
                         width: 24.w,
                         height: 24.w,
-                        child: Image.asset(isLike
-                            ? "assets/oimg/icon_like_on.png"
-                            : "assets/oimg/icon_like_off.png"),
+                        child: Image.asset(isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png"),
                       ),
                       SizedBox(
                         width: 16.w,
@@ -308,19 +280,13 @@ class MoreSheetUtil {
                   InkWell(
                     onTap: () {
                       //获取当前播放列表
-                      var isOk =
-                          Get.find<UserPlayInfoController>().addToNext(item);
-                      ToastUtil.showToast(
-                          msg: isOk ? "Add ok".tr : "Already in the list".tr);
-                      if (clickType == "net_playlist" ||
-                          clickType == "loc_playlist") {
-                        EventUtils.instance.addEvent("det_playlist_click",
-                            data: {"detail_click": "play_next"});
+                      var isOk = Get.find<UserPlayInfoController>().addToNext(item);
+                      ToastUtil.showToast(msg: isOk ? "Add ok".tr : "Already in the list".tr);
+                      if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "play_next"});
                       }
-                      if (clickType == "artist_more_song" ||
-                          clickType == "artist") {
-                        EventUtils.instance.addEvent("det_artist_click",
-                            data: {"detail_click": "play_next"});
+                      if (clickType == "artist_more_song" || clickType == "artist") {
+                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "play_next"});
                       }
                     },
                     child: Container(
@@ -353,20 +319,14 @@ class MoreSheetUtil {
                   InkWell(
                     onTap: () {
                       //获取当前播放列表
-                      var isOk =
-                          Get.find<UserPlayInfoController>().addToQueue(item);
-                      ToastUtil.showToast(
-                          msg: isOk ? "Add ok".tr : "Already in the list".tr);
+                      var isOk = Get.find<UserPlayInfoController>().addToQueue(item);
+                      ToastUtil.showToast(msg: isOk ? "Add ok".tr : "Already in the list".tr);
 
-                      if (clickType == "net_playlist" ||
-                          clickType == "loc_playlist") {
-                        EventUtils.instance.addEvent("det_playlist_click",
-                            data: {"detail_click": "add_queue"});
+                      if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "add_queue"});
                       }
-                      if (clickType == "artist_more_song" ||
-                          clickType == "artist") {
-                        EventUtils.instance.addEvent("det_artist_click",
-                            data: {"detail_click": "add_queue"});
+                      if (clickType == "artist_more_song" || clickType == "artist") {
+                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "add_queue"});
                       }
                     },
                     child: Container(
@@ -401,14 +361,11 @@ class MoreSheetUtil {
             InkWell(
               onTap: () {
                 //获取当前播放列表
-                if (clickType == "net_playlist" ||
-                    clickType == "loc_playlist") {
-                  EventUtils.instance.addEvent("det_playlist_click",
-                      data: {"detail_click": "add_playlist"});
+                if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "add_playlist"});
                 }
                 if (clickType == "artist_more_song" || clickType == "artist") {
-                  EventUtils.instance.addEvent("det_artist_click",
-                      data: {"detail_click": "add_playlist"});
+                  EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "add_playlist"});
                 }
 
                 showAddList(item);
@@ -442,21 +399,15 @@ class MoreSheetUtil {
             //跳转到歌手
             InkWell(
               onTap: () async {
-                if (clickType == "net_playlist" ||
-                    clickType == "loc_playlist") {
-                  EventUtils.instance.addEvent("det_playlist_click",
-                      data: {"detail_click": "go_artist"});
+                if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "go_artist"});
                 }
                 if (clickType == "artist_more_song" || clickType == "artist") {
-                  EventUtils.instance.addEvent("det_artist_click",
-                      data: {"detail_click": "go_artist"});
+                  EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "go_artist"});
                 }
 
                 if (clickType == "play_playlist" || clickType == "play") {
-                  EventUtils.instance.addEvent("play_page_click", data: {
-                    "song_id": item["videoId"],
-                    "station": "view_artist"
-                  });
+                  EventUtils.instance.addEvent("play_page_click", data: {"song_id": item["videoId"], "station": "view_artist"});
                 }
                 AppLog.e(item);
                 if (Get.find<Application>().typeSo == "yt") {
@@ -466,8 +417,7 @@ class MoreSheetUtil {
                   );
                   LoadingUtil.hideAllLoading();
 
-                  String channelId =
-                      result1.data["videoDetails"]?["channelId"] ?? "";
+                  String channelId = result1.data["videoDetails"]?["channelId"] ?? "";
                   String author = result1.data["videoDetails"]?["author"] ?? "";
                   if (channelId.isEmpty) {
                     ToastUtil.showToast(msg: "Failed to get artist".tr);
@@ -491,35 +441,28 @@ class MoreSheetUtil {
 
                 //请求获取歌手信息
                 LoadingUtil.showLoading();
-                var result =
-                    await ApiMain.instance.getVideoNext(item["videoId"]);
+                var result = await ApiMain.instance.getVideoNext(item["videoId"]);
 
                 if (result.code == HttpCode.success) {
                   try {
-                    var browseId = result.data["contents"]
-                                                ["singleColumnMusicWatchNextResultsRenderer"]
-                                            ["tabbedRenderer"]
-                                        ["watchNextTabbedResultsRenderer"]["tabs"][0]
-                                    ["tabRenderer"]["content"]["musicQueueRenderer"]
-                                ["content"]["playlistPanelRenderer"]["contents"][0]
-                            ["playlistPanelVideoRenderer"]["longBylineText"]["runs"]
-                        [0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+                    var browseId = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]
+                                ["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]
+                            ["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["navigationEndpoint"]
+                        ["browseEndpoint"]["browseId"];
 
                     Get.back();
                     LoadingUtil.hideAllLoading();
 
                     await Future.delayed(Duration(milliseconds: 200));
 
-                    EventUtils.instance.addEvent("det_artist_show",
-                        data: {"form": "song_more_go_to_artist"});
+                    EventUtils.instance.addEvent("det_artist_show", data: {"form": "song_more_go_to_artist"});
 
                     if (isPlayPage) {
                       // if (!isPlayPage) {
                       //   Get.find<UserPlayInfoController>().showFloatingWidget();
                       // }
                       Get.find<UserPlayInfoController>().showFloatingWidget();
-                      await Get.to(UserArtistInfo(),
-                          arguments: {"browseId": browseId});
+                      await Get.to(UserArtistInfo(), arguments: {"browseId": browseId});
                       Get.find<UserPlayInfoController>().hideFloatingWidget();
                       return;
                     }
@@ -584,10 +527,7 @@ class MoreSheetUtil {
       Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,10 +554,7 @@ class MoreSheetUtil {
                                     child: Container(
                                       width: 36.w,
                                       height: 36.w,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(2.w),
-                                          color: Color(0xffE0E0EF)),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)),
                                     ),
                                   ),
 
@@ -628,14 +565,11 @@ class MoreSheetUtil {
                                       width: 40.w,
                                       height: 40.w,
                                       clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(2.w)),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
                                       child: item["cover"] == null
                                           ?
                                           //默认封面
-                                          Image.asset(
-                                              "assets/oimg/icon_d_item.png")
+                                          Image.asset("assets/oimg/icon_d_item.png")
                                           : NetImageView(
                                               imgUrl: item["cover"],
                                               fit: BoxFit.cover,
@@ -653,8 +587,7 @@ class MoreSheetUtil {
                               item["title"],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 14.w, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                             ))
                           ],
                         ),
@@ -822,10 +755,7 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           children: [
             Container(
@@ -834,8 +764,7 @@ class MoreSheetUtil {
                 children: [
                   Text(
                     "Add to playlist".tr,
-                    style:
-                        TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500),
                   ),
                   // Spacer(),
                   // IconButton(
@@ -903,10 +832,7 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -931,9 +857,7 @@ class MoreSheetUtil {
                 maxLines: 5,
                 maxLength: 100,
                 style: TextStyle(fontSize: 14.w),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.w),
-                    color: Colors.white),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Colors.white),
               ),
             ),
             SizedBox(
@@ -953,14 +877,10 @@ class MoreSheetUtil {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(
-                                    color: Color(0xff824EFF).withOpacity(0.75),
-                                    width: 2.w)),
+                                border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
-                              style: TextStyle(
-                                  fontSize: 14.w,
-                                  color: Color(0xff824EFF).withOpacity(0.75)),
+                              style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75)),
                             ),
                           ))),
                   SizedBox(
@@ -999,8 +919,7 @@ class MoreSheetUtil {
                             ),
                             child: Text(
                               "Confirm".tr,
-                              style: TextStyle(
-                                  fontSize: 14.w, color: Colors.white),
+                              style: TextStyle(fontSize: 14.w, color: Colors.white),
                             ),
                           ))),
                 ],
@@ -1098,9 +1017,7 @@ class MoreSheetUtil {
                     child: Container(
                       width: 48.w,
                       height: 48.w,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2.w),
-                          color: Color(0xffE0E0EF)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)),
                     ),
                   ),
 
@@ -1111,8 +1028,7 @@ class MoreSheetUtil {
                       width: 54.w,
                       height: 54.w,
                       clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.w)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.w)),
                       child: item["cover"] == null
                           ?
                           //默认封面
@@ -1145,8 +1061,7 @@ class MoreSheetUtil {
                 ),
                 Text(
                   "${childList.length} songs",
-                  style: TextStyle(
-                      fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
+                  style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
                 ),
               ],
             )),
@@ -1178,10 +1093,7 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1206,9 +1118,7 @@ class MoreSheetUtil {
                 maxLines: 5,
                 maxLength: 100,
                 style: TextStyle(fontSize: 14.w),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.w),
-                    color: Colors.white),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Colors.white),
               ),
             ),
             SizedBox(
@@ -1228,14 +1138,10 @@ class MoreSheetUtil {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(
-                                    color: Color(0xff824EFF).withOpacity(0.75),
-                                    width: 2.w)),
+                                border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
-                              style: TextStyle(
-                                  fontSize: 14.w,
-                                  color: Color(0xff824EFF).withOpacity(0.75)),
+                              style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75)),
                             ),
                           ))),
                   SizedBox(
@@ -1258,8 +1164,7 @@ class MoreSheetUtil {
 
                             //刷新数据
                             if (Get.isRegistered<UserLibraryController>()) {
-                              Get.find<UserLibraryController>()
-                                  .bindMyPlayListData();
+                              Get.find<UserLibraryController>().bindMyPlayListData();
                             }
 
                             Get.back();
@@ -1273,8 +1178,7 @@ class MoreSheetUtil {
                             ),
                             child: Text(
                               "Confirm".tr,
-                              style: TextStyle(
-                                  fontSize: 14.w, color: Colors.white),
+                              style: TextStyle(fontSize: 14.w, color: Colors.white),
                             ),
                           ))),
                 ],

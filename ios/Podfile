@@ -43,7 +43,6 @@ target 'Runner' do
   pod 'GoogleMobileAdsMediationUnity'
   pod 'GoogleMobileAdsMediationFacebook'
 
-  pod 'AppLovinMediationGoogleAdManagerAdapter'
   pod 'AppLovinMediationGoogleAdapter'
   pod 'AppLovinMediationVungleAdapter'
   pod 'AppLovinMediationMintegralAdapter'

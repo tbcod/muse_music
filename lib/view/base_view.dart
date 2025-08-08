@@ -8,8 +8,7 @@ import '../util/download/download_util.dart';
 import '../util/more_sheet_util.dart';
 import '../util/tba/event_util.dart';
 
-getDownloadAndMoreBtn(Map item, String type,
-    {bool isSearch = false, bool locIsHome = false, double iconHeight = 50}) {
+getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsHome = false, double iconHeight = 50}) {
   // type分类
   //loc_playlist
   //net_playlist
@@ -24,18 +23,15 @@ getDownloadAndMoreBtn(Map item, String type,
     mainAxisSize: MainAxisSize.min,
     children: [
       //获取是否显示下载按钮
-      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") ==
-          "on")
+      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
         Obx(() {
           //获取下载状态
           var videoId = item["videoId"];
 
           if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
             //有添加过下载
-            var state =
-                DownloadUtils.instance.allDownLoadingData[videoId]["state"];
-            double progress =
-                DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+            var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+            double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
 
             // AppLog.e(
             //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
@@ -86,25 +82,17 @@ getDownloadAndMoreBtn(Map item, String type,
           return InkWell(
             onTap: () {
               if (type == "net_playlist" || type == "loc_playlist") {
-                EventUtils.instance.addEvent("det_playlist_click",
-                    data: {"detail_click": "dl"});
+                EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "dl"});
               }
               if (type == "artist_more_song" || type == "artist") {
-                EventUtils.instance
-                    .addEvent("det_artist_click", data: {"detail_click": "dl"});
+                EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
               }
 
-              if (type == "net_playlist" ||
-                  type == "artist_more_song" ||
-                  type == "artist") {
-                DownloadUtils.instance.download(videoId, item,
-                    clickType: isSearch ? "s_detail" : "h_detail");
+              if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
+                DownloadUtils.instance.download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail");
                 return;
-              } else if (type == "loc_playlist" ||
-                  type == "liked" ||
-                  type == "download") {
-                DownloadUtils.instance.download(videoId, item,
-                    clickType: locIsHome ? "h_detail" : "library");
+              } else if (type == "loc_playlist" || type == "liked" || type == "download") {
+                DownloadUtils.instance.download(videoId, item, clickType: locIsHome ? "h_detail" : "library");
                 return;
               }
 
@@ -128,12 +116,10 @@ getDownloadAndMoreBtn(Map item, String type,
       InkWell(
         onTap: () {
           if (type == "net_playlist" || type == "loc_playlist") {
-            EventUtils.instance
-                .addEvent("det_playlist_click", data: {"detail_click": "more"});
+            EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
           }
           if (type == "artist_more_song" || type == "artist") {
-            EventUtils.instance
-                .addEvent("det_artist_click", data: {"detail_click": "more"});
+            EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
           }
 
           MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);

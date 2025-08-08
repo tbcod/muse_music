@@ -401,7 +401,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                           height: 32.w,
                         ),
                       ),
-                      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on")
+                      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
                         Obx(() {
                           //获取下载状态
                           var videoId = controller.nowData["videoId"];
