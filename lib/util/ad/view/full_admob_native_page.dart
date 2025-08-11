@@ -90,7 +90,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
             children: [
               StatefulBuilder(builder: (context, a) {
                 return ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: 300, minHeight: 320, maxWidth: 300, maxHeight: 360),
+                  constraints: const BoxConstraints(minWidth: 300, minHeight: 300, maxWidth: 300, maxHeight: 300),
                   child: AdWidget(ad: widget.ad, key: UniqueKey()),
                 );
               }),
@@ -130,7 +130,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                       child: IgnorePointer(
                         ignoring: true,
                         child: Container(
-                          decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(16)),
+                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
                           child: const Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Icon(Icons.close_rounded, size: 24, color: Colors.black38),
@@ -151,7 +151,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                         },
                         behavior: HitTestBehavior.opaque,
                         child: Container(
-                          decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(16)),
+                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
                           child: const Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Icon(Icons.close_rounded, size: 24, color: Colors.black54),

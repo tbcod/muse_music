@@ -180,6 +180,10 @@ class UserHome extends GetView<UserHomeController> {
     if (data.isEmpty) {
       return Container();
     }
+    // AppLog.i("home view item type:$type, $title, ${data.length}");
+    // if(title.startsWith("为你推荐的电台")){
+    //   AppLog.e("home view item type:$type, $title, ${data.length}");
+    // }
 
     List types = [
       "MUSIC_VIDEO_TYPE_OMV",
@@ -1047,8 +1051,6 @@ class UserHome extends GetView<UserHomeController> {
             );
           }
 
-          AppLog.e("view item type:$type,$title, $data");
-
           return Container(
             height: 0,
             color: Colors.red,
@@ -1194,7 +1196,7 @@ class UserHomeController extends GetxController with StateMixin {
         if (childItem.containsKey("musicResponsiveListItemRenderer")) {
           //音乐
           List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?
               ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
           type = musicType;
@@ -1312,7 +1314,7 @@ class UserHomeController extends GetxController with StateMixin {
     try {
       List list = result.data["continuationContents"]?["sectionListContinuation"]?["continuations"] ?? [];
       nextData = list.firstOrNull?["nextContinuationData"] ?? {};
-      AppLog.i("获取FEmusic_home next:${nextData.keys}");
+      // AppLog.i("获取FEmusic_home next:${nextData.keys}");
     } catch (e) {
       AppLog.e("获取FEmusic_home下一页出错了:${e.toString()}");
       nextData = {};

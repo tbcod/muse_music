@@ -35,6 +35,7 @@ target 'Runner' do
 
 #  pod 'FBSDKCoreKit'
 #   pod 'FBAudienceNetwork','6.15.2'
+  pod 'SnapKit', '~> 5.6.0'
 
   pod 'GoogleMobileAdsMediationAppLovin'
   pod 'GoogleMobileAdsMediationVungle'
@@ -66,6 +67,8 @@ target 'Runner' do
 #   pod 'TPNIronSourceSDKAdapter','6.4.70'
 #   pod 'TPNPangleSDKAdapter','6.4.70'
 #   pod 'TPNInmobiSDKAdapter','6.4.70'
+
+
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

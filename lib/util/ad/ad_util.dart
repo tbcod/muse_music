@@ -325,8 +325,8 @@ class AdUtils {
         } else if (type == "native") {
           NativeAd nativeAd = NativeAd(
             adUnitId: ad_id,
+            factoryId: 'full_native',
             request: const AdRequest(),
-            // factoryId: "",
             listener: admob.NativeAdListener(onAdLoaded: (ad) async {
               AdUtils.instance.loadedAdMap[ad_id] = {
                 "data": item,
@@ -335,12 +335,12 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (ad, e) {
+              AppLog.e("原生广告加载是失败:${e.toString()}");
               ad.dispose();
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
             }, onAdClicked: (ad) {
-              // Global.instance.bannerNativeAdClicked.value = true;
               bannerNativeAdClicked.refresh();
               // showBlock?.onClick?.call();
             }, onAdImpression: (ad) {
@@ -371,7 +371,8 @@ class AdUtils {
                   currency: currencyCode,
                   precision_type: precision.name);
             }),
-            nativeTemplateStyle: NativeTemplateStyle(templateType: TemplateType.medium, cornerRadius: 8),
+            nativeTemplateStyle: null,
+            // nativeTemplateStyle: NativeTemplateStyle(templateType: TemplateType.medium, cornerRadius: 8),
           );
           nativeAd.load();
         }
