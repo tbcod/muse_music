@@ -296,6 +296,8 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
+              AppLog.e("admob广告加载是失败:$ad_id,  ${e.toString()}");
+
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
@@ -317,6 +319,7 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
+              AppLog.e("admob广告加载是失败:$ad_id,  ${e.toString()}");
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
@@ -335,7 +338,7 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (ad, e) {
-              AppLog.e("原生广告加载是失败:${e.toString()}");
+              AppLog.e("原生广告加载是失败:$ad_id,  ${e.toString()}");
               ad.dispose();
               if (onLoad != null) {
                 onLoad(ad_id, false, e);

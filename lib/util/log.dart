@@ -7,7 +7,7 @@ import 'package:music_muse/muse_config.dart';
 
 class AppLog {
   static void print(dynamic msg, {bool isErr = false}) {
-    if (!MuseConfig.isUser) {
+    if (kDebugMode) {
       String callerInfo = "";
       final stackTrace = StackTrace.current.toString().split("\n");
       if (stackTrace.length > 2) {
