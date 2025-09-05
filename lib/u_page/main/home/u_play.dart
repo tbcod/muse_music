@@ -239,6 +239,13 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   if (controller.isPlaying.value) {
                                     controller.player?.pause();
                                   } else {
+                                    EventUtils.instance.addEvent("play_num", data: {
+                                      "song_id": controller.nowData["videoId"],
+                                      "song_name": controller.nowData["title"],
+                                      "artist_name": controller.nowData["subtitle"],
+                                      "playlist_id": controller.playlistId,
+                                    });
+                                    EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
                                     controller.player?.play();
                                   }
 
@@ -1402,6 +1409,7 @@ class UserPlayInfoController extends GetxController {
 
     player?.addListener(playListener);
     isLoaded.value = true;
+
 
     if (isOpenShowBar) {
       //更新播放

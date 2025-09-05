@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +18,7 @@ import '../../const/env.dart';
 import '../log.dart';
 
 class TbaIos extends BaseApi {
-  static final String host = Env.isUser
+  static final String host = MuseConfig.isUser
       ? "https://levulose.littlemusicmuse.com/antenna/auric/ward"
       : "https://test-levulose.littlemusicmuse.com/zazen/prop";
 

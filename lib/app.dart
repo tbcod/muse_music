@@ -117,14 +117,14 @@ class Application extends GetxService {
   AppsflyerSdk? appsflyerSdk;
 
   initAppsflyer() async {
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       return;
     }
 
     AppsFlyerOptions appsFlyerOptions = AppsFlyerOptions(
-      afDevKey: Env.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "",
+      afDevKey: MuseConfig.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "",
       appId: "6667107568",
-      showDebug: !Env.isUser,
+      showDebug: !MuseConfig.isUser,
     );
     appsflyerSdk = AppsflyerSdk(appsFlyerOptions);
     var appsflyerData = await appsflyerSdk?.initSdk(
@@ -240,7 +240,7 @@ class Application extends GetxService {
   }
 
   Future initNetPush() async {
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       return;
     }
 

@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/const/env.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
@@ -217,7 +218,7 @@ class UserSetting extends GetView<UserSettingController> {
           AppLog.e(AdUtils.instance.loadedAdMap);
           // AppLog.e(AdUtils.instance.adJson);
 
-          if (Env.isUser) {
+          if (MuseConfig.isUser) {
             return;
           }
           // TbaUtils.instance.postUserData({"mm_new_user": "old"});

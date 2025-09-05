@@ -75,7 +75,9 @@ class HistoryUtil {
 
     if (songHistoryList.isEmpty) {
       //添加默认的12首歌
-      songHistoryList.value = decodeList(locSong);
+      // songHistoryList.value = decodeList(locSong);
+      songHistoryList.value = listenNowListData();
+
       saveData();
     }
 

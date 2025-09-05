@@ -12,6 +12,7 @@ import 'package:anythink_sdk/at_platformview/at_native_platform_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/muse_config.dart';
 
 import '../../const/env.dart';
 import '../log.dart';
@@ -30,7 +31,7 @@ class TopOnUtils {
   StreamSubscription? rewardedStream;
 
   Future init() async {
-    if (Env.isUser) {
+    if (MuseConfig.isUser) {
       //正式环境
       ATInitManger.initAnyThinkSDK(
           appidStr: 'a67ad5a10620d8',

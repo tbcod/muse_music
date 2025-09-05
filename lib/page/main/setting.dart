@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/env.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main/setting/feedback.dart';
 import 'package:music_muse/page/main/setting/only_web.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
@@ -130,7 +131,7 @@ class SettingPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       listTitle.add("Ad Tools");
     }
   }

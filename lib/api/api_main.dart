@@ -364,7 +364,7 @@ class ApiMain extends BaseApi {
         isFirstRequest = false;
         Future.delayed(const Duration(seconds: 2)).then((v) {
           UserHomeController controller = Get.find<UserHomeController>();
-          controller.bindYoutubeMusicData(source:"visitor_play");
+          controller.bindYoutubeMusicData(source: "visitor_play");
         });
       }
     }
@@ -409,7 +409,7 @@ class ApiMain extends BaseApi {
         "&cplatform=DESKTOP"
         "&volume=100"
         "&cmt=$et"
-        "&state=${isPlaying ? 'paused' : 'playing'}"
+        "&state=${isPlaying ? 'playing' : 'paused'}"
         "&st=$st" //开始时间
         "&et=$et"
         "&hl=$_hl"

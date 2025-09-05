@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/const/env.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
@@ -53,7 +54,7 @@ class LaunchPage extends GetView<LaunchPageController> {
                   height: 8.w,
                 ),
                 Text(
-                  Env.appName,
+                  MuseConfig.appName,
                   style: TextStyle(fontSize: 16.w),
                 ),
 
@@ -221,7 +222,7 @@ class LaunchPageController extends GetxController {
       isToMain = true;
       progress.value = 1;
 
-      if (!Env.isUser) {
+      if (!MuseConfig.isUser) {
         EventUtils.instance.addEvent("enter_home");
         EventUtils.instance.addEvent("home_source");
         Get.offAll(const UserMain());

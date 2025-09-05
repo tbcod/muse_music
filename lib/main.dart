@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'const/env.dart';
+import 'muse_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +82,7 @@ class MyApp extends GetView {
                         color: Colors.black,
                         fontWeight: FontWeight.bold),
                     backgroundColor: Colors.transparent)),
-            title: Env.appName,
+            title: MuseConfig.appName,
             debugShowCheckedModeBanner: false,
             home: const LaunchPage(),
             locale: MyTranslations.locale,

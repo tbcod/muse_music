@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:music_muse/const/data_config.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
@@ -12,6 +13,8 @@ import 'native_util.dart';
 
 const String mmAdJson = "mmAdJson";
 const String mmFullClickbait = "mmFullClickbait";
+
+const String museSongRecommonedKey = "museSongRecommonedKeys";
 
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
@@ -24,12 +27,16 @@ class RemoteUtil {
 
   late SharedPreferences isp;
 
+  String _listenNowRecom = "";
+
   init() async {
     isp = await SharedPreferences.getInstance();
 
     _adJson = MuseConfig.adJsonIos;
 
     _bannerClickbait = isp.getString(mmFullClickbait) ?? "";
+
+    _listenNowRecom = isp.getString(museSongRecommonedKey) ?? "";
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -82,6 +89,10 @@ class RemoteUtil {
         isp.setString(mmFullClickbait, bannerClickbait);
         _bannerClickbait = bannerClickbait;
       }
+
+      String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
+      isp.setString(museSongRecommonedKey, listenNowSongs);
+      _listenNowRecom = listenNowSongs;
     } catch (e) {
       AppLog.e(e);
     }
@@ -104,5 +115,17 @@ class RemoteUtil {
     if (_bannerClickbait.isEmpty) return 0;
     final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
     return config["Countdown"] ?? 0;
+  }
+
+  List<Map> get listenNowRecommend {
+    if (_listenNowRecom.isNotEmpty) {
+      try {
+        List<Map> list = jsonDecode(_listenNowRecom);
+        return list;
+      } catch (e) {
+        AppLog.e(e.toString());
+      }
+    }
+    return DataConfig.listenMusic;
   }
 }
