@@ -120,8 +120,9 @@ class RemoteUtil {
   List<Map> get listenNowRecommend {
     if (_listenNowRecom.isNotEmpty) {
       try {
-        List<Map> list = jsonDecode(_listenNowRecom);
-        return list;
+        List list = jsonDecode(_listenNowRecom);
+        List<Map> newList = List.from(list);
+        return newList;
       } catch (e) {
         AppLog.e(e.toString());
       }

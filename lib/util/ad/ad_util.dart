@@ -21,7 +21,7 @@ import '../native_util.dart';
 import '../tba/event_util.dart';
 import 'view/full_admob_native_page.dart';
 
-enum AdScene { play, download, search, openCool,openHot }
+enum AdScene { play, download, search, openCool, openHot, playlist, artist, collection, back }
 
 class AdUtils {
   AdUtils._internal();
@@ -129,11 +129,12 @@ class AdUtils {
 
     Duration temp = nowTime.difference(lastShowTime!);
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
-    AppLog.i("广告间隔,$lastShowTime,$nowTime, ${temp.inSeconds}---$wait");
+    // AppLog.i("广告间隔,$lastShowTime,$nowTime, ${temp.inSeconds}---需要${wait}s");
 
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
       return true;
     } else {
+      AppLog.i("广告间隔中:${temp.inSeconds}s---需要${wait}s");
       return false;
     }
   }
@@ -305,22 +306,25 @@ class AdUtils {
           RewardedAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
-            rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
-              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
-              if (onLoad != null) {
-                onLoad(ad.adUnitId, true, null);
-              }
-              AdUtils.instance.loadedAdMap[ad_id] = {
-                "data": item,
-                "admob_ad": ad,
-                "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
-              };
-            }, onAdFailedToLoad: (e) {
-              if (onLoad != null) {
-                onLoad(ad_id, false, e);
-              }
-            }),
+            rewardedAdLoadCallback: RewardedAdLoadCallback(
+              onAdLoaded: (ad) {
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+                if (onLoad != null) {
+                  onLoad(ad.adUnitId, true, null);
+                }
+                AdUtils.instance.loadedAdMap[ad_id] = {
+                  "data": item,
+                  "admob_ad": ad,
+                  "timeMs": DateTime.now().millisecondsSinceEpoch,
+                  "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+                };
+              },
+              onAdFailedToLoad: (e) {
+                if (onLoad != null) {
+                  onLoad(ad_id, false, e);
+                }
+              },
+            ),
           );
         } else if (type == "native") {
           NativeAd nativeAd = NativeAd(
@@ -563,7 +567,7 @@ class AdUtils {
     // }
 
     if (!await canShow()) {
-      AppLog.i("广告间隔未到, $key");
+      // AppLog.i("广告间隔未到, $key");
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "ad interval has not expired"));
       }
@@ -573,7 +577,7 @@ class AdUtils {
     AppLog.i("准备展示广告, $key");
 
     if (key != "level_h") {
-      bool isHighSuc = await showAd("level_h",adScene: adScene, onShow: onShow);
+      bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
       AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
         return true;
@@ -671,7 +675,8 @@ class AdUtils {
           openAd?.show();
           isShowAd = true;
           break;
-        } else if (type == "interstitial") {
+        }
+        else if (type == "interstitial") {
           InterstitialAd? interstitialAd = loadedItem["admob_ad"];
           //设置显示事件
           interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
@@ -722,7 +727,8 @@ class AdUtils {
           interstitialAd?.show();
           isShowAd = true;
           break;
-        } else if (type == "rewarded") {
+        }
+        else if (type == "rewarded") {
           RewardedAd? rewardedAd = loadedItem["admob_ad"];
           //设置显示事件
           rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {

@@ -80,6 +80,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     onPressed: () {
                       Get.back();
                       controller.showFloatingWidget();
+                      AdUtils.instance.showAd("behavior", adScene: AdScene.back);
                     },
                     icon: Image.asset(
                       "assets/oimg/icon_play_close.png",
@@ -238,6 +239,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                                   if (controller.isPlaying.value) {
                                     controller.player?.pause();
+                                    AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                   } else {
                                     EventUtils.instance.addEvent("play_num", data: {
                                       "song_id": controller.nowData["videoId"],
@@ -247,6 +249,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     });
                                     EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
                                     controller.player?.play();
+                                    AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                   }
 
                                   EventUtils.instance.addEvent("play_page_click", data: {"click": "pause"});
@@ -922,9 +925,17 @@ class UserPlayInfoController extends GetxController {
 
                                       if (isPlaying.value) {
                                         await player?.pause();
+                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                       } else {
                                         await player?.play();
                                         //暂停其他页面的播放
+                                        EventUtils.instance.addEvent("play_num", data: {
+                                          "song_id": nowData["videoId"],
+                                          "song_name": nowData["title"],
+                                          "artist_name": nowData["subtitle"],
+                                        });
+                                        EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
+                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                       }
                                       isPlaying.toggle();
                                     },
@@ -1338,6 +1349,12 @@ class UserPlayInfoController extends GetxController {
             if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
               //没有网络
               AppLog.e("没有网络，不切换下一曲");
+              EventUtils.instance.addEvent("play_num", data: {
+                "song_id": nowData["videoId"],
+                "song_name": nowData["title"],
+                "artist_name": nowData["subtitle"],
+              });
+              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
               return;
             }
 
@@ -1404,12 +1421,24 @@ class UserPlayInfoController extends GetxController {
       player = VideoPlayerController.file(File(downloadPath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
     }
 
-    await player?.initialize();
+    await player?.initialize().catchError((e) {
+      final errorCode = player?.value.errorDescription ?? 'initialize error';
+
+      if(!isOpenShowBar){
+        EventUtils.instance.addEvent("play_num", data: {
+          "song_id": nowData["videoId"],
+          "song_name": nowData["title"],
+          "artist_name": nowData["subtitle"],
+        });
+        EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "initialize error", "detail": errorCode});
+      }
+      AppLog.e("initialize error:${e.toString()}");
+    });
+
     videoAspectRatio = player?.value.aspectRatio ?? 1;
 
     player?.addListener(playListener);
     isLoaded.value = true;
-
 
     if (isOpenShowBar) {
       //更新播放

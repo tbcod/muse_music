@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/u_page/main/libray/u_loc_add_song.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 
 import '../../../const/db_key.dart';
 import '../../../util/download/download_util.dart';
@@ -28,6 +29,7 @@ class UserLoaAllChoose extends GetView<UserLoaAllChooseController> {
           leading: IconButton(
               onPressed: () {
                 Get.back();
+                AdUtils.instance.showAd("behavior", adScene: AdScene.back);
               },
               icon: Image.asset(
                 "assets/oimg/icon_back.png",

@@ -46,9 +46,7 @@ class DownloadUtils {
 
   reDownloadData() {
     //获取所有正在下载的
-    var needDownloadData = allDownLoadingData.values
-        .where((e) => e["state"] == 1 || e["state"] == 3)
-        .toList();
+    var needDownloadData = allDownLoadingData.values.where((e) => e["state"] == 1 || e["state"] == 3).toList();
 
     needDownloadData
         .map((e) {
@@ -74,8 +72,7 @@ class DownloadUtils {
 
   //获取Url
   Future<String> getDownloadUrl(String videoId, bool isCache) async {
-    var result =
-        await ApiMain.instance.getVideoInfo(videoId, toastBlack: !isCache);
+    var result = await ApiMain.instance.getVideoInfo(videoId, toastBlack: !isCache);
 
     if (result.code != HttpCode.success) {
       // ToastUtil.showToast(msg: result.message ?? "error");
@@ -93,8 +90,7 @@ class DownloadUtils {
   }
 
   Future<Map> getCacheMap(String videoId) async {
-    var result =
-        await ApiMain.instance.getVideoInfo(videoId, toastBlack: false);
+    var result = await ApiMain.instance.getVideoInfo(videoId, toastBlack: false);
 
     if (result.code != HttpCode.success) {
       // ToastUtil.showToast(msg: result.message ?? "error");
@@ -122,9 +118,9 @@ class DownloadUtils {
   var allCancelToken = {};
 
   var hasNewDownload = false.obs;
+
   //添加下载
-  download(String videoId, Map infoData,
-      {required String clickType, bool showAd = true}) async {
+  download(String videoId, Map infoData, {required String clickType, bool showAd = true}) async {
     if (infoData.isEmpty) {
       return;
     }
@@ -156,12 +152,11 @@ class DownloadUtils {
       //artist_more_song
       //artist
 
-      EventUtils.instance.addEvent("save_click",
-          data: {"station": clickType, "song_id": videoId});
     }
+    EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
 
     if (showAd) {
-      AdUtils.instance.showAd("behavior",adScene: AdScene.download);
+      AdUtils.instance.showAd("behavior", adScene: AdScene.download);
       //好评引导
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
@@ -202,6 +197,8 @@ class DownloadUtils {
           saveNewState();
 
           HistoryUtil.instance.addHistorySong(infoData);
+
+          EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
           return;
         }
       }
@@ -212,6 +209,7 @@ class DownloadUtils {
       LoadingUtil.hideAllLoading();
       if (url.isEmpty) {
         ToastUtil.showToast(msg: "Get url error".tr);
+        EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
         return;
       }
 
@@ -261,7 +259,7 @@ class DownloadUtils {
           // AppLog.e("缓存$count/$total");
 
           if (count == total) {
-            AppLog.e("下载完成");
+            AppLog.i("下载完成");
             //下载完成
             allDownLoadingData[videoId]["progress"] = 1.0;
             allDownLoadingData[videoId]["state"] = 2;
@@ -270,8 +268,7 @@ class DownloadUtils {
             allDownLoadingData.refresh();
             saveVideoInfo();
 
-            EventUtils.instance
-                .addEvent("save_succ", data: {"song_id": videoId});
+            EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
             hasNewDownload.value = true;
             saveNewState();
             HistoryUtil.instance.addHistorySong(infoData);
@@ -284,16 +281,17 @@ class DownloadUtils {
         },
         // options: Options(headers: {"Range": "bytes=$downloadedLength-"})
       );
+    } on DioException catch (e) {
+      AppLog.e("下载失败Dio：${e.toString()}");
+      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "1.${e.toString()}"});
     } catch (e) {
-      print(e);
+      AppLog.e("下载失败：${e.toString()}");
       //下载失败
       // allDownLoadingData[videoId]["state"] = 4;
       // allDownLoadingData.refresh();
       // //存本地
       // saveVideoInfo();
-
-      EventUtils.instance.addEvent("save_fail",
-          data: {"song_id": videoId, "reason": "network error"});
+      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "2.network error"});
     }
 
     // ALDownloader.download(url,
@@ -438,14 +436,7 @@ class DownloadUtils {
       // AppLog.e("缓存获取url==$url");
 
       //添加到下载列表
-      allCacheData[videoId] = {
-        "url": url,
-        "videoId": videoId,
-        "infoData": infoData,
-        "progress": 0.0,
-        "state": 0,
-        "time": DateTime.now()
-      };
+      allCacheData[videoId] = {"url": url, "videoId": videoId, "infoData": infoData, "progress": 0.0, "state": 0, "time": DateTime.now()};
 
       saveCacheVideoInfo();
     }
@@ -464,8 +455,7 @@ class DownloadUtils {
 
     var fileName = "${Uuid().v8()}.mp4";
 
-    Dio().download(url, dic.path + "/$fileName",
-        onReceiveProgress: (int count, int total) {
+    Dio().download(url, dic.path + "/$fileName", onReceiveProgress: (int count, int total) {
       // AppLog.e("缓存$count/$total");
 
       if (count == total) {

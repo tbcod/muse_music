@@ -6,6 +6,7 @@ import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/libray/u_loc_add_song.dart';
 import 'package:music_muse/u_page/main/libray/u_loc_all_choose.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
@@ -51,6 +52,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                   leading: IconButton(
                       onPressed: () {
                         Get.back();
+                        AdUtils.instance.showAd("behavior", adScene: AdScene.back);
                       },
                       icon: Image.asset(
                         "assets/oimg/icon_back.png",
@@ -791,6 +793,12 @@ class UserLocPlayListInfoController extends GetxController with StateMixin {
     super.onInit();
     info = Get.arguments;
     bindData();
+  }
+
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.playlist);
+    super.onReady();
   }
 
   bindData() async {

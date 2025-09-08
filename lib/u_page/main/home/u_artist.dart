@@ -9,6 +9,7 @@ import 'package:music_muse/u_page/main/home/u_more_song.dart';
 import 'package:music_muse/u_page/main/home/u_more_video.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/format_data.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/view/net_img.dart';
@@ -1002,6 +1003,12 @@ class UserArtistInfoController extends GetxController with StateMixin {
     });
   }
 
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.artist);
+    super.onReady();
+  }
+
   bindData() async {
     var result = await ApiMain.instance.getData(browseId);
     if (result.code == HttpCode.success) {
@@ -1135,4 +1142,5 @@ class UserArtistInfoController extends GetxController with StateMixin {
 
     moreList = newMusicData;
   }
+
 }

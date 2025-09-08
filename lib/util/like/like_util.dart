@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
@@ -53,6 +54,9 @@ class LikeUtil {
     ToastUtil.showToast(msg: "Followed this song".tr);
 
     saveLikeState();
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   saveLikeState() async {
@@ -84,6 +88,9 @@ class LikeUtil {
     saveData();
     ToastUtil.showToast(msg: "You have canceled following this song".tr);
     saveLikeState();
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   likeList(String browseId, Map infoData, String subtitle) async {
@@ -117,6 +124,9 @@ class LikeUtil {
     if (Get.isRegistered<UserLibraryController>()) {
       Get.find<UserLibraryController>().bindMyPlayListData();
     }
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   unlikeList(String browseId) async {
@@ -135,6 +145,9 @@ class LikeUtil {
     }
 
     saveLikeState();
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   likeArtist(String browseId, Map infoData) {
@@ -150,6 +163,9 @@ class LikeUtil {
     ToastUtil.showToast(msg: "Followed this singer".tr);
 
     saveLikeState();
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   unlikeArtist(String browseId) {
@@ -157,6 +173,9 @@ class LikeUtil {
     saveData();
     ToastUtil.showToast(msg: "You have canceled following this singer".tr);
     saveLikeState();
+
+    AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
+
   }
 
   //保存到本地数据
