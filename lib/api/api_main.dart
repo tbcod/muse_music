@@ -93,7 +93,7 @@ class ApiMain extends BaseApi {
     var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     if (result.code == HttpCode.success) {
       //请求成功
-      AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
+      // AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
 
       EventUtils.instance.addEvent("source_get");
     }

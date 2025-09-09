@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/app.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
@@ -134,6 +135,7 @@ class UserMainController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    bus.isBMode = true;
     IdfaUtil.instance.showIdfaDialog();
     Future.delayed(Duration(seconds: 10)).then((e) {
       IdfaUtil.instance.showIdfaDialog();

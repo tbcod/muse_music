@@ -334,7 +334,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 4),
                                     thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5, disabledThumbRadius: 5)),
                                 child: Slider(
-                                  value: controller.sliderValue.value,
+                                  value: min(1, max(0, controller.sliderValue.value)),
                                   onChanged: (value) {
                                     //计算时间
                                     controller.sliderValue.value = value;
@@ -1424,7 +1424,7 @@ class UserPlayInfoController extends GetxController {
     await player?.initialize().catchError((e) {
       final errorCode = player?.value.errorDescription ?? 'initialize error';
 
-      if(!isOpenShowBar){
+      if (!isOpenShowBar) {
         EventUtils.instance.addEvent("play_num", data: {
           "song_id": nowData["videoId"],
           "song_name": nowData["title"],
@@ -2311,10 +2311,32 @@ class UserPlayInfoController extends GetxController {
       "song_name": playList[nowIndex]["title"],
       "artist_name": playList[nowIndex]["subtitle"],
       "playlist_id": playlistId,
-      "station": "notif"
+      "station": "notif",
     });
 
     realPlay(nowIndex);
+  }
+
+  recoverPlay({bool isForce = true}) async {
+    int count = (isForce ? 5 : 1);
+    for (int i = 0; i < count; i++) {
+      if (isPlaying.isFalse) return;
+      AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
+      await Future.delayed(const Duration(milliseconds: 500));
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+      await session.setActive(true);
+      player?.pause();
+      player?.play().ignore();
+      if (i == count - 1 && player?.value.isPlaying == false) {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
+        await session.configure(const AudioSessionConfiguration.music());
+        await session.setActive(true);
+        player?.pause();
+        player?.play().ignore();
+      }
+    }
   }
 }
 

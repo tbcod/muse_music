@@ -35,38 +35,33 @@ target 'Runner' do
 
 #  pod 'FBSDKCoreKit'
 #   pod 'FBAudienceNetwork','6.15.2'
-  pod 'SnapKit', '~> 5.6.0'
+  pod 'SnapKit'     #, '~> 5.6.0'
 
   pod 'GoogleMobileAdsMediationAppLovin'
   pod 'GoogleMobileAdsMediationVungle'
   pod 'GoogleMobileAdsMediationMintegral'
   pod 'GoogleMobileAdsMediationPangle'
-  pod 'GoogleMobileAdsMediationUnity'
+#   pod 'GoogleMobileAdsMediationUnity'
   pod 'GoogleMobileAdsMediationFacebook'
 
   pod 'AppLovinMediationGoogleAdapter'
   pod 'AppLovinMediationVungleAdapter'
   pod 'AppLovinMediationMintegralAdapter'
   pod 'AppLovinMediationByteDanceAdapter'
-  pod 'AppLovinMediationUnityAdsAdapter'
+#   pod 'AppLovinMediationUnityAdsAdapter'
   pod 'AppLovinMediationFacebookAdapter'
   pod 'AppLovinMediationBidMachineAdapter'
   pod 'AppLovinMediationMolocoAdapter'
 
-#   pod 'AnyThinkiOS','6.4.39'
-#   pod 'TraminiSDK','6.4.39'
-  pod 'TPNiOS','6.4.70'
-  pod 'TPNFacebookSDKAdapter','6.4.70'
-  pod 'TPNAdmobSDKAdapter','6.4.70'
-  pod 'TPNApplovinSDKAdapter','6.4.70'
-  pod 'TPNMintegralSDKAdapter','6.4.70'
-  pod 'TPNVungleSDKAdapter','6.4.70'
-  pod 'TPNBigoSDKAdapter','6.4.70'
 
-#   pod 'TPNUnityAdsSDKAdapter','6.4.70'
-#   pod 'TPNIronSourceSDKAdapter','6.4.70'
-#   pod 'TPNPangleSDKAdapter','6.4.70'
-#   pod 'TPNInmobiSDKAdapter','6.4.70'
+#   pod 'TPNiOS','6.4.70'
+#   pod 'TPNFacebookSDKAdapter','6.4.70'
+#   pod 'TPNAdmobSDKAdapter','6.4.70'
+#   pod 'TPNApplovinSDKAdapter','6.4.70'
+#   pod 'TPNMintegralSDKAdapter','6.4.70'
+#   pod 'TPNVungleSDKAdapter','6.4.70'
+#   pod 'TPNBigoSDKAdapter','6.4.70'
+
 
 
 

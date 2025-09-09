@@ -54,10 +54,8 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
     }
 
     _streamSubscription = AdUtils.instance.bannerNativeAdClicked.listen((val) {
-      Future.delayed(const Duration(milliseconds: 1000)).then((v) {
-        _closeType.value = CloseType.normal;
-        _curSec.value = -1;
-      });
+      _closeType.value = CloseType.normal;
+      _curSec.value = -1;
     });
 
     super.initState();
@@ -85,21 +83,36 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
+        body: Container(
+          padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffa78efe), Color(0xff5d59dc)])),
+          width: double.infinity,
+          height: double.infinity,
           child: Stack(
             children: [
-              StatefulBuilder(builder: (context, a) {
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: 300, minHeight: 300, maxWidth: 300, maxHeight: 300),
-                  child: AdWidget(ad: widget.ad, key: UniqueKey()),
-                );
-              }),
+              Positioned(
+                left: 16,
+                right: 16,
+                top: 16,
+                child: StatefulBuilder(builder: (context, a) {
+                  try {
+                    return SizedBox(
+                      height: 620,
+                      child: AdWidget(ad: widget.ad, key: UniqueKey()),
+                    );
+                  } catch (e) {
+                    _closeType.value = CloseType.normal;
+                    return const SizedBox.shrink();
+                  }
+                }),
+              ),
               Obx(() {
                 return Visibility(
                   visible: _curSec.value >= 0,
                   child: Positioned(
-                    right: 8,
-                    top: 8,
+                    right: 20,
+                    top: 24,
                     child: Container(
                         alignment: Alignment.center,
                         width: 24,
@@ -122,43 +135,33 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 );
               }),
               Obx(() {
-                return Visibility(
-                  visible: _closeType.value == CloseType.disable,
-                  child: Positioned(
-                      right: 8,
-                      top: 8,
-                      child: IgnorePointer(
-                        ignoring: true,
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.close_rounded, size: 24, color: Colors.black38),
-                          ),
-                        ),
-                      )),
-                );
-              }),
-              Obx(() {
-                return Visibility(
-                  visible: _closeType.value == CloseType.normal || _closeType.value == CloseType.limit,
-                  child: Positioned(
-                      right: 8,
-                      top: 8,
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.close_rounded, size: 24, color: Colors.black54),
-                          ),
-                        ),
-                      )),
-                );
+                return Positioned(
+                    left: 20,
+                    top: 24,
+                    child: _closeType.value == CloseType.disable
+                        ? IgnorePointer(
+                            ignoring: true,
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black38),
+                              ),
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              Get.back();
+                            },
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black54),
+                              ),
+                            ),
+                          ));
               }),
             ],
           ),

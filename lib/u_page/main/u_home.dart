@@ -1134,7 +1134,7 @@ class UserHomeController extends GetxController with StateMixin {
       change("", status: RxStatus.loading());
     }
 
-    AppLog.i("开始请求Music");
+    // AppLog.i("开始请求Music");
     EventUtils.instance.addEvent("home_refresh_and", data: {"source": source});
 
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
@@ -1235,13 +1235,13 @@ class UserHomeController extends GetxController with StateMixin {
           List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
           String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
           //id
-          var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
+          String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
 
           //封面
           var childItemCover =
               childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
 
-          if (type.isNotEmpty) {
+          if (type.isNotEmpty && browseId.isNotEmpty) {
             realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
           }
         } else {

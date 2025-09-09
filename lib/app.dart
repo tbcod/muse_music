@@ -18,7 +18,7 @@ import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
-import 'package:music_muse/util/ad/topon_util.dart';
+// import 'package:music_muse/util/ad/topon_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
@@ -33,6 +33,7 @@ import 'package:uuid/uuid.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:appsflyer_sdk/appsflyer_sdk.dart';
 
+import 'const/bus.dart';
 import 'const/db_key.dart';
 import 'const/env.dart';
 
@@ -61,24 +62,27 @@ class Application extends GetxService {
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark));
 
-    final sp = await SharedPreferences.getInstance();
+     await MuseSP.instance.init();
+    // final sp = await SharedPreferences.getInstance();
+
+    bus.setAppLaunchCount();
 
     //设置设备的uuid,每次重新安装后不一样
-    userAppUuid = sp.getString("userAppUuid") ?? "";
+    userAppUuid = museSp.getString("userAppUuid") ?? "";
     if (userAppUuid.isEmpty) {
       userAppUuid = const Uuid().v4();
-      await sp.setString("userAppUuid", userAppUuid);
+      await museSp.setString("userAppUuid", userAppUuid);
     }
     RemoteUtil.shareInstance.init();
 
     if (visitorData.isEmpty) {
-      visitorData = sp.getString("visitorData") ?? "";
+      visitorData = museSp.getString("visitorData") ?? "";
       // visitorData = 'CgtaOU84b01JNDlJbyiFuszEBjIKCgJKUBIEGgAgDg%3D%3D';
     }
 
     //设置语言
-    var lastLangCode = sp.getString("lastLangCode") ?? "";
-    var lastLangCountryCode = sp.getString("lastLangCountryCode") ?? "";
+    var lastLangCode = museSp.getString("lastLangCode") ?? "";
+    var lastLangCountryCode = museSp.getString("lastLangCountryCode") ?? "";
     if (lastLangCode.isNotEmpty) {
       MyTranslations.locale = Locale(lastLangCode, lastLangCountryCode);
     }
@@ -198,7 +202,7 @@ class Application extends GetxService {
   initAd() {
     AdmobUtils.instance.init();
     MaxUtils.instance.init();
-    TopOnUtils.instance.init();
+    // TopOnUtils.instance.init();
   }
 
   changeTypeSo(String str) async {

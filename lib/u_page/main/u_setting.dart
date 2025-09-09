@@ -1,4 +1,3 @@
-import 'package:anythink_sdk/at_init.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
+import 'package:music_muse/util/toast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -228,17 +228,17 @@ class UserSetting extends GetView<UserSettingController> {
                 title: "Tip",
                 content: "choose",
                 lBtnText: "Max",
-                rBtnText: "TopOn",
+                rBtnText: "AdMob",
                 lBtnOnTap: () {
                   Get.back();
                   AppLovinMAX.showMediationDebugger();
                 },
                 rBtnOnTap: () {
                   Get.back();
-                  ATInitManger.showDebuggerUI(debugKey: "");
-                  // MobileAds.instance.openAdInspector((p0) {
-                  //   // ToastUtil.showToast(msg: p0?.message ?? "error");
-                  // });
+                  // ATInitManger.showDebuggerUI(debugKey: "");
+                  MobileAds.instance.openAdInspector((p0) {
+                    ToastUtil.showToast(msg: p0?.message ?? "error");
+                  });
                 },
               ),
               barrierDismissible: true);

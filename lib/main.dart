@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/page/launch.dart';
 import 'package:music_muse/page/main_page.dart';
@@ -22,6 +23,7 @@ import 'muse_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bus.startTime = DateTime.now();
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }

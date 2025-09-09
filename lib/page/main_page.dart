@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/page/main/home.dart';
 import 'package:music_muse/page/main/home/play.dart';
 import 'package:music_muse/page/main/setting.dart';
@@ -98,6 +99,8 @@ class MainPageController extends GetxController {
 
   StreamSubscription<List<ConnectivityResult>>? subscription;
 
+  bool _isRequesting = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -108,9 +111,29 @@ class MainPageController extends GetxController {
     AdUtils.instance.loadAd("behavior");
 
     // Future.delayed(Duration(seconds: 5)).then((_) => Get.off(const UserMain()));
+    _requestCloak();
 
     //设置网络监听，成功后打开B面
-    subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
+    // subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
+    //   var result = await CUtil.instance.checkCloak();
+    //
+    //   //监听到网络变化重新请求一次
+    //   var okStr = GetPlatform.isIOS ? "excerpt" : "";
+    //
+    //   if (result.data == okStr) {
+    //     //缓存
+    //     var sp = await SharedPreferences.getInstance();
+    //     await sp.setBool("isOpenUser", true);
+    //     bus.isBMode = true;
+    //     Get.off(const UserMain());
+    //   }
+    // });
+  }
+
+  Future _requestCloak() async {
+    if (_isRequesting) return;
+    _isRequesting = true;
+    try {
       var result = await CUtil.instance.checkCloak();
 
       //监听到网络变化重新请求一次
@@ -120,9 +143,17 @@ class MainPageController extends GetxController {
         //缓存
         var sp = await SharedPreferences.getInstance();
         await sp.setBool("isOpenUser", true);
+        bus.isBMode = true;
         Get.off(const UserMain());
+      } else {
+        await Future.delayed(const Duration(milliseconds: 1500));
+        _isRequesting = false;
+        _requestCloak();
       }
-    });
+    } catch (e) {
+      _isRequesting = false;
+      _requestCloak();
+    }
   }
 
   @override

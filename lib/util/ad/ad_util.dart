@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:anythink_sdk/at_index.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
 import 'package:music_muse/util/ad/topon_util.dart';
@@ -119,6 +117,8 @@ class AdUtils {
 
   var bannerNativeAdClicked = false.obs;
 
+  int oneAdLoadTimeOut = 12;
+
   //是否超过广告间隔
   Future<bool> canShow() async {
     if (lastShowTime == null) {
@@ -212,13 +212,16 @@ class AdUtils {
   var loadedAdMap = {};
 
   //load
-  loadAd(String key, {LoadCallback? onLoad}) {
+  loadAd(String key, {LoadCallback? onLoad}) async {
     if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告$key");
+      AppLog.i("没有对应广告:$key");
+      onLoad?.call("", false, null);
       return;
     }
     List configList = adJson[key] ?? [];
     if (configList.isEmpty) {
+      AppLog.i("对应广告没有内容:$key");
+      onLoad?.call("", false, null);
       return;
     }
     //按照优先级降序排序
@@ -229,7 +232,8 @@ class AdUtils {
       return bl.compareTo(al);
     });
 
-    AppLog.i("开始加载广告:$key");
+    AppLog.i("开始加载广告位:$key");
+    oneAdLoadTimeOut = adJson["sod_time_out"] ?? 12;
 
     //循环加载广告
     for (var item in configList) {
@@ -241,7 +245,7 @@ class AdUtils {
         //如果已经加载了并且没有超时就跳过
         int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
         //缓存过期时间
-        if (timeMs < DateTime.now().subtract(const Duration(minutes: 55)).millisecondsSinceEpoch) {
+        if (timeMs < DateTime.now().subtract(const Duration(minutes: 50)).millisecondsSinceEpoch) {
           //已过期,删除广告重新加载
           //销毁广告后删除
 
@@ -252,6 +256,7 @@ class AdUtils {
           }
           loadedAdMap.remove(ad_id);
         } else {
+          AppLog.i("广告开始加载(缓存存在)：$key， $source, $type, $ad_id");
           //未过期，加载下一条
           continue;
         }
@@ -262,10 +267,11 @@ class AdUtils {
       if (source == "admob") {
         //加载admob广告
         if (type == "open") {
-          AppOpenAd.load(
+         await AppOpenAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
             adLoadCallback: AppOpenAdLoadCallback(onAdLoaded: (ad) {
+              AppLog.i("广告加载成功（open）：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -276,17 +282,19 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
+              AppLog.e("广告加载失败（open）：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
             }),
-          );
-        } else if (type == "interstitial") {
-          InterstitialAd.load(
+          ).timeout(Duration(seconds: oneAdLoadTimeOut));
+        }
+        else if (type == "interstitial") {
+          await InterstitialAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
             adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
-              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+              AppLog.i("广告加载成功（插屏）：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -297,13 +305,14 @@ class AdUtils {
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
               };
             }, onAdFailedToLoad: (e) {
+              AppLog.e("广告加载失败（插屏）：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
             }),
-          );
+          ).timeout(Duration(seconds: oneAdLoadTimeOut));
         } else if (type == "rewarded") {
-          RewardedAd.load(
+          await RewardedAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
             rewardedAdLoadCallback: RewardedAdLoadCallback(
@@ -320,12 +329,13 @@ class AdUtils {
                 };
               },
               onAdFailedToLoad: (e) {
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id");
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
               },
             ),
-          );
+          ).timeout(Duration(seconds: oneAdLoadTimeOut));
         } else if (type == "native") {
           NativeAd nativeAd = NativeAd(
             adUnitId: ad_id,
@@ -346,13 +356,20 @@ class AdUtils {
               }
             }, onAdClicked: (ad) {
               bannerNativeAdClicked.refresh();
-              // showBlock?.onClick?.call();
+              AppLog.i("原生广告点击:${ad.adUnitId}");
+              if (Get.isRegistered<UserPlayInfoController>()) {
+                UserPlayInfoController playInfoController = Get.find<UserPlayInfoController>();
+                playInfoController.recoverPlay(isForce: false);
+              }
             }, onAdImpression: (ad) {
               adIsShowing = true;
               AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
               // showBlock?.onShowSuccess?.call();
+              if (Get.isRegistered<UserPlayInfoController>()) {
+                UserPlayInfoController playInfoController = Get.find<UserPlayInfoController>();
+                playInfoController.recoverPlay(isForce: true);
+              }
             }, onAdClosed: (ad) {
-              // showBlock?.onClose?.call();
               //关闭
               // adIsShowing = false;
               // //设置显示时间以判断广告间隔
@@ -378,9 +395,10 @@ class AdUtils {
             nativeTemplateStyle: null,
             // nativeTemplateStyle: NativeTemplateStyle(templateType: TemplateType.medium, cornerRadius: 8),
           );
-          nativeAd.load();
+          await nativeAd.load().timeout(Duration(seconds: oneAdLoadTimeOut));
         }
-      } else if (source == "max") {
+      }
+      else if (source == "max") {
         //加载max广告
         if (type == "open") {
           AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(
@@ -456,68 +474,69 @@ class AdUtils {
               onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {}));
           AppLovinMAX.loadRewardedAd(ad_id);
         }
-      } else if (source == "topon") {
-        if (type == "interstitial") {
-          TopOnUtils.instance.interstitialStream?.cancel();
-          TopOnUtils.instance.interstitialStream = null;
-
-          // AppLog.e("加载topon插屏");
-          TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
-            if (e.interstatus == InterstitialStatus.interstitialAdDidFinishLoading) {
-              //加载成功
-              // AppLog.e("topon插屏加载成功");
-              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
-
-              if (onLoad != null) {
-                onLoad(e.placementID, true, null);
-              }
-              AdUtils.instance.loadedAdMap[ad_id] = {
-                "data": item,
-                "admob_ad": null,
-                "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
-              };
-            } else if (e.interstatus == InterstitialStatus.interstitialAdFailToLoadAD) {
-              //加载失败
-              AppLog.e("topon插屏加载失败:${e.requestMessage}");
-              if (onLoad != null) {
-                onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
-              }
-            }
-          });
-          ATInterstitialManager.loadInterstitialAd(placementID: ad_id, extraMap: {});
-        } else if (type == "rewarded") {
-          TopOnUtils.instance.rewardedStream?.cancel();
-          TopOnUtils.instance.rewardedStream = null;
-
-          // AppLog.e("加载topon激励");
-          TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
-            if (e.rewardStatus == RewardedStatus.rewardedVideoDidFinishLoading) {
-              //加载成功
-              //加载成功
-              // AppLog.e("topon激励加载成功");
-              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
-
-              if (onLoad != null) {
-                onLoad(e.placementID, true, null);
-              }
-              AdUtils.instance.loadedAdMap[ad_id] = {
-                "data": item,
-                "admob_ad": null,
-                "timeMs": DateTime.now().millisecondsSinceEpoch,
-                "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
-              };
-            } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToLoad) {
-              //加载失败
-              AppLog.e("topon激励加载失败:${e.requestMessage}");
-              if (onLoad != null) {
-                onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
-              }
-            }
-          });
-          ATRewardedManager.loadRewardedVideo(placementID: ad_id, extraMap: {});
-        }
       }
+      // else if (source == "topon") {
+      //   if (type == "interstitial") {
+      //     TopOnUtils.instance.interstitialStream?.cancel();
+      //     TopOnUtils.instance.interstitialStream = null;
+      //
+      //     // AppLog.e("加载topon插屏");
+      //     TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
+      //       if (e.interstatus == InterstitialStatus.interstitialAdDidFinishLoading) {
+      //         //加载成功
+      //         // AppLog.e("topon插屏加载成功");
+      //         AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+      //
+      //         if (onLoad != null) {
+      //           onLoad(e.placementID, true, null);
+      //         }
+      //         AdUtils.instance.loadedAdMap[ad_id] = {
+      //           "data": item,
+      //           "admob_ad": null,
+      //           "timeMs": DateTime.now().millisecondsSinceEpoch,
+      //           "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+      //         };
+      //       } else if (e.interstatus == InterstitialStatus.interstitialAdFailToLoadAD) {
+      //         //加载失败
+      //         AppLog.e("topon插屏加载失败:${e.requestMessage}");
+      //         if (onLoad != null) {
+      //           onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
+      //         }
+      //       }
+      //     });
+      //     ATInterstitialManager.loadInterstitialAd(placementID: ad_id, extraMap: {});
+      //   } else if (type == "rewarded") {
+      //     TopOnUtils.instance.rewardedStream?.cancel();
+      //     TopOnUtils.instance.rewardedStream = null;
+      //
+      //     // AppLog.e("加载topon激励");
+      //     TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
+      //       if (e.rewardStatus == RewardedStatus.rewardedVideoDidFinishLoading) {
+      //         //加载成功
+      //         //加载成功
+      //         // AppLog.e("topon激励加载成功");
+      //         AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+      //
+      //         if (onLoad != null) {
+      //           onLoad(e.placementID, true, null);
+      //         }
+      //         AdUtils.instance.loadedAdMap[ad_id] = {
+      //           "data": item,
+      //           "admob_ad": null,
+      //           "timeMs": DateTime.now().millisecondsSinceEpoch,
+      //           "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2
+      //         };
+      //       } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToLoad) {
+      //         //加载失败
+      //         AppLog.e("topon激励加载失败:${e.requestMessage}");
+      //         if (onLoad != null) {
+      //           onLoad(e.placementID, false, AdError(-101, "", e.requestMessage));
+      //         }
+      //       }
+      //     });
+      //     ATRewardedManager.loadRewardedVideo(placementID: ad_id, extraMap: {});
+      //   }
+      // }
     }
   }
 
@@ -575,6 +594,8 @@ class AdUtils {
     }
 
     AppLog.i("准备展示广告, $key");
+
+    EventUtils.instance.addEvent("ad_chance");
 
     if (key != "level_h") {
       bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
@@ -675,8 +696,7 @@ class AdUtils {
           openAd?.show();
           isShowAd = true;
           break;
-        }
-        else if (type == "interstitial") {
+        } else if (type == "interstitial") {
           InterstitialAd? interstitialAd = loadedItem["admob_ad"];
           //设置显示事件
           interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
@@ -727,10 +747,13 @@ class AdUtils {
           interstitialAd?.show();
           isShowAd = true;
           break;
-        }
-        else if (type == "rewarded") {
+        } else if (type == "rewarded") {
           RewardedAd? rewardedAd = loadedItem["admob_ad"];
           //设置显示事件
+          UserPlayInfoController? playInfoController;
+          if (Get.isRegistered<UserPlayInfoController>()) {
+            playInfoController = Get.find<UserPlayInfoController>();
+          }
           rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(onAdClicked: (ad) {
             if (onShow != null) {
               onShow.onClick!(ad.adUnitId);
@@ -744,6 +767,7 @@ class AdUtils {
               onShow.onShowFail!(ad.adUnitId, e);
             }
           }, onAdDismissedFullScreenContent: (ad) {
+            playInfoController?.recoverPlay(isForce: false);
             adIsShowing = false;
             //广告关闭
             //删除缓存
@@ -758,6 +782,7 @@ class AdUtils {
               onShow.onClose!(ad.adUnitId);
             }
           }, onAdShowedFullScreenContent: (ad) {
+            playInfoController?.recoverPlay(isForce: true);
             adIsShowing = true;
             if (onShow != null) {
               onShow.onShow!(ad.adUnitId);
@@ -778,6 +803,7 @@ class AdUtils {
           };
           rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
             //用户看完激励广告
+            playInfoController?.recoverPlay(isForce: false);
           });
           isShowAd = true;
           break;
@@ -795,6 +821,10 @@ class AdUtils {
                   loadAd(key);
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
+                  }
+                  if (Get.isRegistered<UserPlayInfoController>()) {
+                    UserPlayInfoController playInfoController = Get.find<UserPlayInfoController>();
+                    playInfoController.recoverPlay(isForce: false);
                   }
                 },
               ),
@@ -976,113 +1006,114 @@ class AdUtils {
             break;
           }
         }
-      } else if (source == "topon") {
-        //增加topon
-
-        if (type == "interstitial") {
-          var isReady = await ATInterstitialManager.hasInterstitialAdReady(placementID: ad_id);
-          if (isReady) {
-            TopOnUtils.instance.interstitialStream?.cancel();
-            TopOnUtils.instance.interstitialStream = null;
-
-            TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
-              if (e.interstatus == InterstitialStatus.interstitialFailedToShow) {
-                //展示失败
-                if (onShow != null) {
-                  onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
-                }
-              } else if (e.interstatus == InterstitialStatus.interstitialDidShowSucceed) {
-                //展示
-                adIsShowing = true;
-                if (onShow != null) {
-                  onShow.onShow!(e.placementID);
-                }
-
-                var revenueData = e.extraMap;
-                // 收益上报
-                TbaUtils.instance.postAd(
-                    ad_network: revenueData["network_name"] ?? "",
-                    ad_pos_id: key,
-                    ad_source: "topon",
-                    ad_unit_id: revenueData["adunit_id"] ?? "",
-                    ad_format: "interstitial",
-                    ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
-                    currency: revenueData["currency"] ?? "USD",
-                    precision_type: revenueData["precision"] ?? "");
-              } else if (e.interstatus == InterstitialStatus.interstitialAdDidClose) {
-                //关闭
-                adIsShowing = false;
-                //设置显示时间以判断广告间隔
-                setShowTime();
-                //重新加载一轮广告
-                loadAd(key);
-                if (onShow != null) {
-                  onShow.onClose!(e.placementID);
-                }
-
-                if (onShow != null) {
-                  onShow.onShow!(e.placementID);
-                }
-              }
-            });
-            ATInterstitialManager.showInterstitialAd(placementID: ad_id);
-            loadedAdMap.remove(ad_id);
-            isShowAd = true;
-            break;
-          }
-        } else if (type == "rewarded") {
-          var isReady = await ATRewardedManager.rewardedVideoReady(placementID: ad_id);
-          if (isReady) {
-            TopOnUtils.instance.rewardedStream?.cancel();
-            TopOnUtils.instance.rewardedStream = null;
-
-            TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
-              if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToPlay) {
-                //展示失败
-                if (onShow != null) {
-                  onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
-                }
-              } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidStartPlaying) {
-                //展示
-                adIsShowing = true;
-                if (onShow != null) {
-                  onShow.onShow!(e.placementID);
-                }
-
-                var revenueData = e.extraMap;
-                // 收益上报
-                TbaUtils.instance.postAd(
-                    ad_network: revenueData["network_name"] ?? "",
-                    ad_pos_id: key,
-                    ad_source: "topon",
-                    ad_unit_id: revenueData["adunit_id"] ?? "",
-                    ad_format: "rewarded",
-                    ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
-                    currency: revenueData["currency"] ?? "USD",
-                    precision_type: revenueData["precision"] ?? "");
-              } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidClose) {
-                //关闭
-                adIsShowing = false;
-                //设置显示时间以判断广告间隔
-                setShowTime();
-                //重新加载一轮广告
-                loadAd(key);
-                if (onShow != null) {
-                  onShow.onClose!(e.placementID);
-                }
-
-                if (onShow != null) {
-                  onShow.onShow!(e.placementID);
-                }
-              }
-            });
-            ATRewardedManager.showRewardedVideo(placementID: ad_id);
-            loadedAdMap.remove(ad_id);
-            isShowAd = true;
-            break;
-          }
-        }
       }
+      // else if (source == "topon") {
+      //   //增加topon
+      //
+      //   if (type == "interstitial") {
+      //     var isReady = await ATInterstitialManager.hasInterstitialAdReady(placementID: ad_id);
+      //     if (isReady) {
+      //       TopOnUtils.instance.interstitialStream?.cancel();
+      //       TopOnUtils.instance.interstitialStream = null;
+      //
+      //       TopOnUtils.instance.interstitialStream = ATListenerManager.interstitialEventHandler.listen((e) {
+      //         if (e.interstatus == InterstitialStatus.interstitialFailedToShow) {
+      //           //展示失败
+      //           if (onShow != null) {
+      //             onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
+      //           }
+      //         } else if (e.interstatus == InterstitialStatus.interstitialDidShowSucceed) {
+      //           //展示
+      //           adIsShowing = true;
+      //           if (onShow != null) {
+      //             onShow.onShow!(e.placementID);
+      //           }
+      //
+      //           var revenueData = e.extraMap;
+      //           // 收益上报
+      //           TbaUtils.instance.postAd(
+      //               ad_network: revenueData["network_name"] ?? "",
+      //               ad_pos_id: key,
+      //               ad_source: "topon",
+      //               ad_unit_id: revenueData["adunit_id"] ?? "",
+      //               ad_format: "interstitial",
+      //               ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
+      //               currency: revenueData["currency"] ?? "USD",
+      //               precision_type: revenueData["precision"] ?? "");
+      //         } else if (e.interstatus == InterstitialStatus.interstitialAdDidClose) {
+      //           //关闭
+      //           adIsShowing = false;
+      //           //设置显示时间以判断广告间隔
+      //           setShowTime();
+      //           //重新加载一轮广告
+      //           loadAd(key);
+      //           if (onShow != null) {
+      //             onShow.onClose!(e.placementID);
+      //           }
+      //
+      //           if (onShow != null) {
+      //             onShow.onShow!(e.placementID);
+      //           }
+      //         }
+      //       });
+      //       ATInterstitialManager.showInterstitialAd(placementID: ad_id);
+      //       loadedAdMap.remove(ad_id);
+      //       isShowAd = true;
+      //       break;
+      //     }
+      //   } else if (type == "rewarded") {
+      //     var isReady = await ATRewardedManager.rewardedVideoReady(placementID: ad_id);
+      //     if (isReady) {
+      //       TopOnUtils.instance.rewardedStream?.cancel();
+      //       TopOnUtils.instance.rewardedStream = null;
+      //
+      //       TopOnUtils.instance.rewardedStream = ATListenerManager.rewardedVideoEventHandler.listen((e) {
+      //         if (e.rewardStatus == RewardedStatus.rewardedVideoDidFailToPlay) {
+      //           //展示失败
+      //           if (onShow != null) {
+      //             onShow.onShowFail!(e.placementID, AdError(-102, "", e.requestMessage));
+      //           }
+      //         } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidStartPlaying) {
+      //           //展示
+      //           adIsShowing = true;
+      //           if (onShow != null) {
+      //             onShow.onShow!(e.placementID);
+      //           }
+      //
+      //           var revenueData = e.extraMap;
+      //           // 收益上报
+      //           TbaUtils.instance.postAd(
+      //               ad_network: revenueData["network_name"] ?? "",
+      //               ad_pos_id: key,
+      //               ad_source: "topon",
+      //               ad_unit_id: revenueData["adunit_id"] ?? "",
+      //               ad_format: "rewarded",
+      //               ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
+      //               currency: revenueData["currency"] ?? "USD",
+      //               precision_type: revenueData["precision"] ?? "");
+      //         } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidClose) {
+      //           //关闭
+      //           adIsShowing = false;
+      //           //设置显示时间以判断广告间隔
+      //           setShowTime();
+      //           //重新加载一轮广告
+      //           loadAd(key);
+      //           if (onShow != null) {
+      //             onShow.onClose!(e.placementID);
+      //           }
+      //
+      //           if (onShow != null) {
+      //             onShow.onShow!(e.placementID);
+      //           }
+      //         }
+      //       });
+      //       ATRewardedManager.showRewardedVideo(placementID: ad_id);
+      //       loadedAdMap.remove(ad_id);
+      //       isShowAd = true;
+      //       break;
+      //     }
+      //   }
+      // }
     }
 
     //没有显示广告
@@ -1184,19 +1215,20 @@ class MyNativeAdViewController extends GetxController {
             loadType = 2;
           }
         }
-      } else if (source == "topon") {
-        if (type == "native") {
-          var isLoadOk = await TopOnUtils.instance.loadNativeAd(ad_id, positionKey, adView);
-          if (isLoadOk) {
-            loadType = 3;
-          }
-        } else if (type == "banner") {
-          var isLoadOk = await TopOnUtils.instance.loadBannerAd(ad_id, positionKey, adView);
-          if (isLoadOk) {
-            loadType = 3;
-          }
-        }
       }
+      // else if (source == "topon") {
+      //   if (type == "native") {
+      //     var isLoadOk = await TopOnUtils.instance.loadNativeAd(ad_id, positionKey, adView);
+      //     if (isLoadOk) {
+      //       loadType = 3;
+      //     }
+      //   } else if (type == "banner") {
+      //     var isLoadOk = await TopOnUtils.instance.loadBannerAd(ad_id, positionKey, adView);
+      //     if (isLoadOk) {
+      //       loadType = 3;
+      //     }
+      //   }
+      // }
 
       AppLog.e("结束加载原生广告:${isOk ? "成功" : "失败"}---$type,$source");
       if (isOk) {

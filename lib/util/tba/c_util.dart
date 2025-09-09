@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:get/get.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../api/base_api.dart';
@@ -23,7 +24,7 @@ class CUtil extends BaseApi {
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;
-    var netResult = await Connectivity().checkConnectivity();
+    // var netResult = await Connectivity().checkConnectivity();
 
     if (GetPlatform.isAndroid) {
       return BaseModel(code: -1);
@@ -31,7 +32,7 @@ class CUtil extends BaseApi {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
 
       var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-      return httpRequest("/elope/callus", method: HttpMethod.get, body: {
+      BaseModel model = await httpRequest("/elope/callus", method: HttpMethod.get, body: {
         //distinct_id
         "teapot": userAppUuid,
         //client_ts
@@ -39,7 +40,7 @@ class CUtil extends BaseApi {
         //device_model
         "bunch": iosInfo.model,
         //bundle_id
-        "environ": packageInfo.packageName,
+        "environ": MuseConfig.isUser ? packageInfo.packageName : "player.musemusic.offlisten",
         //os_version
         "exorcise": iosInfo.systemVersion,
         //idfv
@@ -55,6 +56,8 @@ class CUtil extends BaseApi {
         //app_version
         "brent": packageInfo.version,
       });
+      AppLog.i("cloak请求结果：${model.data}(excerpt)");
+      return model;
     }
   }
 }

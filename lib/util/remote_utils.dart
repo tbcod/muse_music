@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/const/data_config.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/util/log.dart';
@@ -11,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'native_util.dart';
 
-const String mmAdJson = "mmAdJson";
+const String mmAdJsonKey = "mmAdJson";
 const String mmFullClickbait = "mmFullClickbait";
 
 const String museSongRecommonedKey = "museSongRecommonedKeys";
@@ -32,7 +33,13 @@ class RemoteUtil {
   init() async {
     isp = await SharedPreferences.getInstance();
 
-    _adJson = MuseConfig.adJsonIos;
+    final jsonString = museSp.getString(mmAdJsonKey) ?? "";
+    if(jsonString.isNotEmpty){
+      Map oldMap = jsonDecode(jsonString);
+      _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
+    }else{
+      _adJson = MuseConfig.adJsonIos;
+    }
 
     _bannerClickbait = isp.getString(mmFullClickbait) ?? "";
 
@@ -79,6 +86,7 @@ class RemoteUtil {
       AppLog.i(jsonString);
 
       if (jsonString.isNotEmpty) {
+        museSp.setString(mmAdJsonKey, jsonString);
         Map oldMap = jsonDecode(jsonString);
         //map key转为小写
         _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
@@ -100,6 +108,7 @@ class RemoteUtil {
 
   Map<String, dynamic> get adJson {
     if (kDebugMode) return MuseConfig.adJsonIos;
+    if(bus.isFirstAppLaunch) return MuseConfig.adJsonIos;
     return _adJson;
   }
 
