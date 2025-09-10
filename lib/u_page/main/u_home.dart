@@ -163,7 +163,7 @@ class UserHome extends GetView<UserHomeController> {
                 Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
                 ElevatedButton(
                     onPressed: () {
-                      controller.bindYoutubeMusicData(source: "click_bottomtab");
+                      controller.bindYoutubeMusicData(source: "reload");
                     },
                     child: Text("Reload".tr)),
               ],
@@ -464,7 +464,7 @@ class UserHome extends GetView<UserHomeController> {
                                                 //下载中\下载暂停
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId, state: state);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -486,7 +486,7 @@ class UserHome extends GetView<UserHomeController> {
                                               } else if (state == 2) {
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId,state: state);
                                                   },
                                                   child: Container(
                                                     height: 50.w,

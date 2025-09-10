@@ -15,6 +15,7 @@ import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/u_page/main/u_setting.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
+import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/download/download_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/log.dart';
@@ -60,6 +61,12 @@ class UserMain extends GetView<UserMainController> {
             backgroundColor: Colors.white,
             onTap: (index) {
               IdfaUtil.instance.showIdfaDialog();
+              if(controller.nowIndex.value == index){
+                return;
+              }
+              if (controller.nowIndex.value == 1 && index == 0) {
+                Get.find<UserHomeController>().bindYoutubeMusicData(source: "click_bottomtab");
+              }
               controller.nowIndex.value = index;
               controller.pageC.jumpToPage(index);
 
@@ -136,10 +143,11 @@ class UserMainController extends GetxController {
   void onInit() {
     super.onInit();
     bus.isBMode = true;
-    IdfaUtil.instance.showIdfaDialog();
-    Future.delayed(Duration(seconds: 10)).then((e) {
-      IdfaUtil.instance.showIdfaDialog();
-    });
+
+    // IdfaUtil.instance.showIdfaDialog();
+    // Future.delayed(Duration(seconds: 10)).then((e) {
+    //   IdfaUtil.instance.showIdfaDialog();
+    // });
 
     Get.put(UserPlayInfoController());
 
@@ -230,6 +238,11 @@ class UserMainController extends GetxController {
     //         msg: "non-WiFi environment, pay attention to data consumption");
     //   }
     // });
+  }
+
+  @override
+  Future<void> onReady() async {
+    await ConsentRequest.instance.startRequest();
   }
 
   initData() async {

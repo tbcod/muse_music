@@ -31,8 +31,9 @@ class TbaUtils {
   Future<BaseModel> postInstall() async {
     if (GetPlatform.isIOS) {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
-      var idfaStatus =
-          await AppTrackingTransparency.requestTrackingAuthorization();
+      final idfaStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
+      // var idfaStatus =
+      //     await AppTrackingTransparency.requestTrackingAuthorization();
       var userAgent = "";
       try {
         var result =

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/page/main/home/play.dart';
+import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
@@ -58,6 +60,15 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
       _curSec.value = -1;
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (Get.isRegistered<UserPlayInfoController>()) {
+        Get.find<UserPlayInfoController>().hideFloatingWidget();
+      }
+      if (Get.isRegistered<PlayPageController>()) {
+        Get.find<PlayPageController>().hideFloatingWidget();
+      }
+    });
     super.initState();
   }
 
@@ -102,6 +113,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                       child: AdWidget(ad: widget.ad, key: UniqueKey()),
                     );
                   } catch (e) {
+                    AppLog.e("报错了：${e.toString()}");
                     _closeType.value = CloseType.normal;
                     return const SizedBox.shrink();
                   }
@@ -151,6 +163,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                           )
                         : GestureDetector(
                             onTap: () {
+                              AppLog.i("关闭点击");
                               Get.back();
                             },
                             behavior: HitTestBehavior.opaque,
@@ -172,6 +185,17 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
 
   @override
   Future<void> dispose() async {
+    final previous = Get.routing.previous;
+    if(!previous.contains("BOTTOMSHEET")){
+      Future.delayed(const Duration(seconds: 1)).then((v){
+        if (Get.isRegistered<UserPlayInfoController>()) {
+          Get.find<UserPlayInfoController>().showFloatingWidget();
+        }
+        if (Get.isRegistered<PlayPageController>()) {
+          Get.find<PlayPageController>().showFloatingWidget();
+        }
+      });
+    }
     widget.onClose.call();
     _streamSubscription?.cancel();
     _streamSubscription = null;

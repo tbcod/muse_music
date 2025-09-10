@@ -441,7 +441,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               //下载中\下载暂停
                               return InkWell(
                                 onTap: () {
-                                  controller.removeDownload();
+                                  controller.removeDownload(state);
                                 },
                                 child: Container(
                                     width: 32.w,
@@ -457,7 +457,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             } else if (state == 2) {
                               return InkWell(
                                 onTap: () {
-                                  controller.removeDownload();
+                                  controller.removeDownload(state);
                                 },
                                 child: Image.asset(
                                   "assets/oimg/icon_download_ok.png",
@@ -593,7 +593,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                             var sp = await SharedPreferences.getInstance();
                                             await sp.setBool("IsShowDownloadGuide", true);
                                             controller.isShowDownloadGuide.value = false;
-                                            controller.removeDownload();
+                                            controller.removeDownload(state);
                                           },
                                           child: Container(
                                               width: 32.w,
@@ -612,7 +612,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                             var sp = await SharedPreferences.getInstance();
                                             await sp.setBool("IsShowDownloadGuide", true);
                                             controller.isShowDownloadGuide.value = false;
-                                            controller.removeDownload();
+                                            controller.removeDownload(state);
                                           },
                                           child: Image.asset(
                                             "assets/oimg/icon_download_ok.png",
@@ -2175,8 +2175,8 @@ class UserPlayInfoController extends GetxController {
     DownloadUtils.instance.download(nowData["videoId"], nowData, clickType: "play");
   }
 
-  removeDownload() async {
-    DownloadUtils.instance.remove(nowData["videoId"]);
+  removeDownload(int state) async {
+    DownloadUtils.instance.remove(nowData["videoId"], state: state);
   }
 
   //添加到下一个播放

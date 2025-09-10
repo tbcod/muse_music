@@ -34,13 +34,12 @@ class MuseSP {
 
   late SharedPreferences _museSp;
 
-
   init() async {
     _museSp = await SharedPreferences.getInstance();
   }
 
-  Future<bool> setInt(String key, int value) async {
-    return await _museSp.setInt(key, value);
+  Future  setInt(String key, int value) async {
+      await _museSp.setInt(key, value);
   }
 
   int getInt(String key) {
@@ -48,8 +47,16 @@ class MuseSP {
     return value ?? 0;
   }
 
-  Future<bool> setString(String key, String value) async {
-    return await _museSp.setString(key, value);
+  Future setBool(String key, bool value) async {
+    await _museSp.setBool(key, value);
+  }
+
+  bool getBool(String key) {
+    return _museSp.getBool(key) ?? false;
+  }
+
+  Future  setString(String key, String value) async {
+    await _museSp.setString(key, value);
   }
 
   String? getString(String key) {

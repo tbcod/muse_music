@@ -120,7 +120,7 @@ class DownloadUtils {
   var hasNewDownload = false.obs;
 
   //添加下载
-  download(String videoId, Map infoData, {required String clickType, bool showAd = true}) async {
+  download(String videoId, Map infoData, {required String clickType, bool showAd = true, bool isRetry = false}) async {
     if (infoData.isEmpty) {
       return;
     }
@@ -151,14 +151,14 @@ class DownloadUtils {
       //download
       //artist_more_song
       //artist
-
     }
     EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
+    ToastUtil.showToast(msg: "addedDownloadQueue".tr);
 
     if (showAd) {
       AdUtils.instance.showAd("behavior", adScene: AdScene.download);
       //好评引导
-      Future.delayed(Duration(milliseconds: 500)).then((_) {
+      Future.delayed(const Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();
       });
@@ -199,6 +199,7 @@ class DownloadUtils {
           HistoryUtil.instance.addHistorySong(infoData);
 
           EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
+          ToastUtil.showToast(msg: "downloadCompleted".tr);
           return;
         }
       }
@@ -229,7 +230,7 @@ class DownloadUtils {
 
     var url = allDownLoadingData[videoId]["url"] ?? "";
     var fileName = "${Uuid().v8()}.mp4";
-    AppLog.e("下载链接$url");
+    AppLog.i("下载链接$url");
 
     allDownLoadingData[videoId]["state"] = 1;
     allDownLoadingData.refresh();
@@ -239,7 +240,7 @@ class DownloadUtils {
 
     var filePath = "${dic.path}/$fileName";
 
-    AppLog.e("开始下载");
+    AppLog.i("开始下载");
 
     var downloadedLength = 0;
     if (File(filePath).existsSync()) {
@@ -268,6 +269,7 @@ class DownloadUtils {
             allDownLoadingData.refresh();
             saveVideoInfo();
 
+            ToastUtil.showToast(msg: "downloadCompleted".tr);
             EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
             hasNewDownload.value = true;
             saveNewState();
@@ -282,8 +284,29 @@ class DownloadUtils {
         // options: Options(headers: {"Range": "bytes=$downloadedLength-"})
       );
     } on DioException catch (e) {
-      AppLog.e("下载失败Dio：${e.toString()}");
-      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "1.${e.toString()}"});
+      if (isRetry) {
+        AppLog.e("下载失败Dio：${e.toString()}");
+        ToastUtil.showToast(msg: "downloadFailed".tr);
+        EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
+      } else {
+        AppLog.e("下载失败：${e.toString()}，开始重试");
+        //删除下载文件
+        // try {
+        //   var fileName = allDownLoadingData[videoId]?["path"] ?? "";
+        //   var dic = await getApplicationDocumentsDirectory();
+        //   var path = "${dic.path}/$fileName";
+        //   if (await File(path).exists()) {
+        //     await File(path).delete();
+        //   }
+        // } catch (e) {
+        //   print(e);
+        // }
+        // allDownLoadingData.remove(videoId);
+        // allDownLoadingData.refresh();
+        // await saveVideoInfo();
+        EventUtils.instance.addEvent("download_exc", data: {"song_id": videoId, "reason": "Http Exception, Retry!", "message": "1.${e.toString()}"});
+        return download(videoId, infoData, clickType: clickType, isRetry: true);
+      }
     } catch (e) {
       AppLog.e("下载失败：${e.toString()}");
       //下载失败
@@ -291,7 +314,8 @@ class DownloadUtils {
       // allDownLoadingData.refresh();
       // //存本地
       // saveVideoInfo();
-      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "2.network error"});
+      ToastUtil.showToast(msg: "downloadFailed".tr);
+      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "network error", "message": "2.${e.toString()}"});
     }
 
     // ALDownloader.download(url,
@@ -345,7 +369,7 @@ class DownloadUtils {
   }
 
   //删除、取消下载
-  Future remove(String videoId) async {
+  Future remove(String videoId, {required int state}) async {
     // var url = allDownLoadingData[videoId]?["url"] ?? "";
     // ALDownloader.remove(url);
 
@@ -375,6 +399,9 @@ class DownloadUtils {
         await saveVideoInfo();
 
         ToastUtil.showToast(msg: "Delete ok".tr);
+        if (state == 1) {
+          EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "User Cancel!"});
+        }
       },
     ));
   }

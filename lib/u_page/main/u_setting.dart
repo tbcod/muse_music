@@ -9,6 +9,7 @@ import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/const/env.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/u_main.dart';
+import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
@@ -43,10 +44,7 @@ class UserSetting extends GetView<UserSettingController> {
         }
       },
       child: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/oimg/all_page_bg.png"),
-                fit: BoxFit.fill)),
+        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -104,8 +102,7 @@ class UserSetting extends GetView<UserSettingController> {
             isRightText
                 ? Obx(() => Text(
                       rightText.value,
-                      style: TextStyle(
-                          fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
                     ))
                 : Image.asset(
                     "assets/img/icon_right.png",
@@ -123,6 +120,18 @@ class UserSetting extends GetView<UserSettingController> {
           Get.to(OnlyWeb(), arguments: 2);
         } else if (itemTitle == "Terms of Service".tr) {
           Get.to(OnlyWeb(), arguments: 1);
+        } else if (itemTitle == "pops".tr) {
+          Get.dialog(BaseDialog(
+            title: "pops".tr,
+            content: "popDetail".tr,
+            rBtnText: "reset".tr,
+            lBtnText: "Cancel".tr,
+            rBtnOnTap: () async {
+              ConsentRequest.instance.reset();
+              Get.back();
+              ToastUtil.showToast(msg: "success".tr);
+            },
+          ));
         } else if (itemTitle == "Language".tr) {
           //不显示播放控件
           Get.find<UserPlayInfoController>().hideFloatingWidget();
@@ -154,17 +163,13 @@ class UserSetting extends GetView<UserSettingController> {
 
                             AppLog.e(nowIndex);
 
-                            var nowLocale =
-                                listLocale[nowIndex] ?? Locale("en", "US");
+                            var nowLocale = listLocale[nowIndex] ?? Locale("en", "US");
                             MyTranslations.locale = nowLocale;
                             await Get.updateLocale(nowLocale);
-                            controller.langStr.value =
-                                listLocale[nowIndex].toString();
+                            controller.langStr.value = listLocale[nowIndex].toString();
                             var sp = await SharedPreferences.getInstance();
-                            sp.setString(
-                                "lastLangCode", nowLocale.languageCode);
-                            sp.setString("lastLangCountryCode",
-                                nowLocale.countryCode ?? "");
+                            sp.setString("lastLangCode", nowLocale.languageCode);
+                            sp.setString("lastLangCountryCode", nowLocale.countryCode ?? "");
 
                             Get.find<UserMainController>().reloadData();
 
@@ -250,8 +255,7 @@ class UserSetting extends GetView<UserSettingController> {
             rBtnText: "Clear".tr,
             rBtnOnTap: () async {
               await CacheUtils.instance.clearCache();
-              controller.cacheNum.value =
-                  await CacheUtils.instance.loadCacheSize();
+              controller.cacheNum.value = await CacheUtils.instance.loadCacheSize();
             },
           ));
 
@@ -281,6 +285,7 @@ class UserSettingController extends GetxController {
     "Privacy Policy".tr,
     "Terms of Service".tr,
     "Feedback".tr,
+    "pops".tr,
     "Cache clean".tr,
     "Version".tr,
     // "Language".tr

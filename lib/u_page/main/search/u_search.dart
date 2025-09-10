@@ -1436,7 +1436,7 @@ class UserSearchController extends GetxController with StateMixin {
     Get.focusScope?.unfocus();
 
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     EventUtils.instance.addEvent("search_content", data: {"content": str});
 

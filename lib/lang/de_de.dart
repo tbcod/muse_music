@@ -101,5 +101,12 @@ const Map<String, String> deDE = {
   "loadMoreFailStr": "Keine Netzwerkverbindung, bitte versuchen Sie es erneut.",
   "noMoreStr": "Kein weiterer Inhalt.",
   "noNetPlayStr":
-      "Keine Netzwerkverbindung, überprüfen Sie den Status Ihres Netzwerks"
+      "Keine Netzwerkverbindung, überprüfen Sie den Status Ihres Netzwerks",
+  "addedDownloadQueue": "Zur Download-Warteschlange hinzugefügt",
+  "downloadCompleted": "Download abgeschlossen",
+  "downloadFailed": "Download fehlgeschlagen",
+  "pops": "Datenschutzoptionen",
+  "popDetail": "Möchten Sie Ihre Datenschutzeinstellungen zurücksetzen?",
+  "success": "Erfolg!",
+  "reset": "Zurücksetzen"
 };

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:music_muse/page/main/home.dart';
 import 'package:music_muse/page/main/home/play.dart';
 import 'package:music_muse/page/main/setting.dart';
 import 'package:music_muse/u_page/u_main.dart';
+import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -114,20 +116,36 @@ class MainPageController extends GetxController {
     _requestCloak();
 
     //设置网络监听，成功后打开B面
-    // subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
-    //   var result = await CUtil.instance.checkCloak();
-    //
-    //   //监听到网络变化重新请求一次
-    //   var okStr = GetPlatform.isIOS ? "excerpt" : "";
-    //
-    //   if (result.data == okStr) {
-    //     //缓存
-    //     var sp = await SharedPreferences.getInstance();
-    //     await sp.setBool("isOpenUser", true);
-    //     bus.isBMode = true;
-    //     Get.off(const UserMain());
-    //   }
-    // });
+    subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
+      var result = await CUtil.instance.checkCloak();
+
+      //监听到网络变化重新请求一次
+      var okStr = GetPlatform.isIOS ? "excerpt" : "";
+
+      if (result.data == okStr) {
+        //缓存
+        var sp = await SharedPreferences.getInstance();
+        await sp.setBool("isOpenUser", true);
+        bus.isBMode = true;
+        Get.off(const UserMain());
+      }
+    });
+  }
+
+  @override
+  Future<void> onReady() async {
+    await ConsentRequest.instance.startRequest();
+    _requestIDFA();
+  }
+
+  _requestIDFA() async {
+    await IdfaUtil.instance.showIdfaDialog();
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status != TrackingStatus.denied && status != TrackingStatus.authorized) {
+      Future.delayed(const Duration(seconds: 5)).then((e) {
+        _requestIDFA();
+      });
+    }
   }
 
   Future _requestCloak() async {
@@ -146,7 +164,7 @@ class MainPageController extends GetxController {
         bus.isBMode = true;
         Get.off(const UserMain());
       } else {
-        await Future.delayed(const Duration(milliseconds: 1500));
+        await Future.delayed(const Duration(milliseconds: 500));
         _isRequesting = false;
         _requestCloak();
       }

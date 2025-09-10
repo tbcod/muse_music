@@ -463,6 +463,7 @@ class AdUtils {
                 };
               },
               onAdLoadFailedCallback: (adId, e) {
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, ${e.toString()}");
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
@@ -595,7 +596,6 @@ class AdUtils {
 
     AppLog.i("准备展示广告, $key");
 
-    EventUtils.instance.addEvent("ad_chance");
 
     if (key != "level_h") {
       bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
@@ -605,8 +605,9 @@ class AdUtils {
       }
     }
 
+
     if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告");
+      AppLog.e("没有对应广告:$key, 不展示");
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "show key error"));
       }
@@ -616,8 +617,12 @@ class AdUtils {
     //显示广告逻辑
     List configList = adJson[key] ?? [];
     if (configList.isEmpty) {
+      AppLog.e("对应广告位没配置:$key, 不展示");
       return false;
     }
+
+
+
     //按照优先级降序排序
     configList.sort((a, b) {
       int al = a["adweight"];
@@ -629,6 +634,8 @@ class AdUtils {
     //循环判断广告是否加载
 
     AppLog.i("开始显示广告:$key");
+
+    EventUtils.instance.addEvent("ad_chance");
 
     var isShowAd = false;
     for (var item in configList) {
@@ -766,6 +773,7 @@ class AdUtils {
             if (onShow != null) {
               onShow.onShowFail!(ad.adUnitId, e);
             }
+            AppLog.e("广告加载失败:$key, $source,  $type, ${ad.adUnitId}, ${e.toString()} ");
           }, onAdDismissedFullScreenContent: (ad) {
             playInfoController?.recoverPlay(isForce: false);
             adIsShowing = false;
@@ -849,6 +857,7 @@ class AdUtils {
             AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(onAdLoadedCallback: (ad) {
               //已经加载成功，无需回调此方法
             }, onAdLoadFailedCallback: (adId, e) {
+              AppLog.e("广告加载失败:$key, $source,  $type, $adId, ${e.toString()} ");
               //已经加载成功，无需回调此方法
             }, onAdDisplayedCallback: (ad) {
               adIsShowing = true;
@@ -903,6 +912,7 @@ class AdUtils {
             AppLovinMAX.setInterstitialListener(InterstitialListener(onAdLoadedCallback: (ad) {
               //已经加载成功，无需回调此方法
             }, onAdLoadFailedCallback: (adId, e) {
+              AppLog.e("广告加载失败:$key, $source,  $type, $adId, ${e.toString()} ");
               //已经加载成功，无需回调此方法
             }, onAdDisplayedCallback: (ad) {
               adIsShowing = true;
@@ -964,6 +974,7 @@ class AdUtils {
                 onShow.onShow!(ad.adUnitId);
               }
             }, onAdDisplayFailedCallback: (ad, e) {
+              AppLog.e("广告加载失败:$key, $source,  $type, ${ad.adUnitId}, ${e.toString()} ");
               loadedAdMap.remove(ad.adUnitId);
               if (onShow != null) {
                 onShow.onShowFail!(ad.adUnitId, AdError(e.code.value, e.waterfall.toString(), e.message));

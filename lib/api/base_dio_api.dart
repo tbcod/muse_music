@@ -18,8 +18,8 @@ class BaseApi {
         return status != null && status < 500; // 接受 4xx，抛出 5xx
       },
     ));
-    dio?.options.connectTimeout = const Duration(seconds: 20);
-    dio?.options.receiveTimeout = const Duration(seconds: 20);
+    dio?.options.connectTimeout = const Duration(seconds: 12);
+    dio?.options.receiveTimeout = const Duration(seconds: 12);
     dio?.options.baseUrl = baseHost;
 
     //模拟器测试时候添加
