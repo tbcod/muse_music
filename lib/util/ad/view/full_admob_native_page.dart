@@ -97,7 +97,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
         body: Container(
           padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
           decoration: const BoxDecoration(
-              gradient: LinearGradient(end: Alignment.bottomCenter, begin: Alignment.topCenter, colors: [Color(0xffa79efe), Color(0xff5d60dc)])),
+              gradient: LinearGradient(end: Alignment.bottomCenter, begin: Alignment.topCenter, colors: [Color(0xffb79efe), Color(0xff5e60dc)])),
           width: double.infinity,
           height: double.infinity,
           child: Stack(
@@ -107,16 +107,18 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 right: 16,
                 top: 16,
                 child: StatefulBuilder(builder: (context, a) {
-                  try {
-                    return SizedBox(
-                      height: 620,
-                      child: AdWidget(ad: widget.ad, key: UniqueKey()),
-                    );
-                  } catch (e) {
-                    AppLog.e("报错了：${e.toString()}");
-                    _closeType.value = CloseType.normal;
-                    return const SizedBox.shrink();
-                  }
+                  return Container(
+                    height: 620,
+                    child: Builder(builder: (_) {
+                      try {
+                        return AdWidget(ad: widget.ad);
+                      } catch (e) {
+                        AppLog.e("AdWidget报错了：${e.toString()}");
+                        _closeType.value = CloseType.normal;
+                        return const SizedBox.shrink();
+                      }
+                    }),
+                  );
                 }),
               ),
               Obx(() {
@@ -163,7 +165,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                           )
                         : GestureDetector(
                             onTap: () {
-                              AppLog.i("关闭点击");
+                              AppLog.i("关闭点击广告");
                               Get.back();
                             },
                             behavior: HitTestBehavior.opaque,
@@ -186,8 +188,8 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
   @override
   Future<void> dispose() async {
     final previous = Get.routing.previous;
-    if(!previous.contains("BOTTOMSHEET")){
-      Future.delayed(const Duration(seconds: 1)).then((v){
+    if (!previous.contains("BOTTOMSHEET")) {
+      Future.delayed(const Duration(seconds: 1)).then((v) {
         if (Get.isRegistered<UserPlayInfoController>()) {
           Get.find<UserPlayInfoController>().showFloatingWidget();
         }
