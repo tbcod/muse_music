@@ -179,6 +179,13 @@ class AppController extends SuperController {
           isNewUser = tempD.inHours < 24;
           TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
 
+
+          if(AdUtils.instance.adIsShowing){
+            if (Get.isRegistered<UserPlayInfoController>()) {
+              Get.find<UserPlayInfoController>().recoverPlay(isForce: true);
+            }
+          }
+
           AdUtils.instance.showAd("open",
               adScene: AdScene.openHot,
               onShow: ShowCallback(

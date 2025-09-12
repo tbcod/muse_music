@@ -127,8 +127,8 @@ class NativeAdFactory: FLTNativeAdFactory{
         let actionLB = UILabel()
         actionLB.text = nativeAd.callToAction ?? "Install"
         actionLB.textAlignment  = .center
-        actionLB.textColor = UIColor.white
-        actionLB.backgroundColor = UIColor.init(hex: "#8669FE")
+        actionLB.textColor = UIColor.black
+        actionLB.backgroundColor = UIColor.init(hex: "#b79efe")
         actionLB.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         actionLB.numberOfLines = 1
         actionLB.layer.cornerRadius = 14
