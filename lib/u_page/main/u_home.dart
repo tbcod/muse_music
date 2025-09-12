@@ -1110,7 +1110,7 @@ class UserHomeController extends GetxController with StateMixin {
   @override
   void onReady() async {
     super.onReady();
-
+    Get.find<Application>().isMainPage.value = true;
     IdfaUtil.instance.showIdfaDialog();
     Future.delayed(const Duration(seconds: 10)).then((e) {
       IdfaUtil.instance.showIdfaDialog();
@@ -1120,6 +1120,9 @@ class UserHomeController extends GetxController with StateMixin {
     await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
+
+    Get.find<Application>().isMainPage.value = true;
+
   }
 
   var nextData = {};

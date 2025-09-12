@@ -747,7 +747,7 @@ class UserPlayInfoController extends GetxController {
 
             // Another app started playing audio and we should pause.
 
-            await player?.pause();
+            // await player?.pause();
             // isPlaying.value = player?.value.isPlaying ?? false;
             // if (Get.find<Application>().isAppBack) {
             //   isPlaying.value = player?.value.isPlaying ?? false;
@@ -779,7 +779,7 @@ class UserPlayInfoController extends GetxController {
     });
 
     session.becomingNoisyEventStream.listen((_) {
-      player?.pause();
+      // player?.pause();
       // The user unplugged the headphones, so we should pause or lower the volume.
     });
 
@@ -839,7 +839,7 @@ class UserPlayInfoController extends GetxController {
     overlayEntry = OverlayEntry(builder: (c) {
       return Obx(() {
         return Positioned(
-            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom,
+            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + ScreenUtil().bottomBarHeight,
             left: 0,
             right: 0,
             child: Material(
