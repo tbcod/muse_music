@@ -770,7 +770,7 @@ class UserPlayInfoController extends GetxController {
           case AudioInterruptionType.unknown:
             AppLog.e("外部音乐结束unknown");
             // The interruption ended but we should not resume.
-            await player?.pause();
+            // await player?.pause();
             // isPlaying.value = player?.value.isPlaying ?? false;
 
             break;

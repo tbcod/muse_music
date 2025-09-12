@@ -127,18 +127,18 @@ class NativeAdFactory: FLTNativeAdFactory{
         let actionLB = UILabel()
         actionLB.text = nativeAd.callToAction ?? "Install"
         actionLB.textAlignment  = .center
-        actionLB.textColor = UIColor.white
-        actionLB.backgroundColor = UIColor.init(hex: "#8669FE")
+        actionLB.textColor = UIColor.black
+        actionLB.backgroundColor = UIColor.init(hex: "#b79efe")
         actionLB.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         actionLB.numberOfLines = 1
-        actionLB.layer.cornerRadius = 22
+        actionLB.layer.cornerRadius = 14
         actionLB.layer.masksToBounds = true
         nativeADView.storeView = actionLB
         nativeADView.callToActionView?.isUserInteractionEnabled = true
         nativeADView.addSubview(actionLB)
         actionLB.snp.makeConstraints({(make)in
             make.centerX.equalToSuperview()
-                make.top.equalTo(subTitleLB.snp.bottom).offset(36)
+                make.top.equalTo(subTitleLB.snp.bottom).offset(42)
                 make.height.equalTo(44)
                 make.width.equalToSuperview().offset(-44)
         })
