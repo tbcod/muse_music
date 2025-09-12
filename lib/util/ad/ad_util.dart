@@ -646,16 +646,16 @@ class AdUtils {
 
     EventUtils.instance.addEvent("ad_chance");
 
-    if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
-      Get.bottomSheet(
-        const LaunchLoadingPage(),
-        isScrollControlled: true,
-        enableDrag: false,
-        isDismissible: false,
-        backgroundColor: Colors.black,
-        useRootNavigator: true,
-      );
-    }
+    // if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
+    //   Get.bottomSheet(
+    //     const LaunchLoadingPage(),
+    //     isScrollControlled: true,
+    //     enableDrag: false,
+    //     isDismissible: false,
+    //     backgroundColor: Colors.black,
+    //     useRootNavigator: true,
+    //   );
+    // }
 
     var isShowAd = false;
     for (var item in configList) {
