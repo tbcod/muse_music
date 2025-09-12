@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/view/base_view.dart';
 
@@ -29,6 +30,7 @@ class UserLikeSong extends GetView<UserLikeSongController> {
           leading: IconButton(
               onPressed: () {
                 Get.back();
+                AdUtils.instance.showAd("behavior", adScene: AdScene.back);
               },
               icon: Image.asset(
                 "assets/oimg/icon_back.png",
@@ -234,8 +236,17 @@ class UserLikeSongController extends GetxController {
     bindData();
   }
 
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.playlist);
+    super.onReady();
+  }
+
   bindData() {
     //获取所有收藏的歌曲
     list.value = LikeUtil.instance.allVideoMap.values.toList();
   }
+
+
+
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/page/main/home/play.dart';
+import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
@@ -54,12 +56,19 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
     }
 
     _streamSubscription = AdUtils.instance.bannerNativeAdClicked.listen((val) {
-      Future.delayed(const Duration(milliseconds: 1000)).then((v) {
-        _closeType.value = CloseType.normal;
-        _curSec.value = -1;
-      });
+      _closeType.value = CloseType.normal;
+      _curSec.value = -1;
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (Get.isRegistered<UserPlayInfoController>()) {
+        Get.find<UserPlayInfoController>().hideFloatingWidget();
+      }
+      if (Get.isRegistered<PlayPageController>()) {
+        Get.find<PlayPageController>().hideFloatingWidget();
+      }
+    });
     super.initState();
   }
 
@@ -85,21 +94,37 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
+        body: Container(
+          padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(end: Alignment.bottomCenter, begin: Alignment.topCenter, colors: [Color(0xffa79efe), Color(0xff5d60dc)])),
+          width: double.infinity,
+          height: double.infinity,
           child: Stack(
             children: [
-              StatefulBuilder(builder: (context, a) {
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: 300, minHeight: 300, maxWidth: 300, maxHeight: 300),
-                  child: AdWidget(ad: widget.ad, key: UniqueKey()),
-                );
-              }),
+              Positioned(
+                left: 16,
+                right: 16,
+                top: 16,
+                child: StatefulBuilder(builder: (context, a) {
+                  try {
+                    return SizedBox(
+                      height: 620,
+                      child: AdWidget(ad: widget.ad, key: UniqueKey()),
+                    );
+                  } catch (e) {
+                    AppLog.e("报错了：${e.toString()}");
+                    _closeType.value = CloseType.normal;
+                    return const SizedBox.shrink();
+                  }
+                }),
+              ),
               Obx(() {
                 return Visibility(
                   visible: _curSec.value >= 0,
                   child: Positioned(
-                    right: 8,
-                    top: 8,
+                    right: 20,
+                    top: 24,
                     child: Container(
                         alignment: Alignment.center,
                         width: 24,
@@ -122,43 +147,34 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 );
               }),
               Obx(() {
-                return Visibility(
-                  visible: _closeType.value == CloseType.disable,
-                  child: Positioned(
-                      right: 8,
-                      top: 8,
-                      child: IgnorePointer(
-                        ignoring: true,
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.close_rounded, size: 24, color: Colors.black38),
-                          ),
-                        ),
-                      )),
-                );
-              }),
-              Obx(() {
-                return Visibility(
-                  visible: _closeType.value == CloseType.normal || _closeType.value == CloseType.limit,
-                  child: Positioned(
-                      right: 8,
-                      top: 8,
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(16)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.close_rounded, size: 24, color: Colors.black54),
-                          ),
-                        ),
-                      )),
-                );
+                return Positioned(
+                    left: 20,
+                    top: 24,
+                    child: _closeType.value == CloseType.disable
+                        ? IgnorePointer(
+                            ignoring: true,
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black38),
+                              ),
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              AppLog.i("关闭点击");
+                              Get.back();
+                            },
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black54),
+                              ),
+                            ),
+                          ));
               }),
             ],
           ),
@@ -169,11 +185,23 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
 
   @override
   Future<void> dispose() async {
+    final previous = Get.routing.previous;
+    if(!previous.contains("BOTTOMSHEET")){
+      Future.delayed(const Duration(seconds: 1)).then((v){
+        if (Get.isRegistered<UserPlayInfoController>()) {
+          Get.find<UserPlayInfoController>().showFloatingWidget();
+        }
+        if (Get.isRegistered<PlayPageController>()) {
+          Get.find<PlayPageController>().showFloatingWidget();
+        }
+      });
+    }
     widget.onClose.call();
     _streamSubscription?.cancel();
     _streamSubscription = null;
     _timer?.cancel();
     _timer = null;
+    AdUtils.instance.adIsShowing = false;
     super.dispose();
   }
 }

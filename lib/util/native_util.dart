@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/util/log.dart';
 
 class NativeUtils {
   NativeUtils._() : super();
   static final NativeUtils _instance = NativeUtils._();
+
   static NativeUtils get instance {
     return _instance;
   }
@@ -16,24 +18,28 @@ class NativeUtils {
   initFacebook() async {
     // return;
 
-    var jsonStr = FirebaseRemoteConfig.instance.getString("musicmuse_fabo_id");
-    // AppLog.e("云控fb");
-    if (jsonStr.isEmpty) {
-      // AppLog.e("云控fb为空");
-      return;
+    var jsonMap = {};
+    try {
+      var jsonStr = FirebaseRemoteConfig.instance.getString("muse_fb_id");
+      if (jsonStr.isEmpty) {
+        jsonStr = FirebaseRemoteConfig.instance.getString("musicmuse_fabo_id");
+      }
+      if (jsonStr.isNotEmpty) {
+        jsonMap = jsonDecode(jsonStr);
+      }
+    } catch (e) {
+      AppLog.e(e.toString());
     }
 
-    var jsonMap = jsonDecode(jsonStr);
-    String fbid = jsonMap["id"] ?? "";
-    String fbtoken = jsonMap["token"] ?? "";
+    String fbId = jsonMap["id"] ?? "";
+    String fbToken = jsonMap["token"] ?? "";
 
-    if (fbid.isEmpty || fbtoken.isEmpty) {
-      AppLog.e("云控格式问题：$jsonMap");
-      return;
+    if (fbId.isEmpty || fbToken.isEmpty) {
+      fbId = MuseConfig.fbIdDef;
+      fbToken = MuseConfig.fbTokenDef;
     }
 
-    var result = await channel
-        .invokeMethod("initFacebook", {"fbid": fbid, "fbtoken": fbtoken});
-    AppLog.e("原生返回的：$result");
+    var result = await channel.invokeMethod("initFacebook", {"fbid": fbId, "fbtoken": fbToken});
+    AppLog.i("原生返回的：$result, fb id:$fbId,fb token:$fbToken");
   }
 }

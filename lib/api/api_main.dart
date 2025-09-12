@@ -29,11 +29,19 @@ class ApiMain extends BaseApi {
     return _instance;
   }
 
+  // Map<String, dynamic> playJsonData = {
+  //   "context": {
+  //     "client": {"clientName": "ANDROID", "clientVersion": "19.11.43", "platform": "MOBILE"}
+  //   },
+  //   "params": "8AEB",
+  //   "contentCheckOk": true,
+  //   "racyCheckOk": true
+  // };
   Map<String, dynamic> playJsonData = {
     "context": {
       "client": {"clientName": "ANDROID", "clientVersion": "19.11.43", "platform": "MOBILE"}
     },
-    "params": "8AEB",
+    "params": "gAQB8AUBygYQNTIxNTJCNDk0NkMyRjczRg%3D%3D",
     "contentCheckOk": true,
     "racyCheckOk": true
   };
@@ -43,14 +51,16 @@ class ApiMain extends BaseApi {
 
   initFirebaseData() {
     try {
-      var jsonStr = FirebaseRemoteConfig.instance.getString("musicmuse_play");
-      var data = jsonDecode(jsonStr);
-      playJsonData = data;
-
       //获取无版权的id
       blackVideoIds = FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
+
+      var jsonStr = FirebaseRemoteConfig.instance.getString("musicmuse_play");
+      if (jsonStr.isNotEmpty) {
+        var data = jsonDecode(jsonStr);
+        playJsonData = data;
+      }
     } catch (e) {
-      print(e);
+      AppLog.e(e.toString());
     }
   }
 
@@ -83,7 +93,7 @@ class ApiMain extends BaseApi {
     var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     if (result.code == HttpCode.success) {
       //请求成功
-      AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
+      // AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
 
       EventUtils.instance.addEvent("source_get");
     }
@@ -118,6 +128,7 @@ class ApiMain extends BaseApi {
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;
 
+    AppLog.i("request:$url,$body");
     BaseModel result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     //判断是否有链接
@@ -128,7 +139,7 @@ class ApiMain extends BaseApi {
     return result;
   }
 
-  Future<BaseModel> getVideoInfoYoutube(String videoId) {
+  Future<BaseModel> getVideoInfoYoutube(String videoId, {int retryCount = 0}) async {
     var url = "https://www.youtube.com/youtubei/v1/player";
 
     Map<String, dynamic> body = Map.of(playJsonData);
@@ -143,7 +154,17 @@ class ApiMain extends BaseApi {
     //   "videoId": videoId
     // };
 
-    return httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    AppLog.i("request:$url,$body");
+    BaseModel result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+
+    String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
+
+    if (videoUrl.isEmpty && retryCount < 1) {
+      AppLog.e("获取url失败:$url,$body，重试：$retryCount");
+      await Future.delayed(Duration(seconds: retryCount + 1));
+      return getVideoInfoYoutube(videoId, retryCount: retryCount + 1);
+    }
+    return result;
   }
 
   Future<BaseModel> getSearchList(String input) {
@@ -364,7 +385,7 @@ class ApiMain extends BaseApi {
         isFirstRequest = false;
         Future.delayed(const Duration(seconds: 2)).then((v) {
           UserHomeController controller = Get.find<UserHomeController>();
-          controller.bindYoutubeMusicData(source:"visitor_play");
+          controller.bindYoutubeMusicData(source: "visitor_play");
         });
       }
     }
@@ -409,7 +430,7 @@ class ApiMain extends BaseApi {
         "&cplatform=DESKTOP"
         "&volume=100"
         "&cmt=$et"
-        "&state=${isPlaying ? 'paused' : 'playing'}"
+        "&state=${isPlaying ? 'playing' : 'paused'}"
         "&st=$st" //开始时间
         "&et=$et"
         "&hl=$_hl"

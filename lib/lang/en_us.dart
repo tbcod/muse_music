@@ -96,5 +96,12 @@ const Map<String, String> enUS = {
       "Access your favorite tracks instantly with a click here.",
   "loadMoreFailStr": "No network,please retry.",
   "noMoreStr": "No more content.",
-  "noNetPlayStr": "No network, please check your network status"
+  "noNetPlayStr": "No network, please check your network status",
+  "addedDownloadQueue":"Added to download queue",
+  "downloadCompleted":"Download completed",
+  "downloadFailed":"Download failed",
+  "pops": "Privacy Options",
+  "popDetail": "Would you like to reset your privacy authorization settings?",
+  "success": "Success!",
+  "reset": "Reset"
 };

@@ -80,6 +80,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     onPressed: () {
                       Get.back();
                       controller.showFloatingWidget();
+                      AdUtils.instance.showAd("behavior", adScene: AdScene.back);
                     },
                     icon: Image.asset(
                       "assets/oimg/icon_play_close.png",
@@ -238,8 +239,17 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                                   if (controller.isPlaying.value) {
                                     controller.player?.pause();
+                                    AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                   } else {
+                                    EventUtils.instance.addEvent("play_num", data: {
+                                      "song_id": controller.nowData["videoId"],
+                                      "song_name": controller.nowData["title"],
+                                      "artist_name": controller.nowData["subtitle"],
+                                      "playlist_id": controller.playlistId,
+                                    });
+                                    EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
                                     controller.player?.play();
+                                    AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                   }
 
                                   EventUtils.instance.addEvent("play_page_click", data: {"click": "pause"});
@@ -324,7 +334,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 4),
                                     thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5, disabledThumbRadius: 5)),
                                 child: Slider(
-                                  value: controller.sliderValue.value,
+                                  value: min(1, max(0, controller.sliderValue.value)),
                                   onChanged: (value) {
                                     //计算时间
                                     controller.sliderValue.value = value;
@@ -431,7 +441,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               //下载中\下载暂停
                               return InkWell(
                                 onTap: () {
-                                  controller.removeDownload();
+                                  controller.removeDownload(state);
                                 },
                                 child: Container(
                                     width: 32.w,
@@ -447,7 +457,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             } else if (state == 2) {
                               return InkWell(
                                 onTap: () {
-                                  controller.removeDownload();
+                                  controller.removeDownload(state);
                                 },
                                 child: Image.asset(
                                   "assets/oimg/icon_download_ok.png",
@@ -583,7 +593,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                             var sp = await SharedPreferences.getInstance();
                                             await sp.setBool("IsShowDownloadGuide", true);
                                             controller.isShowDownloadGuide.value = false;
-                                            controller.removeDownload();
+                                            controller.removeDownload(state);
                                           },
                                           child: Container(
                                               width: 32.w,
@@ -602,7 +612,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                             var sp = await SharedPreferences.getInstance();
                                             await sp.setBool("IsShowDownloadGuide", true);
                                             controller.isShowDownloadGuide.value = false;
-                                            controller.removeDownload();
+                                            controller.removeDownload(state);
                                           },
                                           child: Image.asset(
                                             "assets/oimg/icon_download_ok.png",
@@ -915,9 +925,17 @@ class UserPlayInfoController extends GetxController {
 
                                       if (isPlaying.value) {
                                         await player?.pause();
+                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                       } else {
                                         await player?.play();
                                         //暂停其他页面的播放
+                                        EventUtils.instance.addEvent("play_num", data: {
+                                          "song_id": nowData["videoId"],
+                                          "song_name": nowData["title"],
+                                          "artist_name": nowData["subtitle"],
+                                        });
+                                        EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
+                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                       }
                                       isPlaying.toggle();
                                     },
@@ -1331,6 +1349,12 @@ class UserPlayInfoController extends GetxController {
             if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
               //没有网络
               AppLog.e("没有网络，不切换下一曲");
+              EventUtils.instance.addEvent("play_num", data: {
+                "song_id": nowData["videoId"],
+                "song_name": nowData["title"],
+                "artist_name": nowData["subtitle"],
+              });
+              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
               return;
             }
 
@@ -1397,7 +1421,20 @@ class UserPlayInfoController extends GetxController {
       player = VideoPlayerController.file(File(downloadPath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
     }
 
-    await player?.initialize();
+    await player?.initialize().catchError((e) {
+      final errorCode = player?.value.errorDescription ?? 'initialize error';
+
+      if (!isOpenShowBar) {
+        EventUtils.instance.addEvent("play_num", data: {
+          "song_id": nowData["videoId"],
+          "song_name": nowData["title"],
+          "artist_name": nowData["subtitle"],
+        });
+        EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "initialize error", "detail": errorCode});
+      }
+      AppLog.e("initialize error:${e.toString()}");
+    });
+
     videoAspectRatio = player?.value.aspectRatio ?? 1;
 
     player?.addListener(playListener);
@@ -2138,8 +2175,8 @@ class UserPlayInfoController extends GetxController {
     DownloadUtils.instance.download(nowData["videoId"], nowData, clickType: "play");
   }
 
-  removeDownload() async {
-    DownloadUtils.instance.remove(nowData["videoId"]);
+  removeDownload(int state) async {
+    DownloadUtils.instance.remove(nowData["videoId"], state: state);
   }
 
   //添加到下一个播放
@@ -2274,10 +2311,32 @@ class UserPlayInfoController extends GetxController {
       "song_name": playList[nowIndex]["title"],
       "artist_name": playList[nowIndex]["subtitle"],
       "playlist_id": playlistId,
-      "station": "notif"
+      "station": "notif",
     });
 
     realPlay(nowIndex);
+  }
+
+  recoverPlay({bool isForce = true}) async {
+    int count = (isForce ? 5 : 1);
+    for (int i = 0; i < count; i++) {
+      if (isPlaying.isFalse) return;
+      AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
+      await Future.delayed(const Duration(milliseconds: 500));
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+      await session.setActive(true);
+      player?.pause();
+      player?.play().ignore();
+      if (i == count - 1 && player?.value.isPlaying == false) {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
+        await session.configure(const AudioSessionConfiguration.music());
+        await session.setActive(true);
+        player?.pause();
+        player?.play().ignore();
+      }
+    }
   }
 }
 

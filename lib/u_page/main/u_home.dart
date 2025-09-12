@@ -11,6 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/app.dart';
+import 'package:music_muse/const/data_config.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/generated/assets.dart';
@@ -27,6 +28,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/more_sheet_util.dart';
+import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/net_img.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -161,7 +163,7 @@ class UserHome extends GetView<UserHomeController> {
                 Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
                 ElevatedButton(
                     onPressed: () {
-                      controller.bindYoutubeMusicData(source: "click_bottomtab");
+                      controller.bindYoutubeMusicData(source: "reload");
                     },
                     child: Text("Reload".tr)),
               ],
@@ -462,7 +464,7 @@ class UserHome extends GetView<UserHomeController> {
                                                 //下载中\下载暂停
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId, state: state);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -484,7 +486,7 @@ class UserHome extends GetView<UserHomeController> {
                                               } else if (state == 2) {
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId);
+                                                    DownloadUtils.instance.remove(videoId,state: state);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -1132,7 +1134,7 @@ class UserHomeController extends GetxController with StateMixin {
       change("", status: RxStatus.loading());
     }
 
-    AppLog.i("开始请求Music");
+    // AppLog.i("开始请求Music");
     EventUtils.instance.addEvent("home_refresh_and", data: {"source": source});
 
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
@@ -1143,7 +1145,7 @@ class UserHomeController extends GetxController with StateMixin {
         change("", status: RxStatus.error());
         // TbaUtils.instance.postUserData({"mm_type_so": "no"});
       }
-
+      ToastUtil.showToast(msg: "Network issue,Please try again later.");
       return;
     }
 
@@ -1196,8 +1198,8 @@ class UserHomeController extends GetxController with StateMixin {
         if (childItem.containsKey("musicResponsiveListItemRenderer")) {
           //音乐
           List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?
-              ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+              ?["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
           type = musicType;
 
@@ -1233,13 +1235,13 @@ class UserHomeController extends GetxController with StateMixin {
           List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
           String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
           //id
-          var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
+          String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
 
           //封面
           var childItemCover =
               childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
 
-          if (type.isNotEmpty) {
+          if (type.isNotEmpty && browseId.isNotEmpty) {
             realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
           }
         } else {
@@ -1296,6 +1298,9 @@ class UserHomeController extends GetxController with StateMixin {
 
     bindYoutubeMusicNextData();
 
+    if(source == 'drop_down'){
+      ToastUtil.showToast(msg: "Refresh successful");
+    }
     // Get.find<UserPlayInfoController>().showLastPlayBar();
   }
 
@@ -1676,6 +1681,23 @@ final locSong =
 ///下标0us-1mx-2br
 final locTop =
     "XX0iNXhBOUlwZmRRdjRvbmhCMnJnSWVwUXZ4SWlqdDJXbzNMUCI6ImRJdHNpbHlhbHAiLCI1eEE5SXBmZFF2NG9uaEIycmdJZXBRdnhJaWp0MldvM0xQTFYiOiJkSWVzd29yYiIsIlE1WHR1UXU1b1J0N1NSUjVEaXBnSU53dUZGVEJMQzRuT0E9c3ImPUVBR0NoSUFBVVJBSWt3QXBxNHF5ckZTQndMRUNBTkNYRXdteWFvLT1wcXM/Z3BqLnRsdWFmZWRxaC8wNDB4ZUluMnJrZS9pdi9tb2MuZ21pdHkuaS8vOnNwdHRoIjoicmV2b2MiLCJ5bGlhZCBsYWJvbGcgc2dub3MgcG9UIjoiZWx0aXQieyx9InhuU1VULWM3UlhEdmpCNGV6Njg1a0V6WG04azB0VHpnTFAiOiJkSXRzaWx5YWxwIiwieG5TVVQtYzdSWER2akI0ZXo2ODVrRXpYbThrMHRUemdMUExWIjoiZEllc3dvcmIiLCJRWERJempjU1NPdF9FSG1kREo3ejV6RkZxU1JCTEM0bk9BPXNyJkJBVUE0WUFHQ0FCR0lvUUFpSFFBWUhBR0NoSUFBVVJBSWt4QXBxNHF5ckZTQndMRUNBTkNuRXdteWFvLT1wcXM/Z3BqLnRsdWFmZWRxaC8wNDB4ZUluMnJrZS9pdi9tb2MuZ21pdHkuaS8vOnNwdHRoIjoicmV2b2MiLCJ5bGtlZXcgbGFib2xnIHNnbm9zIHBvVCI6ImVsdGl0InssfSItVkpWb1BxUmUyeDFLU0NHYklEdDI5SDEza19nSWtKU0xQIjoiZEl0c2lseWFscCIsIi1WSlZvUHFSZTJ4MUtTQ0diSUR0MjlIMTNrX2dJa0pTTFBMViI6ImRJZXN3b3JiIiwiUVgwTVVicDh3SFRXVWpNSHRYbUNwN3ZTUnJzRExDNG5PQT1zciZCQVVBNFlBR0NBQkdJb1FBaUhRQVlIQUdDaElBQVVSQUlreEFwcTRxeXJGU0J3TEVDQU5DbkV3bXlhby09cHFzP2dwai50bHVhZmVkcWgva1hFeTZfMF9Oc1ovaXYvbW9jLmdtaXR5LmkvLzpzcHR0aCI6InJldm9jIiwibmFpbGl6YXJCIHNnbm9TIHBvVCI6ImVsdGl0InssfSJOODVHRHVTb2U0ZHBBVHBUQ3Y4TlJTWDRzSGs4b1N3T0xQIjoiZEl0c2lseWFscCIsIk44NUdEdVNvZTRkcEFUcFRDdjhOUlNYNHNIazhvU3dPTFBMViI6ImRJZXN3b3JiIiwiQW1tNHhsLXNyaG5JN3RGamw3ckFYTkNyeXpBRExDNG5PQT1zciZCQVVBNFlBR0NBQkdJb1FBaUhRQVlIQUdDaElBQVVSQUlreEFwcTRxeXJGU0J3TEVDQU5DbkV3bXlhby09cHFzP2dwai50bHVhZmVkcWgvY1lHXzBuY2lteV8vaXYvbW9jLmdtaXR5LmkvLzpzcHR0aCI6InJldm9jIiwib2NpeGVNIHNnbm9TIHBvVCI6ImVsdGl0InssfSJHdU1fWEhia013NVRCeEpWRHBZNG9ONl8wRDFPVi03T0xQIjoiZEl0c2lseWFscCIsIkd1TV9YSGJrTXc1VEJ4SlZEcFk0b042XzBEMU9WLTdPTFBMViI6ImRJZXN3b3JiIiwiUTlnSllFUlVyaXJvNExtQTdmeTlEY20zb1luQkxDNG5PQT1zciY9RUFHQ2hJQUFVUkFJa3dBcHE0cXlyRlNCd0xFQ0FOQ1hFd215YW8tPXBxcz9ncGoudGx1YWZlZHFoL2MtTHdLc2I3YVBrL2l2L21vYy5nbWl0eS5pLy86c3B0dGgiOiJyZXZvYyIsInNldGF0UyBkZXRpblUgc2dub1MgcG9UIjoiZWx0aXQie1s=";
+
+// {title: You Belong With Me, subtitle: Taylor Swift, cover: https://i.ytimg.com/vi/VuNIsY6JdUw/sddefault.jpg, type: MUSIC_VIDEO_TYPE_ATV, videoId: VuNIsY6JdUw}
+List  listenNowListData() {
+  List newList = [];
+  List list = RemoteUtil.shareInstance.listenNowRecommend;
+  for (Map obj in list) {
+    Map map = {
+      "title": obj["muse_name"],
+      "subtitle": obj["muse_artist"],
+      "videoId": obj["muse_song_id"],
+      "cover": "https://i.ytimg.com/vi/${obj["muse_song_id"]}/sddefault.jpg",
+      "type": "MUSIC_VIDEO_TYPE_ATV"
+    };
+    newList.add(map);
+  }
+  return newList;
+}
 
 String encodeList(List data) {
   //反转后再base64

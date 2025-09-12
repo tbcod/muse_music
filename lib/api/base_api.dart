@@ -11,7 +11,7 @@ class BaseApi extends GetConnect {
     httpClient.baseUrl = baseHost;
     allowAutoSignedCert = true;
     withCredentials = true;
-    httpClient.timeout = const Duration(seconds: 30);
+    httpClient.timeout = const Duration(seconds: 12);
   }
 
   Future<BaseModel> httpRequest(
@@ -56,15 +56,10 @@ class BaseApi extends GetConnect {
 
       Response response;
       if (method == HttpMethod.get) {
-        Map<String, String> strMap =
-            body.map((key, value) => MapEntry(key, value?.toString() ?? ""));
-        response = await get(url,
-            headers: headers, query: strMap, contentType: contentType);
+        Map<String, String> strMap = body.map((key, value) => MapEntry(key, value?.toString() ?? ""));
+        response = await get(url, headers: headers, query: strMap, contentType: contentType);
       } else {
-        response = await post(url, body,
-            headers: headers,
-            uploadProgress: uploadProgress,
-            contentType: contentType);
+        response = await post(url, body, headers: headers, uploadProgress: uploadProgress, contentType: contentType);
       }
       if (cancelFunc != null) {
         cancelFunc();
@@ -114,13 +109,11 @@ class BaseApi extends GetConnect {
         }
         return data;
       } else {
-        AppLog.e(
-            "请求失败：${response.request?.url} \n${response.body},\ncode:${response.statusCode}");
+        AppLog.e("请求失败：${response.request?.url}, ${response.statusText}, code:${response.statusCode}");
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);
         }
-        return BaseModel(
-            code: response.statusCode ?? -1, message: "httpError".tr);
+        return BaseModel(code: response.statusCode ?? -1, message: "httpError".tr);
       }
     } catch (e) {
       AppLog.e("请求失败:$e");
@@ -162,6 +155,7 @@ class BaseModel<T> {
     code = json["code"];
     data = json["data"];
   }
+
   T? data;
   String? message;
   num? code;

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/api/base_dio_api.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/util/log.dart';
@@ -30,7 +31,7 @@ class HistoryUtil {
     if (songHistoryList.length > 21) {
       songHistoryList.removeLast();
     }
-
+    museSp.setBool("isSongHistoryChanged", true);
     saveData();
   }
 
@@ -73,9 +74,12 @@ class HistoryUtil {
     var box = await Hive.openBox(DBKey.myHistoryMusicData);
     songHistoryList.value = box.values.toList();
 
-    if (songHistoryList.isEmpty) {
+    bool isChanged = museSp.getBool("isSongHistoryChanged");
+    if (songHistoryList.isEmpty || !isChanged) {
       //添加默认的12首歌
-      songHistoryList.value = decodeList(locSong);
+      // songHistoryList.value = decodeList(locSong);
+      songHistoryList.value = listenNowListData();
+
       saveData();
     }
 
@@ -101,38 +105,20 @@ class HistoryUtil {
       //             ["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]
       //         ["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-      var title = result.data["contents"]
-                              ["singleColumnMusicWatchNextResultsRenderer"]
-                          ["tabbedRenderer"]["watchNextTabbedResultsRenderer"]
-                      ["tabs"]
-                  [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]
-              ["playlistPanelRenderer"]["contents"][0]
-          ["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"];
+      var title = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]
+              ["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
+          ["title"]["runs"][0]["text"];
       //歌手
-      var subtitle = result.data["contents"]
-                              ["singleColumnMusicWatchNextResultsRenderer"]
-                          ["tabbedRenderer"]["watchNextTabbedResultsRenderer"]
-                      ["tabs"]
-                  [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]
-              ["playlistPanelRenderer"]["contents"][0]
-          ["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+      var subtitle = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"]
+              [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
+          ["longBylineText"]["runs"][0]["text"];
 
       //封面
-      var cover = result.data["contents"]
-                              ["singleColumnMusicWatchNextResultsRenderer"]
-                          ["tabbedRenderer"]["watchNextTabbedResultsRenderer"]
-                      ["tabs"]
-                  [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]
-              ["playlistPanelRenderer"]["contents"][0]
-          ["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+      var cover = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]
+              ["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
+          ["thumbnail"]["thumbnails"][0]["url"];
 
-      list.add({
-        "title": title,
-        "subtitle": subtitle,
-        "cover": cover,
-        "type": "MUSIC_VIDEO_TYPE_ATV",
-        "videoId": videoId
-      });
+      list.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "MUSIC_VIDEO_TYPE_ATV", "videoId": videoId});
     }
 
     return list;

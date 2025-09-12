@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/util/idfa_util.dart';
 
 import '../log.dart';
 import '../tba/tba_util.dart';
@@ -17,14 +20,21 @@ class AdmobUtils {
   }
 
   Future init() async {
+    MobileAds.instance.setAppMuted(true);
     await MobileAds.instance.initialize();
 
+    List<String> testIds = [];
+    if(kDebugMode){
+      var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+      AppLog.i("idfa:$idfa");
+      testIds.add(idfa);
+    }
     await MobileAds.instance.setAppMuted(true);
     //IDFA或gaid
-    // await MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
-    //     testDeviceIds: [""]));
+    await MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
+        testDeviceIds: testIds));
 
-    //Google UMP
+     //Google UMP
     // ConsentInformation.instance.requestConsentInfoUpdate(
     //     ConsentRequestParameters(
     //         consentDebugSettings: ConsentDebugSettings(testIdentifiers: [])),

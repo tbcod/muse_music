@@ -135,7 +135,7 @@ class MoreSheetUtil {
                       //下载中
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"]);
+                          DownloadUtils.instance.remove(item["videoId"],state: state);
                         },
                         child: Container(
                             height: 40.w,
@@ -167,7 +167,7 @@ class MoreSheetUtil {
                       //下载完成
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"]);
+                          DownloadUtils.instance.remove(item["videoId"],state: state);
                         },
                         child: Container(
                             height: 40.w,

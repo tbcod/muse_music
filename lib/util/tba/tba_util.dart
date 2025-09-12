@@ -31,8 +31,9 @@ class TbaUtils {
   Future<BaseModel> postInstall() async {
     if (GetPlatform.isIOS) {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
-      var idfaStatus =
-          await AppTrackingTransparency.requestTrackingAuthorization();
+      final idfaStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
+      // var idfaStatus =
+      //     await AppTrackingTransparency.requestTrackingAuthorization();
       var userAgent = "";
       try {
         var result =
@@ -93,7 +94,7 @@ class TbaUtils {
   }
 
   Future<BaseModel> postSession() async {
-    // AppLog.e("上报session");
+    AppLog.i("上报session");
     if (GetPlatform.isIOS) {
       return await TbaIos.instance.postData(TbaType.session);
     }
@@ -156,6 +157,7 @@ class TbaUtils {
         name: "ad_impression_revenue",
         parameters: {"value": ecpm / 1000000},
       );
+
 
       return await TbaIos.instance.postData(TbaType.ad, eventData: {
         "platelet": ad_network,

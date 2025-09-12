@@ -19,6 +19,7 @@ import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/base_view.dart';
+import 'package:music_muse/view/emoty_view.dart';
 import 'package:music_muse/view/net_img.dart';
 
 import '../../../generated/assets.dart';
@@ -36,11 +37,7 @@ class UserSearch extends GetView<UserSearchController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserSearchController());
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -73,10 +70,7 @@ class UserSearch extends GetView<UserSearchController> {
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   textInputAction: TextInputAction.search,
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      border:
-                          Border.all(color: Color(0xffA995FF), width: 1.5.w),
-                      borderRadius: BorderRadius.circular(22.w)),
+                      color: Colors.white, border: Border.all(color: Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
                   suffix: Obx(() => controller.showClearBtn.value
                       ? GestureDetector(
                           behavior: HitTestBehavior.opaque,
@@ -118,9 +112,7 @@ class UserSearch extends GetView<UserSearchController> {
                           width: 42.w,
                           padding: EdgeInsets.symmetric(vertical: 4.w),
                           margin: EdgeInsets.only(right: 8.w),
-                          decoration: BoxDecoration(
-                              color: Color(0xffA995FF),
-                              borderRadius: BorderRadius.circular(14.w)),
+                          decoration: BoxDecoration(color: Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
                           child: Image.asset(
                             "assets/oimg/icon_search.png",
                             width: 20.w,
@@ -156,9 +148,7 @@ class UserSearch extends GetView<UserSearchController> {
                               child: Obx(() => EasyRefresh(
                                   onLoad: () async {
                                     await controller.moreYoutubeSearch();
-                                    return controller.youtubeMoreToken.isEmpty
-                                        ? IndicatorResult.noMore
-                                        : IndicatorResult.success;
+                                    return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
                                   },
                                   child: ListView.separated(
                                       itemBuilder: (_, i) {
@@ -179,8 +169,7 @@ class UserSearch extends GetView<UserSearchController> {
                                   Container(
                                     width: double.infinity,
                                     height: 30.w,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 4.w),
+                                    padding: EdgeInsets.symmetric(horizontal: 4.w),
                                     child: TabBar(
                                       tabs: controller.tabList
                                           .map((e) => Tab(
@@ -189,31 +178,21 @@ class UserSearch extends GetView<UserSearchController> {
                                           .toList(),
                                       onTap: (int index) {
                                         if (index == 0) {
-                                          EventUtils.instance.addEvent(
-                                              "search_result_click",
-                                              data: {"detail_click": "all"});
+                                          EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "all"});
                                         }
                                       },
                                       isScrollable: true,
-                                      labelPadding: EdgeInsets.only(
-                                          left: 12.w, right: 12.w),
+                                      labelPadding: EdgeInsets.only(left: 12.w, right: 12.w),
                                       indicatorPadding: EdgeInsets.all(0),
                                       tabAlignment: TabAlignment.start,
-                                      unselectedLabelStyle:
-                                          TextStyle(fontSize: 14.w),
-                                      unselectedLabelColor:
-                                          Colors.black.withOpacity(0.5),
+                                      unselectedLabelStyle: TextStyle(fontSize: 14.w),
+                                      unselectedLabelColor: Colors.black.withOpacity(0.5),
                                       labelColor: Color(0xff8468FF),
                                       indicatorColor: Color(0xff8468FF),
                                       labelStyle: TextStyle(fontSize: 18.w),
                                     ),
                                   ),
-                                  Expanded(
-                                      child: TabBarView(
-                                          children: controller.tabList
-                                              .map((e) => KeepStateView(
-                                                  child: getPage(e)))
-                                              .toList()))
+                                  Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
                                 ],
                               ),
                             ),
@@ -235,9 +214,7 @@ class UserSearch extends GetView<UserSearchController> {
                                     ),
                                     Text(
                                       "History record".tr,
-                                      style: TextStyle(
-                                          fontSize: 20.w,
-                                          fontWeight: FontWeight.bold),
+                                      style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold),
                                     ),
                                     Spacer(),
                                     GestureDetector(
@@ -249,8 +226,7 @@ class UserSearch extends GetView<UserSearchController> {
                                             lBtnText: "Cancel".tr,
                                             rBtnText: "Confirm".tr,
                                             rBtnOnTap: () async {
-                                              var box = await Hive.openBox(
-                                                  DBKey.mySearchHistoryData);
+                                              var box = await Hive.openBox(DBKey.mySearchHistoryData);
                                               //删除全部
                                               await box.clear();
                                               controller.historyList.clear();
@@ -277,15 +253,12 @@ class UserSearch extends GetView<UserSearchController> {
                                 // 数据
                                 Container(
                                     width: double.infinity,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 12.w),
+                                    padding: EdgeInsets.symmetric(horizontal: 12.w),
                                     child: Obx(
                                       () => ExtendedWrap(
                                         spacing: 12.w,
                                         runSpacing: 16.w,
-                                        children: controller.historyList
-                                            .map((e) => getHistoryItem(e))
-                                            .toList(),
+                                        children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
                                         maxLines: 3,
 
                                         // maxLines: controller.historyExpanded.value
@@ -392,8 +365,7 @@ class UserSearch extends GetView<UserSearchController> {
                                   return ListTile(
                                     title: controller.list[index]["view"],
                                     onTap: () {
-                                      var str =
-                                          controller.list[index]["text"] ?? "";
+                                      var str = controller.list[index]["text"] ?? "";
                                       controller.inputC.text = str;
 
                                       controller.showClearBtn.value = true;
@@ -401,8 +373,7 @@ class UserSearch extends GetView<UserSearchController> {
                                     },
                                   );
                                 },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
+                                separatorBuilder: (BuildContext context, int index) {
                                   return SizedBox(
                                     height: 1.w,
                                   );
@@ -423,8 +394,7 @@ class UserSearch extends GetView<UserSearchController> {
     if (title == "All".tr) {
       return Container(
         child: ListView.separated(
-            padding: EdgeInsets.only(
-                top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+            padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
             itemBuilder: (_, i) {
               return getBigItem(i);
             },
@@ -442,130 +412,140 @@ class UserSearch extends GetView<UserSearchController> {
       //歌曲列表
       return Container(
         child: Obx(
-          () => EasyRefresh(
-              onRefresh: () async {
-                await controller.searchSong("");
-              },
-              onLoad: () async {
-                await controller.moreSong();
-                return controller.songNextData.isEmpty
-                    ? IndicatorResult.noMore
-                    : IndicatorResult.success;
-              },
-              child: ListView.separated(
-                  padding: EdgeInsets.only(
-                      top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
-                  itemBuilder: (_, i) {
-                    return getMusicItem(controller.songList[i]);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox();
-                  },
-                  itemCount: controller.songList.length)),
+          () {
+            if (controller.songList.isEmpty) {
+              return const EmotyView();
+            }
+            return EasyRefresh(
+                onRefresh: () async {
+                  await controller.searchSong("");
+                },
+                onLoad: () async {
+                  await controller.moreSong();
+                  return controller.songNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                },
+                child: ListView.separated(
+                    padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+                    itemBuilder: (_, i) {
+                      return getMusicItem(controller.songList[i]);
+                    },
+                    separatorBuilder: (_, i) {
+                      return SizedBox();
+                    },
+                    itemCount: controller.songList.length));
+          },
         ),
       );
     } else if (title == "Video".tr) {
       //视频列表
       return Container(
         child: Obx(
-          () => EasyRefresh(
-              onRefresh: () async {
-                await controller.searchVideo("");
-              },
-              onLoad: () async {
-                await controller.moreVideo();
-                return controller.videoNextData.isEmpty
-                    ? IndicatorResult.noMore
-                    : IndicatorResult.success;
-              },
-              child: ListView.separated(
-                  padding: EdgeInsets.only(
-                      top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
-                  itemBuilder: (_, i) {
-                    return getVideoItem(controller.videoList[i]);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox();
-                  },
-                  itemCount: controller.videoList.length)),
+          (){
+            if (controller.videoList.isEmpty) {
+              return const EmotyView();
+            }
+            return EasyRefresh(
+                onRefresh: () async {
+                  await controller.searchVideo("");
+                },
+                onLoad: () async {
+                  await controller.moreVideo();
+                  return controller.videoNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                },
+                child: ListView.separated(
+                    padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+                    itemBuilder: (_, i) {
+                      return getVideoItem(controller.videoList[i]);
+                    },
+                    separatorBuilder: (_, i) {
+                      return SizedBox();
+                    },
+                    itemCount: controller.videoList.length));
+          },
         ),
       );
     } else if (title == "Artist".tr) {
       //歌手列表
       return Container(
         child: Obx(
-          () => EasyRefresh(
-              onRefresh: () async {
-                await controller.searchArtist("");
-              },
-              onLoad: () async {
-                await controller.moreArtist();
-                return controller.artistNextData.isEmpty
-                    ? IndicatorResult.noMore
-                    : IndicatorResult.success;
-              },
-              child: ListView.separated(
-                  padding: EdgeInsets.only(
-                      top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
-                  itemBuilder: (_, i) {
-                    return getArtistItem(controller.artistList[i]);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox();
-                  },
-                  itemCount: controller.artistList.length)),
+          () {
+            if (controller.artistList.isEmpty) {
+              return const EmotyView();
+            }
+            return EasyRefresh(
+                onRefresh: () async {
+                  await controller.searchArtist("");
+                },
+                onLoad: () async {
+                  await controller.moreArtist();
+                  return controller.artistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                },
+                child: ListView.separated(
+                    padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+                    itemBuilder: (_, i) {
+                      return getArtistItem(controller.artistList[i]);
+                    },
+                    separatorBuilder: (_, i) {
+                      return SizedBox();
+                    },
+                    itemCount: controller.artistList.length));
+          },
         ),
       );
     } else if (title == "Album".tr) {
       //专辑
       return Container(
         child: Obx(
-          () => EasyRefresh(
-              onLoad: () async {
-                await controller.moreAlbum();
-                return controller.albumNextData.isEmpty
-                    ? IndicatorResult.noMore
-                    : IndicatorResult.success;
-              },
-              onRefresh: () async {
-                await controller.searchAlbum("");
-              },
-              child: ListView.separated(
-                  padding: EdgeInsets.only(
-                      top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
-                  itemBuilder: (_, i) {
-                    return getPlayListItem(controller.albumList[i]);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox();
-                  },
-                  itemCount: controller.albumList.length)),
+          (){
+            if (controller.albumList.isEmpty) {
+              return const EmotyView();
+            }
+            return EasyRefresh(
+                onLoad: () async {
+                  await controller.moreAlbum();
+                  return controller.albumNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                },
+                onRefresh: () async {
+                  await controller.searchAlbum("");
+                },
+                child: ListView.separated(
+                    padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+                    itemBuilder: (_, i) {
+                      return getPlayListItem(controller.albumList[i]);
+                    },
+                    separatorBuilder: (_, i) {
+                      return const SizedBox();
+                    },
+                    itemCount: controller.albumList.length));
+          }
         ),
       );
     } else if (title == "Playlist".tr) {
       //歌单
       return Container(
         child: Obx(
-          () => EasyRefresh(
-              onRefresh: () async {
-                await controller.searchPlaylist("");
-              },
-              onLoad: () async {
-                await controller.morePlaylist();
-                return controller.playlistNextData.isEmpty
-                    ? IndicatorResult.noMore
-                    : IndicatorResult.success;
-              },
-              child: ListView.separated(
-                  padding: EdgeInsets.only(
-                      top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
-                  itemBuilder: (_, i) {
-                    return getPlayListItem(controller.playlistList[i]);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox();
-                  },
-                  itemCount: controller.playlistList.length)),
+          (){
+            if (controller.playlistList.isEmpty) {
+              return const EmotyView();
+            }
+            return EasyRefresh(
+                onRefresh: () async {
+                  await controller.searchPlaylist("");
+                },
+                onLoad: () async {
+                  await controller.morePlaylist();
+                  return controller.playlistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                },
+                child: ListView.separated(
+                    padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+                    itemBuilder: (_, i) {
+                      return getPlayListItem(controller.playlistList[i]);
+                    },
+                    separatorBuilder: (_, i) {
+                      return SizedBox();
+                    },
+                    itemCount: controller.playlistList.length));
+          },
         ),
       );
     }
@@ -601,10 +581,7 @@ class UserSearch extends GetView<UserSearchController> {
             children: [
               Text(
                 item["title"] ?? "",
-                style: TextStyle(
-                    fontSize: 20.w,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5),
+                style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5),
               ),
               Spacer(),
               if (item["title"] != "Top result")
@@ -612,8 +589,7 @@ class UserSearch extends GetView<UserSearchController> {
                   onTap: () {
                     if (type == "MUSIC_VIDEO_TYPE_ATV") {
                       controller.toIndex(1);
-                    } else if (type == "MUSIC_VIDEO_TYPE_OMV" ||
-                        type == "MUSIC_VIDEO_TYPE_UGC") {
+                    } else if (type == "MUSIC_VIDEO_TYPE_OMV" || type == "MUSIC_VIDEO_TYPE_UGC") {
                       controller.toIndex(2);
                     } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
                       controller.toIndex(4);
@@ -627,8 +603,7 @@ class UserSearch extends GetView<UserSearchController> {
                     children: [
                       Text(
                         "More".tr,
-                        style:
-                            TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6)),
+                        style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6)),
                       ),
                       SizedBox(
                         width: 4.w,
@@ -691,27 +666,19 @@ class UserSearch extends GetView<UserSearchController> {
 
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click",
-            data: {"detail_click": "song", "song_id": item["videoId"]});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
 
         //添加单曲并播放
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
         //   ..add(item);
-        EventUtils.instance.addEvent("play_click", data: {
-          "song_id": item["videoId"],
-          "song_name": item["title"],
-          "artist_name": item["subtitle"],
-          "playlist_id": "",
-          "station": "search"
-        });
+        EventUtils.instance.addEvent("play_click",
+            data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item,
-            clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
       },
       child: Obx(() {
-        var isCheck = item["videoId"] ==
-            Get.find<UserPlayInfoController>().nowData["videoId"];
+        var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
         return Container(
           height: 96.w,
           color: isCheck ? Color(0xfff7f7f7) : null,
@@ -722,8 +689,7 @@ class UserSearch extends GetView<UserSearchController> {
                 width: 128.w,
                 height: 72.w,
                 clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -736,10 +702,7 @@ class UserSearch extends GetView<UserSearchController> {
                         child: Container(
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
-                              colors: [
-                            Colors.black.withOpacity(0),
-                            Color(0xff060606).withOpacity(0.75)
-                          ],
+                              colors: [Colors.black.withOpacity(0), Color(0xff060606).withOpacity(0.75)],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter)),
                     )),
@@ -777,10 +740,7 @@ class UserSearch extends GetView<UserSearchController> {
                     item["title"] ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w500,
-                        color: isCheck ? Color(0xffA491F7) : Colors.black),
+                    style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500, color: isCheck ? Color(0xffA491F7) : Colors.black),
                   ),
                   SizedBox(
                     height: 6.w,
@@ -792,11 +752,7 @@ class UserSearch extends GetView<UserSearchController> {
                         item["subtitle"],
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 14.w,
-                            color: isCheck
-                                ? Color(0xffA491F7).withOpacity(0.5)
-                                : Colors.black.withOpacity(0.5)),
+                        style: TextStyle(fontSize: 14.w, color: isCheck ? Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
                       )),
                       SizedBox(
                         width: 12.w,
@@ -816,19 +772,12 @@ class UserSearch extends GetView<UserSearchController> {
   getMusicItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click",
-            data: {"detail_click": "song", "song_id": item["videoId"]});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
 
-        EventUtils.instance.addEvent("play_click", data: {
-          "song_id": item["videoId"],
-          "song_name": item["title"],
-          "artist_name": item["subtitle"],
-          "playlist_id": "",
-          "station": "search"
-        });
+        EventUtils.instance.addEvent("play_click",
+            data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item,
-            clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
 
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
@@ -841,13 +790,11 @@ class UserSearch extends GetView<UserSearchController> {
         // Get.to(UserPlayInfo());
       },
       child: Obx(() {
-        var isCheck = item["videoId"] ==
-            Get.find<UserPlayInfoController>().nowData["videoId"];
+        var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
 
         return Container(
           height: 70.w,
-          decoration: BoxDecoration(
-              color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
+          decoration: BoxDecoration(color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
             children: [
@@ -855,8 +802,7 @@ class UserSearch extends GetView<UserSearchController> {
                 width: 54.w,
                 height: 54.w,
                 clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                 child: NetImageView(
                   imgUrl: item["cover"],
                   fit: BoxFit.cover,
@@ -887,8 +833,7 @@ class UserSearch extends GetView<UserSearchController> {
                   Row(
                     children: [
                       Obx(() {
-                        var isLike = LikeUtil.instance.allVideoMap
-                            .containsKey(item["videoId"]);
+                        var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
                         if (isLike) {
                           return Container(
                             width: 16.w,
@@ -916,9 +861,7 @@ class UserSearch extends GetView<UserSearchController> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.w,
-                          color: isCheck
-                              ? Color(0xff8569FF)
-                              : Colors.black.withOpacity(0.75),
+                          color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                         ),
                       ))
                     ],
@@ -1041,12 +984,8 @@ class UserSearch extends GetView<UserSearchController> {
   getPlayListItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance
-            .addEvent("det_playlist_show", data: {"from": "search"});
-        EventUtils.instance.addEvent("search_result_click", data: {
-          "detail_click": "playlist",
-          "playlist_id": item["browseId"]
-        });
+        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
 
         Get.to(
             UserPlayListInfo(
@@ -1063,8 +1002,7 @@ class UserSearch extends GetView<UserSearchController> {
               width: 54.w,
               height: 54.w,
               clipBehavior: Clip.hardEdge,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
               child: NetImageView(
                 imgUrl: item["cover"],
                 fit: BoxFit.cover,
@@ -1104,9 +1042,7 @@ class UserSearch extends GetView<UserSearchController> {
                       item["subtitle"] ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 12.w,
-                          color: Colors.black.withOpacity(0.75)),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
                     ))
                   ],
                 ),
@@ -1121,10 +1057,8 @@ class UserSearch extends GetView<UserSearchController> {
   getArtistItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance
-            .addEvent("det_artist_show", data: {"form": "search"});
-        EventUtils.instance.addEvent("search_result_click",
-            data: {"detail_click": "artist", "artist_id": item["browseId"]});
+        EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
         Get.to(UserArtistInfo(), arguments: item);
       },
       child: Container(
@@ -1136,8 +1070,7 @@ class UserSearch extends GetView<UserSearchController> {
               width: 54.w,
               height: 54.w,
               clipBehavior: Clip.hardEdge,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
               child: NetAvatarView(
                 imgUrl: item["cover"],
                 size: 52.w,
@@ -1177,9 +1110,7 @@ class UserSearch extends GetView<UserSearchController> {
                       item["subtitle"] ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 12.w,
-                          color: Colors.black.withOpacity(0.75)),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
                     ))
                   ],
                 ),
@@ -1195,9 +1126,7 @@ class UserSearch extends GetView<UserSearchController> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.w),
-            color: Color(0xffEFEFFF).withOpacity(0.5)),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Color(0xffEFEFFF).withOpacity(0.5)),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.w),
         child: Text(
           item["str"] ?? "",
@@ -1216,27 +1145,19 @@ class UserSearch extends GetView<UserSearchController> {
     var item = controller.ytList[i];
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click",
-            data: {"detail_click": "song", "song_id": item["videoId"]});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
 
         //添加单曲并播放
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
         //   ..add(item);
-        EventUtils.instance.addEvent("play_click", data: {
-          "song_id": item["videoId"],
-          "song_name": item["title"],
-          "artist_name": item["subtitle"],
-          "playlist_id": "",
-          "station": "search"
-        });
+        EventUtils.instance.addEvent("play_click",
+            data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item,
-            clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
       },
       child: Obx(() {
-        var isCheck = item["videoId"] ==
-            Get.find<UserPlayInfoController>().nowData["videoId"];
+        var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
         return Container(
           height: 96.w,
           color: isCheck ? Color(0xfff7f7f7) : null,
@@ -1247,8 +1168,7 @@ class UserSearch extends GetView<UserSearchController> {
                 width: 128.w,
                 height: 72.w,
                 clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -1261,10 +1181,7 @@ class UserSearch extends GetView<UserSearchController> {
                         child: Container(
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
-                              colors: [
-                            Colors.black.withOpacity(0),
-                            Color(0xff060606).withOpacity(0.75)
-                          ],
+                              colors: [Colors.black.withOpacity(0), Color(0xff060606).withOpacity(0.75)],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter)),
                     )),
@@ -1302,10 +1219,7 @@ class UserSearch extends GetView<UserSearchController> {
                     item["title"] ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w500,
-                        color: isCheck ? Color(0xffA491F7) : Colors.black),
+                    style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500, color: isCheck ? Color(0xffA491F7) : Colors.black),
                   ),
                   SizedBox(
                     height: 6.w,
@@ -1317,11 +1231,7 @@ class UserSearch extends GetView<UserSearchController> {
                         item["subtitle"],
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 14.w,
-                            color: isCheck
-                                ? Color(0xffA491F7).withOpacity(0.5)
-                                : Colors.black.withOpacity(0.5)),
+                        style: TextStyle(fontSize: 14.w, color: isCheck ? Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
                       )),
                       SizedBox(
                         width: 12.w,
@@ -1342,6 +1252,7 @@ class UserSearch extends GetView<UserSearchController> {
 class UserSearchController extends GetxController with StateMixin {
   var list = [].obs;
   var historyList = [].obs;
+
   //搜索结果
   var resultList = [];
   var tabList = [].obs;
@@ -1364,32 +1275,23 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   void getSearchList(String str) async {
-
     BaseModel result = await ApiMain.instance.getSearchList(str);
     if (result.code == HttpCode.success) {
       //解析搜索联想词
 
       //第一条为联想词，第二条为有图片的联想
-      List oldList = result.data["contents"]
-          .first["searchSuggestionsSectionRenderer"]["contents"];
+      List oldList = result.data["contents"].first["searchSuggestionsSectionRenderer"]["contents"];
       var newList = [];
       for (var item in oldList) {
-        List childTextList =
-            item["searchSuggestionRenderer"]["suggestion"]["runs"];
+        List childTextList = item["searchSuggestionRenderer"]["suggestion"]["runs"];
         var itemTextView = RichText(
             text: TextSpan(
                 children: childTextList
                     .map((e) => TextSpan(
                         text: e["text"],
-                        style: TextStyle(
-                            fontSize: 14.w,
-                            color: Colors.black,
-                            fontWeight: e["bold"] == true
-                                ? FontWeight.bold
-                                : FontWeight.normal)))
+                        style: TextStyle(fontSize: 14.w, color: Colors.black, fontWeight: e["bold"] == true ? FontWeight.bold : FontWeight.normal)))
                     .toList()));
-        var itemText = item["searchSuggestionRenderer"]["navigationEndpoint"]
-            ["searchEndpoint"]["query"];
+        var itemText = item["searchSuggestionRenderer"]["navigationEndpoint"]["searchEndpoint"]["query"];
 
         newList.add({"view": itemTextView, "text": itemText});
       }
@@ -1431,24 +1333,24 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   String youtubeMoreToken = "";
+
   void toSearch(String str) async {
     //收起键盘
     Get.focusScope?.unfocus();
 
-
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     EventUtils.instance.addEvent("search_content", data: {"content": str});
 
-    LoadingUtil.showLoading();
     //保存搜索历史记录
     saveHistory(str);
 
-    AdUtils.instance.showAd("behavior",adScene: AdScene.search);
+    AdUtils.instance.showAd("behavior", adScene: AdScene.search);
 
     if (Get.find<Application>().typeSo == "yt") {
       //youtube的搜索
 
+      LoadingUtil.showLoading();
       var result = await ApiMain.instance.youtubeSearch(str);
       showSuggestions.value = false;
       lastWords = str;
@@ -1459,18 +1361,13 @@ class UserSearchController extends GetxController with StateMixin {
       }
 
       //解析数据
-      var oldList = result.data["contents"]["twoColumnSearchResultsRenderer"]
-                  ["primaryContents"]["sectionListRenderer"]["contents"][0]
+      var oldList = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]
               ["itemSectionRenderer"]["contents"] ??
           [];
       //更多数据token
       try {
-        youtubeMoreToken = result.data["contents"]
-                                ["twoColumnSearchResultsRenderer"]
-                            ["primaryContents"]
-                        ["sectionListRenderer"]["contents"][1]
-                    ["continuationItemRenderer"]?["continuationEndpoint"]
-                ?["continuationCommand"]?["token"] ??
+        youtubeMoreToken = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][1]
+                ["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ??
             "";
       } catch (e) {
         print(e);
@@ -1484,21 +1381,12 @@ class UserSearchController extends GetxController with StateMixin {
           AppLog.e(item);
 
           var videoId = item["videoRenderer"]["videoId"];
-          var cover =
-              item["videoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
+          var cover = item["videoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
           var title = item["videoRenderer"]["title"]["runs"][0]["text"];
           var subtitle = item["videoRenderer"]["ownerText"]["runs"][0]["text"];
-          var timeStr =
-              item["videoRenderer"]["lengthText"]?["simpleText"] ?? "";
+          var timeStr = item["videoRenderer"]["lengthText"]?["simpleText"] ?? "";
 
-          newList.add({
-            "title": title,
-            "subtitle": subtitle,
-            "cover": cover,
-            "videoId": videoId,
-            "timeStr": timeStr,
-            "type": "Video"
-          });
+          newList.add({"title": title, "subtitle": subtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": "Video"});
         } else {
           //reelShelfRenderer
           //lockupViewModel
@@ -1519,118 +1407,91 @@ class UserSearchController extends GetxController with StateMixin {
 
     //设置上方tab
     tabList.value = ["All".tr];
-    tabList.addAll(
-        ["Tracks".tr, "Video".tr, "Artist".tr, "Album".tr, "Playlist".tr]);
+    tabList.addAll(["Tracks".tr, "Video".tr, "Artist".tr, "Album".tr, "Playlist".tr]);
 
     //清空搜索记录
     resultList.clear();
     //搜索结果
+    LoadingUtil.showLoading();
     var result = await ApiMain.instance.getSearchResult(str);
+    LoadingUtil.hideAllLoading();
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      var oldList = result.data["contents"]["tabbedSearchResultsRenderer"]
-              ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-          ["contents"];
+      try {
+        var oldList = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
-      for (Map item in oldList) {
-        if (item.containsKey("musicCardShelfRenderer")) {
-          //精准搜索
-          String bigTitle = item["musicCardShelfRenderer"]["header"]
-              ["musicCardShelfHeaderBasicRenderer"]["title"]["runs"][0]["text"];
-          // List childList = item["musicShelfRenderer"]["contents"];
+        for (Map item in oldList) {
+          if (item.containsKey("musicCardShelfRenderer")) {
+            //精准搜索
+            String bigTitle = item["musicCardShelfRenderer"]["header"]["musicCardShelfHeaderBasicRenderer"]["title"]["runs"][0]["text"];
+            // List childList = item["musicShelfRenderer"]["contents"];
 
-          var childTitle =
-              item["musicCardShelfRenderer"]["title"]["runs"][0]["text"];
+            var childTitle = item["musicCardShelfRenderer"]["title"]["runs"][0]["text"];
 
-          List childSubtitleList =
-              item["musicCardShelfRenderer"]["subtitle"]["runs"];
-          var childSubtitle =
-              childSubtitleList.map((e) => e["text"]).toList().join("");
+            List childSubtitleList = item["musicCardShelfRenderer"]["subtitle"]["runs"];
+            var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicCardShelfRenderer"]["thumbnail"]
-                  ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-              .last["url"];
+            var cover = item["musicCardShelfRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-          try {
-            var type = item["musicCardShelfRenderer"]["title"]["runs"][0]
-                        ["navigationEndpoint"]["watchEndpoint"]
-                    ["watchEndpointMusicSupportedConfigs"]
-                ["watchEndpointMusicConfig"]["musicVideoType"];
-            var videoId = item["musicCardShelfRenderer"]["title"]["runs"][0]
-                ["navigationEndpoint"]["watchEndpoint"]["videoId"];
-            resultList.add({
-              "title": bigTitle,
-              "list": [
-                {
-                  "title": childTitle,
-                  "subtitle": childSubtitle,
-                  "cover": cover,
-                  "videoId": videoId,
-                  "type": type
-                }
-              ],
-              "type": type
-            });
-          } catch (e) {
-            print(e);
+            try {
+              var type = item["musicCardShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
+                  ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+              var videoId = item["musicCardShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]["videoId"];
+              resultList.add({
+                "title": bigTitle,
+                "list": [
+                  {"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": type}
+                ],
+                "type": type
+              });
+            } catch (e) {
+              print(e);
 
-            var type = item["musicCardShelfRenderer"]["title"]["runs"][0]
-                        ["navigationEndpoint"]["browseEndpoint"]
-                    ["browseEndpointContextSupportedConfigs"]
-                ["browseEndpointContextMusicConfig"]["pageType"];
-            var browseId = item["musicCardShelfRenderer"]["title"]["runs"][0]
-                ["navigationEndpoint"]["browseEndpoint"]["browseId"];
-            resultList.add({
-              "title": bigTitle,
-              "list": [
-                {
-                  "title": childTitle,
-                  "subtitle": childSubtitle,
-                  "cover": cover,
-                  "browseId": browseId,
-                  "type": type
-                }
-              ],
-              "type": type
-            });
+              var type = item["musicCardShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]
+                  ["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
+              var browseId = item["musicCardShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+              resultList.add({
+                "title": bigTitle,
+                "list": [
+                  {"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": type}
+                ],
+                "type": type
+              });
+            }
+
+            continue;
           }
 
-          continue;
+          if (item.containsKey("itemSectionRenderer")) {
+            //didYouMean，没有内容
+            continue;
+          }
+
+          //列表
+          String bigTitle = item["musicShelfRenderer"]["title"]["runs"][0]["text"];
+          List childList = item["musicShelfRenderer"]["contents"];
+
+          //解析childList
+          var newChildList = FormatMyData.instance.getAllSearchList(childList);
+          resultList.add({"title": bigTitle, "list": newChildList, "type": newChildList.first["type"]});
         }
 
-        if (item.containsKey("itemSectionRenderer")) {
-          //didYouMean，没有内容
-          continue;
-        }
+        // AppLog.e(resultList);
 
-        //列表
-        String bigTitle =
-            item["musicShelfRenderer"]["title"]["runs"][0]["text"];
-        List childList = item["musicShelfRenderer"]["contents"];
+        showSuggestions.value = false;
+        change("", status: RxStatus.success());
 
-        //解析childList
-        var newChildList = FormatMyData.instance.getAllSearchList(childList);
-        resultList.add({
-          "title": bigTitle,
-          "list": newChildList,
-          "type": newChildList.first["type"]
-        });
+        EventUtils.instance.addEvent("search_result");
+      } catch (e) {
+        AppLog.e(e.toString());
       }
-
-      // AppLog.e(resultList);
-
-      showSuggestions.value = false;
-      change("", status: RxStatus.success());
-
-      EventUtils.instance.addEvent("search_result");
     } else {
       showSuggestions.value = false;
       change("", status: RxStatus.error());
     }
 
     lastWords = str;
-    LoadingUtil.hideAllLoading();
 
     await searchOtherList(str);
   }
@@ -1645,8 +1506,7 @@ class UserSearchController extends GetxController with StateMixin {
 
     var str = lastWords;
 
-    var result = await ApiMain.instance
-        .youtubeSearch(str, continuation: youtubeMoreToken);
+    var result = await ApiMain.instance.youtubeSearch(str, continuation: youtubeMoreToken);
     showSuggestions.value = false;
     lastWords = str;
     LoadingUtil.hideAllLoading();
@@ -1657,16 +1517,13 @@ class UserSearchController extends GetxController with StateMixin {
 
     //解析数据
 
-    var oldList = result.data["onResponseReceivedCommands"][0]
-                ["appendContinuationItemsAction"]["continuationItems"][0]
-            ["itemSectionRenderer"]["contents"] ??
+    var oldList = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]["continuationItems"][0]["itemSectionRenderer"]
+            ["contents"] ??
         [];
     //更多数据token
     try {
-      youtubeMoreToken = result.data["onResponseReceivedCommands"][0]
-                      ["appendContinuationItemsAction"]["continuationItems"][1]
-                  ["continuationItemRenderer"]?["continuationEndpoint"]
-              ?["continuationCommand"]?["token"] ??
+      youtubeMoreToken = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]["continuationItems"][1]
+              ["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ??
           "";
     } catch (e) {
       print(e);
@@ -1678,19 +1535,11 @@ class UserSearchController extends GetxController with StateMixin {
       if (item.containsKey("videoRenderer")) {
         //视频
         var videoId = item["videoRenderer"]["videoId"];
-        var cover =
-            item["videoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
+        var cover = item["videoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
         var title = item["videoRenderer"]["title"]["runs"][0]["text"];
         var subtitle = item["videoRenderer"]["ownerText"]["runs"][0]["text"];
         var timeStr = item["videoRenderer"]["lengthText"]?["simpleText"] ?? "";
-        newList.add({
-          "title": title,
-          "subtitle": subtitle,
-          "cover": cover,
-          "videoId": videoId,
-          "timeStr": timeStr,
-          "type": "Video"
-        });
+        newList.add({"title": title, "subtitle": subtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": "Video"});
       } else {
         AppLog.e(item.keys);
       }
@@ -1700,13 +1549,7 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchOtherList(String str) async {
-    await Future.wait([
-      searchSong(str),
-      searchVideo(str),
-      searchArtist(str),
-      searchAlbum(str),
-      searchPlaylist(str)
-    ]);
+    await Future.wait([searchSong(str), searchVideo(str), searchArtist(str), searchAlbum(str), searchPlaylist(str)]);
   }
 
   var songList = [].obs;
@@ -1726,56 +1569,41 @@ class UserSearchController extends GetxController with StateMixin {
 
   var inputFocusNode = FocusNode();
   var showClearBtn = false.obs;
+
   Future searchSong(String str) async {
     //搜索结果
     songList.clear();
     songNextData = {};
-    BaseModel result = await ApiMain.instance
-        .getSearchResult(lastWords, params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]
-                  ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-              ["contents"] ??
-          [];
+      List contents =
+          result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
       for (Map item in contents) {
         if (item.containsKey("musicShelfRenderer")) {
           oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          songNextData = item["musicShelfRenderer"]["continuations"]?[0]
-                  ["nextContinuationData"] ??
-              {};
+          songNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
         }
       }
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
         // var childSubtitle =
         //     childSubtitleList.map((e) => e["text"]).toList().join("");
         var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]
-            ["playlistItemData"]["videoId"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "videoId": videoId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
       }
       songList.addAll(childList);
     } else {
@@ -1788,49 +1616,31 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords,
-        params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]
-              ["musicShelfContinuation"]["contents"] ??
-          [];
+      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      songNextData = result.data["continuationContents"]
-                  ["musicShelfContinuation"]["continuations"]?[0]
-              ["nextContinuationData"] ??
-          {};
+      songNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]
-            ["playlistItemData"]["videoId"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "videoId": videoId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
       }
       songList.addAll(childList);
     } else {
@@ -1841,23 +1651,18 @@ class UserSearchController extends GetxController with StateMixin {
   Future searchVideo(String str) async {
     videoList.clear();
     videoNextData = {};
-    BaseModel result = await ApiMain.instance
-        .getSearchResult(lastWords, params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]
-                  ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-              ["contents"] ??
-          [];
+      List contents =
+          result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
       for (Map item in contents) {
         if (item.containsKey("musicShelfRenderer")) {
           oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          videoNextData = item["musicShelfRenderer"]["continuations"]?[0]
-                  ["nextContinuationData"] ??
-              {};
+          videoNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
         }
       }
 
@@ -1867,32 +1672,20 @@ class UserSearchController extends GetxController with StateMixin {
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
         // var childSubtitle =
         //     childSubtitleList.map((e) => e["text"]).toList().join("");
         var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
         var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]
-            ["playlistItemData"]["videoId"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "timeStr": timeStr,
-          "videoId": videoId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "timeStr": timeStr, "videoId": videoId, "type": ""});
       }
       videoList.addAll(childList);
     } else {
@@ -1905,52 +1698,34 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords,
-        params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]
-              ["musicShelfContinuation"]["contents"] ??
-          [];
+      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      videoNextData = result.data["continuationContents"]
-                  ["musicShelfContinuation"]["continuations"]?[0]
-              ["nextContinuationData"] ??
-          {};
+      videoNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
         // var childSubtitle =
         //     childSubtitleList.map((e) => e["text"]).toList().join("");
         var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
         var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]
-            ["playlistItemData"]["videoId"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "videoId": videoId,
-          "timeStr": timeStr,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": ""});
       }
       videoList.addAll(childList);
     } else {
@@ -1961,23 +1736,18 @@ class UserSearchController extends GetxController with StateMixin {
   Future searchArtist(String str) async {
     artistList.clear();
     artistNextData = {};
-    BaseModel result = await ApiMain.instance
-        .getSearchResult(lastWords, params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]
-                  ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-              ["contents"] ??
-          [];
+      List contents =
+          result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
       for (Map item in contents) {
         if (item.containsKey("musicShelfRenderer")) {
           oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          artistNextData = item["musicShelfRenderer"]["continuations"]?[0]
-                  ["nextContinuationData"] ??
-              {};
+          artistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
         }
       }
 
@@ -1987,33 +1757,21 @@ class UserSearchController extends GetxController with StateMixin {
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
         // var videoId = item["musicResponsiveListItemRenderer"]
         //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       artistList.addAll(childList);
     } else {
@@ -2026,51 +1784,33 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords,
-        params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]
-              ["musicShelfContinuation"]["contents"] ??
-          [];
+      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      artistNextData = result.data["continuationContents"]
-                  ["musicShelfContinuation"]["continuations"]?[0]
-              ["nextContinuationData"] ??
-          {};
+      artistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
         // var videoId = item["musicResponsiveListItemRenderer"]
         // ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       artistList.addAll(childList);
     } else {
@@ -2081,23 +1821,18 @@ class UserSearchController extends GetxController with StateMixin {
   Future searchAlbum(String str) async {
     albumList.clear();
     albumNextData = {};
-    BaseModel result = await ApiMain.instance
-        .getSearchResult(lastWords, params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]
-                  ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-              ["contents"] ??
-          [];
+      List contents =
+          result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
       for (Map item in contents) {
         if (item.containsKey("musicShelfRenderer")) {
           oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          albumNextData = item["musicShelfRenderer"]["continuations"]?[0]
-                  ["nextContinuationData"] ??
-              {};
+          albumNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
         }
       }
 
@@ -2113,33 +1848,21 @@ class UserSearchController extends GetxController with StateMixin {
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
         // var videoId = item["musicResponsiveListItemRenderer"]
         //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       albumList.addAll(childList);
     } else {
@@ -2152,51 +1875,33 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords,
-        params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]
-              ["musicShelfContinuation"]["contents"] ??
-          [];
+      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      albumNextData = result.data["continuationContents"]
-                  ["musicShelfContinuation"]["continuations"]?[0]
-              ["nextContinuationData"] ??
-          {};
+      albumNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
         // var videoId = item["musicResponsiveListItemRenderer"]
         // ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       albumList.addAll(childList);
     } else {
@@ -2207,23 +1912,18 @@ class UserSearchController extends GetxController with StateMixin {
   Future searchPlaylist(String str) async {
     playlistList.clear();
     playlistNextData = {};
-    BaseModel result = await ApiMain.instance
-        .getSearchResult(lastWords, params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]
-                  ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-              ["contents"] ??
-          [];
+      List contents =
+          result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
       for (Map item in contents) {
         if (item.containsKey("musicShelfRenderer")) {
           oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          playlistNextData = item["musicShelfRenderer"]["continuations"]?[0]
-                  ["nextContinuationData"] ??
-              {};
+          playlistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
         }
       }
 
@@ -2233,33 +1933,21 @@ class UserSearchController extends GetxController with StateMixin {
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
         // var videoId = item["musicResponsiveListItemRenderer"]
         //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       playlistList.addAll(childList);
     } else {
@@ -2272,51 +1960,33 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords,
-        params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]
-              ["musicShelfContinuation"]["contents"] ??
-          [];
+      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      playlistNextData = result.data["continuationContents"]
-                  ["musicShelfContinuation"]["continuations"]?[0]
-              ["nextContinuationData"] ??
-          {};
+      playlistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
       for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
+        var childTitle =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]
-                ["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]
-            ["text"]["runs"];
-        var childSubtitle =
-            childSubtitleList.map((e) => e["text"]).toList().join("");
+        List childSubtitleList =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-                ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-            .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
         // var videoId = item["musicResponsiveListItemRenderer"]
         // ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]
-            ["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({
-          "title": childTitle,
-          "subtitle": childSubtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": ""
-        });
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
       }
       playlistList.addAll(childList);
     } else {

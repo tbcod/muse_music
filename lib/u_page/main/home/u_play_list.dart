@@ -5,6 +5,7 @@ import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
@@ -57,6 +58,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                   title: Obx(() => controller.showTitle.value ? Text(controller.info["title"], style: TextStyle(fontSize: 16.w)) : Container()),
                   leading: IconButton(
                       onPressed: () {
+                        AdUtils.instance.showAd("behavior", adScene: AdScene.back);
                         Get.back();
                       },
                       icon: Image.asset(
@@ -749,6 +751,13 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     }
     bindData();
   }
+
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.playlist);
+    super.onReady();
+  }
+
 
   bindData() async {
     var result = await ApiMain.instance.getData(browseId);

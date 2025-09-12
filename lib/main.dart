@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/page/launch.dart';
 import 'package:music_muse/page/main_page.dart';
@@ -18,15 +19,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'const/env.dart';
+import 'muse_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bus.startTime = DateTime.now();
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }
 
 class MyApp extends GetView {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     // bindData();
@@ -55,20 +59,21 @@ class MyApp extends GetView {
 
               child = botToastBuilder(c, child);
               return child;
-            }, //1. call BotToastInit
-            navigatorObservers: [
-              BotToastNavigatorObserver()
-            ], //2. registered route observer
+            },
+            //1. call BotToastInit
+            navigatorObservers: [BotToastNavigatorObserver()],
+            //2. registered route observer
             theme: ThemeData(
                 scaffoldBackgroundColor: const Color(0xfff9f9f9),
-                splashColor: Colors.transparent, // 点击时的高亮效果设置为透明
-                highlightColor: Colors.transparent, // 长按时的扩散效果设置为透明
+                splashColor: Colors.transparent,
+                // 点击时的高亮效果设置为透明
+                highlightColor: Colors.transparent,
+                // 长按时的扩散效果设置为透明
 
                 textTheme: const TextTheme(
                   bodyMedium: TextStyle(height: 1.2),
                 ),
-                bottomSheetTheme: BottomSheetThemeData(
-                    modalBarrierColor: Colors.red.withOpacity(0.43)),
+                bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: Colors.red.withOpacity(0.43)),
                 appBarTheme: AppBarTheme(
                     systemOverlayStyle: getWhiteBarStyle(),
                     foregroundColor: Colors.black,
@@ -76,12 +81,9 @@ class MyApp extends GetView {
                     titleSpacing: 0,
                     elevation: 0,
                     centerTitle: true,
-                    titleTextStyle: TextStyle(
-                        fontSize: 18.w,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                    titleTextStyle: TextStyle(fontSize: 18.w, color: Colors.black, fontWeight: FontWeight.bold),
                     backgroundColor: Colors.transparent)),
-            title: Env.appName,
+            title: MuseConfig.appName,
             debugShowCheckedModeBanner: false,
             home: const LaunchPage(),
             locale: MyTranslations.locale,
@@ -99,8 +101,7 @@ class MyApp extends GetView {
 
             routingCallback: (Routing? routing) async {
               //路由跳转
-              if (routing?.current == "/MainPage" ||
-                  routing?.current == "/UserMain") {
+              if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
                 Get.find<Application>().isMainPage.value = true;
               } else {
                 Get.find<Application>().isMainPage.value = false;
@@ -112,8 +113,7 @@ class MyApp extends GetView {
 }
 
 class AppController extends SuperController {
-  static final RouteObserver<PageRoute> routeObserver =
-      RouteObserver<PageRoute>();
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   @override
   void onInit() async {
@@ -159,11 +159,9 @@ class AppController extends SuperController {
       //判断是否新用户
       var isNewUser = false;
       var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-      var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs)
-          .difference(DateTime.now());
+      var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
       isNewUser = tempD.inHours < 24;
-      TbaUtils.instance
-          .postUserData({"mm_new_user": isNewUser ? "new" : "old"});
+      TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
     }
 
     AppStateEventNotifier.startListening();
@@ -177,20 +175,33 @@ class AppController extends SuperController {
           //判断新老用户
           var isNewUser = false;
           var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-          var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs)
-              .difference(DateTime.now());
+          var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
           isNewUser = tempD.inHours < 24;
-          TbaUtils.instance
-              .postUserData({"mm_new_user": isNewUser ? "new" : "old"});
+          TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
 
-          AdUtils.instance.showAd("open",adScene: AdScene.openHot);
+          AdUtils.instance.showAd("open",
+              adScene: AdScene.openHot,
+              onShow: ShowCallback(
+                onShowFail: (adId, e) {
+                  AppLog.e("前台加载广告失败：$adId, $e");
+                },
+                onClose: (adId) {
+                  if (bus.isLaunchLoadingAdShowing) {
+                    Get.back();
+                  }
+                },
+                onShow: (adId) {
+                  if (bus.isLaunchLoadingAdShowing) {
+                    Get.back();
+                  }
+                },
+              ),);
         } else if (state == AppState.background) {
           Get.find<Application>().isAppBack = true;
           // AppLog.i("后台");
           //判断是否在播放
           try {
-            if (Get.find<UserPlayInfoController>().player?.value.isPlaying ??
-                false) {
+            if (Get.find<UserPlayInfoController>().player?.value.isPlaying ?? false) {
               await Future.delayed(const Duration(milliseconds: 100));
               await Get.find<UserPlayInfoController>().player?.play();
               await Future.delayed(const Duration(milliseconds: 100));
@@ -218,7 +229,7 @@ class AppController extends SuperController {
 
   @override
   void onPaused() async {
-    AppLog.i("-切换到后台");
+    // AppLog.i("-切换到后台");
     // try {
     //   if (Get.find<UserPlayInfoController>().player?.value.isPlaying ?? false) {
     //     await Future.delayed(Duration(milliseconds: 100));
@@ -235,7 +246,7 @@ class AppController extends SuperController {
 
   @override
   void onResumed() async {
-    AppLog.e("-切换到前台");
+    // AppLog.e("-切换到前台");
   }
 
   @override

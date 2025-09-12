@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 
@@ -29,6 +30,7 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
           leading: IconButton(
               onPressed: () {
                 Get.back();
+                AdUtils.instance.showAd("behavior", adScene: AdScene.back);
               },
               icon: Image.asset(
                 "assets/oimg/icon_back.png",
@@ -158,6 +160,12 @@ class UserLikeArtistController extends GetxController {
   void onInit() {
     super.onInit();
     bindData();
+  }
+
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.artist);
+    super.onReady();
   }
 
   bindData() {

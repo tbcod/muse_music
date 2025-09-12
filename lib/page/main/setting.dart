@@ -4,10 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/env.dart';
+import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main/setting/feedback.dart';
 import 'package:music_muse/page/main/setting/only_web.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
+import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/toast.dart';
 
 import '../../view/base_dialog.dart';
 
@@ -89,13 +92,25 @@ class SettingPage extends GetView<SettingPageController> {
         ),
       ),
       onTap: () {
-        if (itemTitle == "Feedback") {
+        if (itemTitle == "Feedback".tr) {
           //反馈
           Get.to(FeedbackPage());
-        } else if (itemTitle == "Privacy Policy") {
+        } else if (itemTitle == "Privacy Policy".tr) {
           Get.to(OnlyWeb(), arguments: 2);
-        } else if (itemTitle == "Terms of Service") {
+        } else if (itemTitle == "Terms of Service".tr) {
           Get.to(OnlyWeb(), arguments: 1);
+        }else if (itemTitle == "pops".tr) {
+          Get.dialog(BaseDialog(
+            title: "pops".tr,
+            content: "popDetail".tr,
+            rBtnText: "reset".tr,
+            lBtnText: "Cancel".tr,
+            rBtnOnTap: () async {
+              ConsentRequest.instance.reset();
+              Get.back();
+              ToastUtil.showToast(msg: "success".tr);
+            },
+          ));
         } else if (itemTitle == "Ad Tools") {
           AppLog.e(AdUtils.instance.loadedAdMap);
           AppLog.e(AdUtils.instance.adJson);
@@ -125,12 +140,12 @@ class SettingPage extends GetView<SettingPageController> {
 }
 
 class SettingPageController extends GetxController {
-  var listTitle = ["Privacy Policy", "Terms of Service", "Feedback"];
+  var listTitle = ["Privacy Policy".tr, "Terms of Service".tr, "Feedback".tr, "pops".tr];
 
   @override
   void onInit() {
     super.onInit();
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       listTitle.add("Ad Tools");
     }
   }
