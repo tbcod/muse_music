@@ -162,6 +162,12 @@ class UserLikeArtistController extends GetxController {
     bindData();
   }
 
+  @override
+  void onReady() {
+    AdUtils.instance.showAd("behavior", adScene: AdScene.artist);
+    super.onReady();
+  }
+
   bindData() {
     //获取所有收藏的歌曲
     list.value = LikeUtil.instance.allArtistMap.values.toList();

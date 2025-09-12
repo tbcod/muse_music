@@ -97,7 +97,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
         body: Container(
           padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
           decoration: const BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffa78efe), Color(0xff5d59dc)])),
+              gradient: LinearGradient(end: Alignment.bottomCenter, begin: Alignment.topCenter, colors: [Color(0xffa79efe), Color(0xff5d60dc)])),
           width: double.infinity,
           height: double.infinity,
           child: Stack(
@@ -201,6 +201,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
     _streamSubscription = null;
     _timer?.cancel();
     _timer = null;
+    AdUtils.instance.adIsShowing = false;
     super.dispose();
   }
 }

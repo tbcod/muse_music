@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/api/api_main.dart';
 import 'package:music_muse/const/env.dart';
 import 'package:music_muse/muse_config.dart';
+import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/history_util.dart';
@@ -51,19 +52,32 @@ class UserSetting extends GetView<UserSettingController> {
             centerTitle: false,
             title: Text("Setting".tr),
             titleSpacing: 12.w,
+            actions: [
+              GestureDetector(
+                  onDoubleTap: () {
+                    controller._clickCount++;
+                    if (controller._clickCount > 5) {
+                      controller._clickCount = 0;
+                      Get.to(() => UDebugPage());
+                    }
+                  },
+                  child: Container(
+                    color: MuseConfig.isUser ? Colors.transparent : Colors.white30,
+                    width: 100,
+                    height: 44,
+                  )),
+            ],
           ),
-          body: Container(
-            child: Obx(() => ListView.separated(
-                itemBuilder: (_, i) {
-                  return getItem(i);
-                },
-                separatorBuilder: (_, i) {
-                  return SizedBox(
-                    height: 1,
-                  );
-                },
-                itemCount: controller.listTitle.length)),
-          ),
+          body: Obx(() => ListView.separated(
+              itemBuilder: (_, i) {
+                return getItem(i);
+              },
+              separatorBuilder: (_, i) {
+                return SizedBox(
+                  height: 1,
+                );
+              },
+              itemCount: controller.listTitle.length)),
         ),
       ),
     );
@@ -294,6 +308,8 @@ class UserSettingController extends GetxController {
   var versionName = "".obs;
   var cacheNum = "".obs;
   var langStr = "".obs;
+
+  int _clickCount = 0;
 
   @override
   void onInit() async {

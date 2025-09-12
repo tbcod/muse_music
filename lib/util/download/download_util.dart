@@ -151,9 +151,9 @@ class DownloadUtils {
       //download
       //artist_more_song
       //artist
+      EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
+      ToastUtil.showToast(msg: "addedDownloadQueue".tr);
     }
-    EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
-    ToastUtil.showToast(msg: "addedDownloadQueue".tr);
 
     if (showAd) {
       AdUtils.instance.showAd("behavior", adScene: AdScene.download);
@@ -198,40 +198,59 @@ class DownloadUtils {
 
           HistoryUtil.instance.addHistorySong(infoData);
 
-          EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
           ToastUtil.showToast(msg: "downloadCompleted".tr);
+          EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
           return;
         }
       }
       //获取url
 
-      LoadingUtil.showLoading();
-      var url = await getDownloadUrl(videoId, false);
-      LoadingUtil.hideAllLoading();
-      if (url.isEmpty) {
-        ToastUtil.showToast(msg: "Get url error".tr);
-        EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
-        return;
-      }
 
-      //添加到下载列表
 
-      var fileName = "${Uuid().v8()}.mp4";
+      var fileName = "${const Uuid().v8()}.mp4";
       allDownLoadingData[videoId] = {
-        "url": url,
+        "url": "",
         "videoId": videoId,
         "infoData": infoData,
         "progress": 0.0,
-        "state": 0,
+        "state": 1,
         "time": DateTime.now(),
         "path": fileName
       };
+      // LoadingUtil.showLoading();
+      allDownLoadingData.refresh();
+
+      var url = await getDownloadUrl(videoId, false);
+      // LoadingUtil.hideAllLoading();
+      if (url.isEmpty) {
+        allDownLoadingData[videoId]["state"] = 0;
+        allDownLoadingData.refresh();
+
+        if (clickType.isNotEmpty) {
+          ToastUtil.showToast(msg: "Get url error".tr);
+        }
+        EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
+        return;
+      }
+      allDownLoadingData[videoId]["url"] = url;
+
+      //添加到下载列表
+
+      // var fileName = "${Uuid().v8()}.mp4";
+      // allDownLoadingData[videoId] = {
+      //   "url": url,
+      //   "videoId": videoId,
+      //   "infoData": infoData,
+      //   "progress": 0.0,
+      //   "state": 0,
+      //   "time": DateTime.now(),
+      //   "path": fileName
+      // };
     }
 
     var url = allDownLoadingData[videoId]["url"] ?? "";
     var fileName = "${Uuid().v8()}.mp4";
     AppLog.i("下载链接$url");
-
     allDownLoadingData[videoId]["state"] = 1;
     allDownLoadingData.refresh();
     await saveVideoInfo();

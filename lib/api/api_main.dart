@@ -159,7 +159,7 @@ class ApiMain extends BaseApi {
 
     String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
 
-    if (videoUrl.isEmpty && retryCount < 3) {
+    if (videoUrl.isEmpty && retryCount < 1) {
       AppLog.e("获取url失败:$url,$body，重试：$retryCount");
       await Future.delayed(Duration(seconds: retryCount + 1));
       return getVideoInfoYoutube(videoId, retryCount: retryCount + 1);

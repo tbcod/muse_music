@@ -20,9 +20,8 @@ class AdmobUtils {
   }
 
   Future init() async {
+    MobileAds.instance.setAppMuted(true);
     await MobileAds.instance.initialize();
-
-
 
     List<String> testIds = [];
     if(kDebugMode){
@@ -30,7 +29,6 @@ class AdmobUtils {
       AppLog.i("idfa:$idfa");
       testIds.add(idfa);
     }
-
     await MobileAds.instance.setAppMuted(true);
     //IDFA或gaid
     await MobileAds.instance.updateRequestConfiguration(RequestConfiguration(

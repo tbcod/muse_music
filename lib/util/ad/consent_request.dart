@@ -40,7 +40,7 @@ class ConsentRequest {
                   },
                 );
               } else {
-                AppLog.e("【ConsentRequest completer 1");
+                AppLog.e("【ConsentRequest】 completer 1");
                 if (!completer.isCompleted) completer.complete(true);
               }
             },
@@ -50,12 +50,12 @@ class ConsentRequest {
             },
           );
         } else {
-          AppLog.e("【ConsentRequest completer 2");
+          AppLog.e("【ConsentRequest】 completer 2");
           if (!completer.isCompleted) completer.complete(true);
         }
       },
       (FormError error) {
-        AppLog.e("【ConsentRequest completer 3, error:${error.message}");
+        AppLog.e("【ConsentRequest】 completer 3, error:${error.message}");
         if (!completer.isCompleted) completer.complete(true);
       },
     );

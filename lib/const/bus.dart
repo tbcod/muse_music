@@ -11,6 +11,8 @@ class Bus {
 
   bool isBMode = false; //进入到B面后设置为true
 
+  bool isLaunchLoadingAdShowing = false;
+
   bool get isFirstAppLaunch {
     return getAppLaunchCount <= 1;
   }

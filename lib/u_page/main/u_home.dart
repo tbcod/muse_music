@@ -1145,7 +1145,7 @@ class UserHomeController extends GetxController with StateMixin {
         change("", status: RxStatus.error());
         // TbaUtils.instance.postUserData({"mm_type_so": "no"});
       }
-
+      ToastUtil.showToast(msg: "Network issue,Please try again later.");
       return;
     }
 
@@ -1298,6 +1298,9 @@ class UserHomeController extends GetxController with StateMixin {
 
     bindYoutubeMusicNextData();
 
+    if(source == 'drop_down'){
+      ToastUtil.showToast(msg: "Refresh successful");
+    }
     // Get.find<UserPlayInfoController>().showLastPlayBar();
   }
 

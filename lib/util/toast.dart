@@ -119,9 +119,10 @@ class LoadingUtil {
   //   return BotToast.showLoading();
   // }
 
-  static CancelFunc showLoading({String msg = "加载中", VoidCallback? onClose}) {
+  static CancelFunc showLoading({String msg = "加载中", VoidCallback? onClose, bool clickClose = true}) {
     return BotToast.showCustomLoading(
         onClose: onClose,
+        clickClose: clickClose,
         toastBuilder: (CancelFunc cancelFunc) {
           return Container(
               width: 80.w,

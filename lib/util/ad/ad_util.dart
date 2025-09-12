@@ -4,6 +4,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
@@ -12,6 +13,7 @@ import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as admob;
+import 'package:music_muse/view/launch_loading.dart';
 
 import '../../app.dart';
 import '../log.dart';
@@ -213,6 +215,10 @@ class AdUtils {
 
   //load
   loadAd(String key, {LoadCallback? onLoad}) async {
+    if (!bus.isBMode && key == 'open') {
+      key = "sod_local_int";
+    }
+
     if (!adJson.containsKey(key)) {
       AppLog.i("没有对应广告:$key");
       onLoad?.call("", false, null);
@@ -267,11 +273,11 @@ class AdUtils {
       if (source == "admob") {
         //加载admob广告
         if (type == "open") {
-         await AppOpenAd.load(
+          await AppOpenAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
             adLoadCallback: AppOpenAdLoadCallback(onAdLoaded: (ad) {
-              AppLog.i("广告加载成功（open）：$key， $source, $type, $ad_id");
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -288,13 +294,12 @@ class AdUtils {
               }
             }),
           ).timeout(Duration(seconds: oneAdLoadTimeOut));
-        }
-        else if (type == "interstitial") {
+        } else if (type == "interstitial") {
           await InterstitialAd.load(
             adUnitId: ad_id,
             request: const AdRequest(),
             adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
-              AppLog.i("广告加载成功（插屏）：$key， $source, $type, $ad_id");
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
               if (onLoad != null) {
                 onLoad(ad.adUnitId, true, null);
               }
@@ -397,8 +402,7 @@ class AdUtils {
           );
           await nativeAd.load().timeout(Duration(seconds: oneAdLoadTimeOut));
         }
-      }
-      else if (source == "max") {
+      } else if (source == "max") {
         //加载max广告
         if (type == "open") {
           AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(
@@ -567,8 +571,10 @@ class AdUtils {
 
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
-    // AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
+    AppLog.e("广告网络：$connectivityResult");
+    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
+        !connectivityResult.contains(ConnectivityResult.mobile) &&
+        !connectivityResult.contains(ConnectivityResult.ethernet)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
@@ -594,17 +600,19 @@ class AdUtils {
       return false;
     }
 
+    if (!bus.isBMode && key == 'open') {
+      key = "sod_local_int";
+    }
+
     AppLog.i("准备展示广告, $key");
 
-
-    if (key != "level_h") {
+    if (key != "level_h" && key != "sod_local_int") {
       bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
       AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
         return true;
       }
     }
-
 
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告:$key, 不展示");
@@ -618,10 +626,11 @@ class AdUtils {
     List configList = adJson[key] ?? [];
     if (configList.isEmpty) {
       AppLog.e("对应广告位没配置:$key, 不展示");
+      if (onShow != null) {
+        onShow.onShowFail!("", AdError(-1, "", "not config"));
+      }
       return false;
     }
-
-
 
     //按照优先级降序排序
     configList.sort((a, b) {
@@ -636,6 +645,17 @@ class AdUtils {
     AppLog.i("开始显示广告:$key");
 
     EventUtils.instance.addEvent("ad_chance");
+
+    if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
+      Get.bottomSheet(
+        const LaunchLoadingPage(),
+        isScrollControlled: true,
+        enableDrag: false,
+        isDismissible: false,
+        backgroundColor: Colors.black,
+        useRootNavigator: true,
+      );
+    }
 
     var isShowAd = false;
     for (var item in configList) {
@@ -660,6 +680,7 @@ class AdUtils {
               onShow.onClick!(ad.adUnitId);
             }
           }, onAdFailedToShowFullScreenContent: (ad, e) {
+            AppLog.e("广告显示失败: $key, $type, $source, $ad_id");
             //显示失败删除缓存广告
             loadedAdMap.remove(ad.adUnitId);
             ad.dispose();
@@ -682,9 +703,16 @@ class AdUtils {
               onShow.onClose!(ad.adUnitId);
             }
           }, onAdShowedFullScreenContent: (ad) {
+            AppLog.i("广告显示成功: $key, $type, $source, $ad_id");
             adIsShowing = true;
             if (onShow != null) {
               onShow.onShow!(ad.adUnitId);
+            }
+            if (Get.isRegistered<UserPlayInfoController>()) {
+              Get.find<UserPlayInfoController>().recoverPlay(isForce: false);
+            }
+            if (bus.isLaunchLoadingAdShowing) {
+              Get.back();
             }
           });
           //设置收益事件
@@ -712,6 +740,7 @@ class AdUtils {
             }
           }, onAdFailedToShowFullScreenContent: (ad, e) {
             //显示失败删除缓存广告
+            AppLog.e("广告显示失败: $key, $type, $source, $ad_id");
             loadedAdMap.remove(ad.adUnitId);
             ad.dispose();
 
@@ -733,9 +762,13 @@ class AdUtils {
               onShow.onClose!(ad.adUnitId);
             }
           }, onAdShowedFullScreenContent: (ad) {
+            AppLog.i("广告显示成功: $key, $type, $source, $ad_id");
             adIsShowing = true;
             if (onShow != null) {
               onShow.onShow!(ad.adUnitId);
+            }
+            if (Get.isRegistered<UserPlayInfoController>()) {
+              Get.find<UserPlayInfoController>().recoverPlay(isForce: true);
             }
           });
           //设置收益事件
@@ -773,7 +806,7 @@ class AdUtils {
             if (onShow != null) {
               onShow.onShowFail!(ad.adUnitId, e);
             }
-            AppLog.e("广告加载失败:$key, $source,  $type, ${ad.adUnitId}, ${e.toString()} ");
+            AppLog.e("广告显示失败:$key, $source,  $type, ${ad.adUnitId}, ${e.toString()} ");
           }, onAdDismissedFullScreenContent: (ad) {
             playInfoController?.recoverPlay(isForce: false);
             adIsShowing = false;
@@ -790,6 +823,7 @@ class AdUtils {
               onShow.onClose!(ad.adUnitId);
             }
           }, onAdShowedFullScreenContent: (ad) {
+            AppLog.i("广告显示成功: $key, $type, $source, $ad_id");
             playInfoController?.recoverPlay(isForce: true);
             adIsShowing = true;
             if (onShow != null) {
@@ -818,6 +852,7 @@ class AdUtils {
         } else if (type == 'native') {
           NativeAd? ad = loadedItem["admob_ad"];
           if (ad != null) {
+            adIsShowing = true;
             Get.bottomSheet(
               FullAdmobNativePage(
                 ad: ad,
