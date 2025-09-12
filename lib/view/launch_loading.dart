@@ -115,12 +115,13 @@ class LaunchLoadingPageController extends GetxController {
       }
     });
 
-    _timer2 = Timer.periodic(const Duration(seconds: 5), (t) {
+    _timer2 = Timer.periodic(const Duration(seconds: 4), (t) {
       if (!AdUtils.instance.adIsShowing) {
         AdUtils.instance.showAd("open",
             adScene: AdScene.openHot,
             onShow: ShowCallback(onShowFail: (adId, e) {
               AppLog.e("onShowFail currentRoute:${Get.currentRoute}");
+              _closePage();
             }, onShow: (adId) {
               _closePage();
             }, onClose: (adId) {
