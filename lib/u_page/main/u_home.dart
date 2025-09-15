@@ -1091,6 +1091,8 @@ class UserHome extends GetView<UserHomeController> {
   }
 }
 
+
+
 class UserHomeController extends GetxController with StateMixin {
   var allData = {};
   var netList = [].obs;
@@ -1106,6 +1108,8 @@ class UserHomeController extends GetxController with StateMixin {
     bindLocalData();
     // bindYoutubeMusicData();
   }
+
+
 
   @override
   void onReady() async {

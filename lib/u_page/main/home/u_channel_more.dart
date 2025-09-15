@@ -6,6 +6,7 @@ import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
 import '../../../util/log.dart';
@@ -22,28 +23,30 @@ class UserChannelMore extends GetView<UserChannelMoreController> {
       appBar: AppBar(
         title: Text(Get.arguments["title"] ?? ""),
       ),
-      body: controller.obxView((s) => Obx(() => EasyRefresh(
-            controller: controller.easyC,
-            onLoad: () async {
-              await controller.bindMoreData();
+      body: PlayerBottomBarView(
+        child: controller.obxView((s) => Obx(() => EasyRefresh(
+              controller: controller.easyC,
+              onLoad: () async {
+                await controller.bindMoreData();
 
-              return controller.moreToken.isEmpty
-                  ? IndicatorResult.noMore
-                  : IndicatorResult.success;
-            },
-            child: GridView.builder(
-              padding: EdgeInsets.all(16.w),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10.w,
-                  crossAxisSpacing: 10.w,
-                  mainAxisExtent: (Get.width - 42.w) / 2 + 50.w),
-              itemBuilder: (_, i) {
-                return getItem(i);
+                return controller.moreToken.isEmpty
+                    ? IndicatorResult.noMore
+                    : IndicatorResult.success;
               },
-              itemCount: controller.list.length,
-            ),
-          ))),
+              child: GridView.builder(
+                padding: EdgeInsets.all(16.w),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10.w,
+                    crossAxisSpacing: 10.w,
+                    mainAxisExtent: (Get.width - 42.w) / 2 + 50.w),
+                itemBuilder: (_, i) {
+                  return getItem(i);
+                },
+                itemCount: controller.list.length,
+              ),
+            ))),
+      ),
     );
   }
 

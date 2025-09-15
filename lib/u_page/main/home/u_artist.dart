@@ -13,6 +13,7 @@ import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/format_data.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/view/net_img.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
 import '../../../util/download/download_util.dart';
@@ -42,257 +43,259 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
               fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Container(
-          child: controller.obxPage((state) => NestedScrollView(
-              controller: controller.scrollC,
-              headerSliverBuilder: (c, innerBoxIsScrolled) {
-                AppLog.e(innerBoxIsScrolled);
-                return [
-                  SliverAppBar(
-                    // systemOverlayStyle: SystemUiOverlayStyle(
-                    //     statusBarIconBrightness: Brightness.light),
-                    backgroundColor: Color(0xfffafafa),
-                    // backgroundColor: Colors.red,
-                    pinned: true,
-                    centerTitle: true,
-                    title: Obx(() => controller.isHeaderExpanded.value
-                        ? Container()
-                        : Text(controller.info["title"])),
-                    expandedHeight: 200.w + Get.mediaQuery.padding.top,
-                    leading: Obx(() => IconButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        icon: Image.asset(
-                          "assets/oimg/icon_back.png",
-                          width: 24.w,
-                          height: 24.w,
-                          color: controller.isHeaderExpanded.value
-                              ? Colors.white
-                              : Colors.black,
-                        ))),
-                    actions: [
-                      Obx(() {
-                        var isLike = LikeUtil.instance.allArtistMap
-                            .containsKey(controller.browseId);
+        body: PlayerBottomBarView(
+          child: Container(
+            child: controller.obxPage((state) => NestedScrollView(
+                controller: controller.scrollC,
+                headerSliverBuilder: (c, innerBoxIsScrolled) {
+                  AppLog.e(innerBoxIsScrolled);
+                  return [
+                    SliverAppBar(
+                      // systemOverlayStyle: SystemUiOverlayStyle(
+                      //     statusBarIconBrightness: Brightness.light),
+                      backgroundColor: Color(0xfffafafa),
+                      // backgroundColor: Colors.red,
+                      pinned: true,
+                      centerTitle: true,
+                      title: Obx(() => controller.isHeaderExpanded.value
+                          ? Container()
+                          : Text(controller.info["title"])),
+                      expandedHeight: 200.w + Get.mediaQuery.padding.top,
+                      leading: Obx(() => IconButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          icon: Image.asset(
+                            "assets/oimg/icon_back.png",
+                            width: 24.w,
+                            height: 24.w,
+                            color: controller.isHeaderExpanded.value
+                                ? Colors.white
+                                : Colors.black,
+                          ))),
+                      actions: [
+                        Obx(() {
+                          var isLike = LikeUtil.instance.allArtistMap
+                              .containsKey(controller.browseId);
 
-                        return IconButton(
-                            onPressed: () {
-                              if (isLike) {
-                                LikeUtil.instance
-                                    .unlikeArtist(controller.browseId);
-                              } else {
-                                LikeUtil.instance.likeArtist(
-                                    controller.browseId, controller.info);
-                              }
-                            },
-                            icon: Image.asset(
-                              isLike
-                                  ? "assets/oimg/icon_like_on.png"
-                                  : "assets/oimg/icon_like_off.png",
-                              width: 24.w,
-                              height: 24.w,
-                              color: isLike
-                                  ? null
-                                  : controller.isHeaderExpanded.value
-                                      ? Colors.white
-                                      : Colors.black,
-                            ));
-                      })
-                    ],
-                    flexibleSpace: FlexibleSpaceBar(
-                      titlePadding: EdgeInsets.only(left: 0),
-                      background: Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                                child: NetImageView(
-                              imgUrl: controller.info["cover"] ?? "",
-                              fit: BoxFit.cover,
-                            )),
-                            //渐变
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                        begin: Alignment.bottomCenter,
-                                        end: Alignment.topCenter,
-                                        colors: [
-                                      Color(0xff0D0D0D).withOpacity(0.69),
-                                      Color(0xff474747).withOpacity(0)
-                                    ])),
+                          return IconButton(
+                              onPressed: () {
+                                if (isLike) {
+                                  LikeUtil.instance
+                                      .unlikeArtist(controller.browseId);
+                                } else {
+                                  LikeUtil.instance.likeArtist(
+                                      controller.browseId, controller.info);
+                                }
+                              },
+                              icon: Image.asset(
+                                isLike
+                                    ? "assets/oimg/icon_like_on.png"
+                                    : "assets/oimg/icon_like_off.png",
+                                width: 24.w,
+                                height: 24.w,
+                                color: isLike
+                                    ? null
+                                    : controller.isHeaderExpanded.value
+                                        ? Colors.white
+                                        : Colors.black,
+                              ));
+                        })
+                      ],
+                      flexibleSpace: FlexibleSpaceBar(
+                        titlePadding: EdgeInsets.only(left: 0),
+                        background: Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                  child: NetImageView(
+                                imgUrl: controller.info["cover"] ?? "",
+                                fit: BoxFit.cover,
+                              )),
+                              //渐变
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                          colors: [
+                                        Color(0xff0D0D0D).withOpacity(0.69),
+                                        Color(0xff474747).withOpacity(0)
+                                      ])),
+                                ),
                               ),
-                            ),
 
-                            Positioned(
-                                left: 12.w,
-                                right: 12.w,
-                                bottom: 8.w,
-                                child: Text(
-                                  controller.info["title"] ?? "",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 24.w,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
-                                ))
-                          ],
+                              Positioned(
+                                  left: 12.w,
+                                  right: 12.w,
+                                  bottom: 8.w,
+                                  child: Text(
+                                    controller.info["title"] ?? "",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 24.w,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500),
+                                  ))
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  controller.hasSong.value
-                      ? SliverPersistentHeader(
-                          pinned: true,
-                          delegate: MySliverDelegate(
-                              80.w,
-                              80.w,
-                              Container(
-                                color: Color(0xfffafafa),
-                                // color: Colors.green,
-                                // clipBehavior: Clip.hardEdge,
-                                // decoration: BoxDecoration(
-                                //   color: Color(0xfffafafa),
-                                // ),
-                                height: 80.w,
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        child: InkWell(
-                                      onTap: () {
-                                        //播放
-                                        if (controller.moreList.isEmpty) {
-                                          AppLog.e(controller.moreList.length);
-                                          return;
-                                        }
-                                        EventUtils.instance.addEvent(
-                                            "det_artist_click",
-                                            data: {"detail_click": "play"});
+                    controller.hasSong.value
+                        ? SliverPersistentHeader(
+                            pinned: true,
+                            delegate: MySliverDelegate(
+                                80.w,
+                                80.w,
+                                Container(
+                                  color: Color(0xfffafafa),
+                                  // color: Colors.green,
+                                  // clipBehavior: Clip.hardEdge,
+                                  // decoration: BoxDecoration(
+                                  //   color: Color(0xfffafafa),
+                                  // ),
+                                  height: 80.w,
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                          child: InkWell(
+                                        onTap: () {
+                                          //播放
+                                          if (controller.moreList.isEmpty) {
+                                            AppLog.e(controller.moreList.length);
+                                            return;
+                                          }
+                                          EventUtils.instance.addEvent(
+                                              "det_artist_click",
+                                              data: {"detail_click": "play"});
 
-                                        Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                                controller.moreList,
-                                                controller.moreList.first,
-                                                clickType: isFormSearch
-                                                    ? "s_detail_artist"
-                                                    : "h_detail_artist");
-                                        // Get.to(UserPlayInfo());
-                                      },
-                                      child: Container(
-                                        height: 42.w,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(21.w),
-                                            color: Color(0xff7453FF)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset(
-                                              "assets/oimg/icon_play.png",
-                                              width: 24.w,
-                                              height: 24.w,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(
-                                              width: 8.w,
-                                            ),
-                                            Text(
-                                              "Play",
-                                              style: TextStyle(
-                                                  fontSize: 16.w,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.white),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )),
-                                    SizedBox(
-                                      width: 15.w,
-                                    ),
-                                    Expanded(
-                                        child: InkWell(
-                                      onTap: () {
-                                        if (controller.moreList.isEmpty) {
-                                          AppLog.e(controller.moreList.length);
-                                          return;
-                                        }
-                                        EventUtils.instance.addEvent(
-                                            "det_artist_click",
-                                            data: {"detail_click": "shuffle"});
-
-                                        List playList =
-                                            List.of(controller.moreList)
-                                              ..shuffle();
-
-                                        Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                                playList, playList.first,
-                                                clickType: isFormSearch
-                                                    ? "s_detail_artist"
-                                                    : "h_detail_artist");
-                                        // Get.to(UserPlayInfo());
-                                      },
-                                      child: Container(
-                                        height: 42.w,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(21.w),
-                                            border: Border.all(
-                                                color: Color(0xff7453FF),
-                                                width: 2.w),
-                                            color: Colors.white),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset(
-                                                "assets/oimg/icon_shuffle1.png",
+                                          Get.find<UserPlayInfoController>()
+                                              .setDataAndPlayItem(
+                                                  controller.moreList,
+                                                  controller.moreList.first,
+                                                  clickType: isFormSearch
+                                                      ? "s_detail_artist"
+                                                      : "h_detail_artist");
+                                          // Get.to(UserPlayInfo());
+                                        },
+                                        child: Container(
+                                          height: 42.w,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(21.w),
+                                              color: Color(0xff7453FF)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset(
+                                                "assets/oimg/icon_play.png",
                                                 width: 24.w,
                                                 height: 24.w,
-                                                color: Color(0xff7453FF)),
-                                            SizedBox(
-                                              width: 8.w,
-                                            ),
-                                            Text(
-                                              "Shuffle",
-                                              style: TextStyle(
-                                                  fontSize: 16.w,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff7453FF)),
-                                            )
-                                          ],
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 8.w,
+                                              ),
+                                              Text(
+                                                "Play",
+                                                style: TextStyle(
+                                                    fontSize: 16.w,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white),
+                                              )
+                                            ],
+                                          ),
                                         ),
+                                      )),
+                                      SizedBox(
+                                        width: 15.w,
                                       ),
-                                    ))
-                                  ],
-                                ),
-                              )))
-                      : SliverToBoxAdapter()
-                ];
-              },
-              body: Container(
-                color: Color(0xfffafafa),
-                child: ListView.separated(
-                    padding: EdgeInsets.only(
-                        top: 10.w,
-                        bottom: Get.mediaQuery.padding.bottom + 100.w),
-                    itemBuilder: (_, i) {
-                      return getBigItem(i);
-                    },
-                    separatorBuilder: (_, i) {
-                      return SizedBox(
-                        height: 16.w,
-                      );
-                    },
-                    itemCount: controller.list.length),
-              ))),
+                                      Expanded(
+                                          child: InkWell(
+                                        onTap: () {
+                                          if (controller.moreList.isEmpty) {
+                                            AppLog.e(controller.moreList.length);
+                                            return;
+                                          }
+                                          EventUtils.instance.addEvent(
+                                              "det_artist_click",
+                                              data: {"detail_click": "shuffle"});
+
+                                          List playList =
+                                              List.of(controller.moreList)
+                                                ..shuffle();
+
+                                          Get.find<UserPlayInfoController>()
+                                              .setDataAndPlayItem(
+                                                  playList, playList.first,
+                                                  clickType: isFormSearch
+                                                      ? "s_detail_artist"
+                                                      : "h_detail_artist");
+                                          // Get.to(UserPlayInfo());
+                                        },
+                                        child: Container(
+                                          height: 42.w,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(21.w),
+                                              border: Border.all(
+                                                  color: Color(0xff7453FF),
+                                                  width: 2.w),
+                                              color: Colors.white),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset(
+                                                  "assets/oimg/icon_shuffle1.png",
+                                                  width: 24.w,
+                                                  height: 24.w,
+                                                  color: Color(0xff7453FF)),
+                                              SizedBox(
+                                                width: 8.w,
+                                              ),
+                                              Text(
+                                                "Shuffle",
+                                                style: TextStyle(
+                                                    fontSize: 16.w,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff7453FF)),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ))
+                                    ],
+                                  ),
+                                )))
+                        : SliverToBoxAdapter()
+                  ];
+                },
+                body: Container(
+                  color: Color(0xfffafafa),
+                  child: ListView.separated(
+                      padding: EdgeInsets.only(
+                          top: 10.w,
+                          bottom: Get.mediaQuery.padding.bottom + 100.w),
+                      itemBuilder: (_, i) {
+                        return getBigItem(i);
+                      },
+                      separatorBuilder: (_, i) {
+                        return SizedBox(
+                          height: 16.w,
+                        );
+                      },
+                      itemCount: controller.list.length),
+                ))),
+          ),
         ),
       ),
     );

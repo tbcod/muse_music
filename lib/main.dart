@@ -102,7 +102,7 @@ class MyApp extends GetView {
             routingCallback: (Routing? routing) async {
               //路由跳转
               AppLog.i("routingCallback current:${routing?.current}, isBottomSheet:${routing?.isBottomSheet}");
-              if ((routing?.current == "/MainPage" || routing?.current == "/UserMain") && routing?.isBottomSheet == false) {
+              if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
                 Get.find<Application>().isMainPage.value = true;
               } else {
                 Get.find<Application>().isMainPage.value = false;

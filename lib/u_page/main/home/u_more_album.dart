@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
 import '../../../util/format_data.dart';
@@ -38,23 +39,25 @@ class UserMoreAlbum extends GetView<UserMoreAlbumController> {
               )),
           title: Text(barTitle),
         ),
-        body: controller.obxView((state) => Container(
-              child: Obx(() => GridView.builder(
-                    padding: EdgeInsets.only(
-                        left: 24.w,
-                        right: 24.w,
-                        bottom: Get.mediaQuery.padding.bottom + 100.w),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.75,
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16.w,
-                        crossAxisSpacing: 16.w),
-                    itemBuilder: (BuildContext context, int index) {
-                      return getItem(index);
-                    },
-                    itemCount: controller.list.length,
-                  )),
-            )),
+        body: PlayerBottomBarView(
+          child: controller.obxView((state) => Container(
+                child: Obx(() => GridView.builder(
+                      padding: EdgeInsets.only(
+                          left: 24.w,
+                          right: 24.w,
+                          bottom: Get.mediaQuery.padding.bottom + 100.w),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 0.75,
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 16.w,
+                          crossAxisSpacing: 16.w),
+                      itemBuilder: (BuildContext context, int index) {
+                        return getItem(index);
+                      },
+                      itemCount: controller.list.length,
+                    )),
+              )),
+        ),
       ),
     );
   }

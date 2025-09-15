@@ -21,6 +21,7 @@ import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/base_view.dart';
 import 'package:music_muse/view/emoty_view.dart';
 import 'package:music_muse/view/net_img.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../generated/assets.dart';
 import '../../../util/dialog_util.dart';
@@ -129,261 +130,263 @@ class UserSearch extends GetView<UserSearchController> {
             ],
           ),
         ),
-        body: Container(
-          child: Stack(
-            children: [
-              //下方历史记录
-              Positioned.fill(
-                  child: Listener(
-                onPointerDown: (e) {
-                  if (Get.focusScope?.hasFocus ?? false) {
-                    Get.focusScope?.unfocus();
-                  }
-                },
-                child: controller.obxView(
-                  (state) =>
-                      //搜索结果
-                      Get.find<Application>().typeSo == "yt"
-                          ? Container(
-                              child: Obx(() => EasyRefresh(
-                                  onLoad: () async {
-                                    await controller.moreYoutubeSearch();
-                                    return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                                  },
-                                  child: ListView.separated(
-                                      itemBuilder: (_, i) {
-                                        return getYTItem(i);
-                                      },
-                                      separatorBuilder: (_, i) {
-                                        return SizedBox(
-                                          height: 10.w,
-                                        );
-                                      },
-                                      itemCount: controller.ytList.length))),
-                            )
-                          : DefaultTabController(
-                              length: controller.tabList.length,
-                              child: Column(
-                                key: controller.tabKey,
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: 30.w,
-                                    padding: EdgeInsets.symmetric(horizontal: 4.w),
-                                    child: TabBar(
-                                      tabs: controller.tabList
-                                          .map((e) => Tab(
-                                                text: e,
-                                              ))
-                                          .toList(),
-                                      onTap: (int index) {
-                                        if (index == 0) {
-                                          EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "all"});
-                                        }
-                                      },
-                                      isScrollable: true,
-                                      labelPadding: EdgeInsets.only(left: 12.w, right: 12.w),
-                                      indicatorPadding: EdgeInsets.all(0),
-                                      tabAlignment: TabAlignment.start,
-                                      unselectedLabelStyle: TextStyle(fontSize: 14.w),
-                                      unselectedLabelColor: Colors.black.withOpacity(0.5),
-                                      labelColor: Color(0xff8468FF),
-                                      indicatorColor: Color(0xff8468FF),
-                                      labelStyle: TextStyle(fontSize: 18.w),
-                                    ),
-                                  ),
-                                  Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
-                                ],
-                              ),
-                            ),
-                  onLoading:
-                      //历史记录
-                      Obx(() => controller.historyList.isEmpty
-                          ? Container()
-                          : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  height: 16.w,
-                                ),
-                                //标题
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 12.w,
-                                    ),
-                                    Text(
-                                      "History record".tr,
-                                      style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold),
-                                    ),
-                                    Spacer(),
-                                    GestureDetector(
-                                        behavior: HitTestBehavior.opaque,
-                                        onTap: () {
-                                          Get.dialog(BaseDialog(
-                                            title: "Delete".tr,
-                                            content: "deleteStr".tr,
-                                            lBtnText: "Cancel".tr,
-                                            rBtnText: "Confirm".tr,
-                                            rBtnOnTap: () async {
-                                              var box = await Hive.openBox(DBKey.mySearchHistoryData);
-                                              //删除全部
-                                              await box.clear();
-                                              controller.historyList.clear();
-                                              // Get.back();
-                                            },
-                                            lBtnOnTap: () {
-                                              // Get.back();
-                                            },
-                                          ));
+        body: PlayerBottomBarView(
+          child: Container(
+            child: Stack(
+              children: [
+                //下方历史记录
+                Positioned.fill(
+                    child: Listener(
+                  onPointerDown: (e) {
+                    if (Get.focusScope?.hasFocus ?? false) {
+                      Get.focusScope?.unfocus();
+                    }
+                  },
+                  child: controller.obxView(
+                    (state) =>
+                        //搜索结果
+                        Get.find<Application>().typeSo == "yt"
+                            ? Container(
+                                child: Obx(() => EasyRefresh(
+                                    onLoad: () async {
+                                      await controller.moreYoutubeSearch();
+                                      return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                                    },
+                                    child: ListView.separated(
+                                        itemBuilder: (_, i) {
+                                          return getYTItem(i);
                                         },
-                                        child: Image.asset(
-                                          "assets/oimg/icon_s_del.png",
-                                          width: 24.w,
-                                          height: 24.w,
-                                        )),
-                                    SizedBox(
-                                      width: 12.w,
+                                        separatorBuilder: (_, i) {
+                                          return SizedBox(
+                                            height: 10.w,
+                                          );
+                                        },
+                                        itemCount: controller.ytList.length))),
+                              )
+                            : DefaultTabController(
+                                length: controller.tabList.length,
+                                child: Column(
+                                  key: controller.tabKey,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 30.w,
+                                      padding: EdgeInsets.symmetric(horizontal: 4.w),
+                                      child: TabBar(
+                                        tabs: controller.tabList
+                                            .map((e) => Tab(
+                                                  text: e,
+                                                ))
+                                            .toList(),
+                                        onTap: (int index) {
+                                          if (index == 0) {
+                                            EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "all"});
+                                          }
+                                        },
+                                        isScrollable: true,
+                                        labelPadding: EdgeInsets.only(left: 12.w, right: 12.w),
+                                        indicatorPadding: EdgeInsets.all(0),
+                                        tabAlignment: TabAlignment.start,
+                                        unselectedLabelStyle: TextStyle(fontSize: 14.w),
+                                        unselectedLabelColor: Colors.black.withOpacity(0.5),
+                                        labelColor: Color(0xff8468FF),
+                                        indicatorColor: Color(0xff8468FF),
+                                        labelStyle: TextStyle(fontSize: 18.w),
+                                      ),
                                     ),
+                                    Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 16.w,
-                                ),
-                                // 数据
-                                Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                                    child: Obx(
-                                      () => ExtendedWrap(
-                                        spacing: 12.w,
-                                        runSpacing: 16.w,
-                                        children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
-                                        maxLines: 3,
-
-                                        // maxLines: controller.historyExpanded.value
-                                        //     ? 100
-                                        //     : 2,
-                                        // minLines: 2,
-                                        // // overflowWidget: TextButton(
-                                        // //     onPressed: () {
-                                        // //       controller
-                                        // //           .historyExpanded
-                                        // //           .toggle();
-                                        // //     },
-                                        // //     child: Text(controller
-                                        // //             .historyExpanded
-                                        // //             .value
-                                        // //         ? "Less"
-                                        // //         : "More")),
-                                        //
-                                        // overflowWidget: GestureDetector(
-                                        //     behavior: HitTestBehavior.opaque,
-                                        //     onTap: () {
-                                        //       controller.historyExpanded.toggle();
-                                        //     },
-                                        //     child: Container(
-                                        //       height: 40.w,
-                                        //       width: 20.w,
-                                        //       alignment: Alignment.center,
-                                        //       child: Image.asset(
-                                        //         controller.historyExpanded.value
-                                        //             ? "assets/img/uimg/h_less.png"
-                                        //             : "assets/img/uimg/h_more.png",
-                                        //         width: 20.w,
-                                        //         height: 20.w,
-                                        //       ),
-                                        //     )),
-                                      ),
-                                    ))
-
-                                //数据
-                                // Container(
-                                //     width: double.infinity,
-                                //     padding:
-                                //         EdgeInsets.symmetric(horizontal: 12.w),
-                                //     child: Obx(
-                                //       () => ExtendedWrap(
-                                //         spacing: 12.w,
-                                //         runSpacing: 16.w,
-                                //         children: controller.historyList
-                                //             .map((e) => getHistoryItem(e))
-                                //             .toList(),
-                                //         maxLines: controller.historyExpanded.value
-                                //             ? 100
-                                //             : 2,
-                                //         minLines: 2,
-                                //         // overflowWidget: TextButton(
-                                //         //     onPressed: () {
-                                //         //       controller
-                                //         //           .historyExpanded
-                                //         //           .toggle();
-                                //         //     },
-                                //         //     child: Text(controller
-                                //         //             .historyExpanded
-                                //         //             .value
-                                //         //         ? "Less"
-                                //         //         : "More")),
-                                //
-                                //         overflowWidget: GestureDetector(
-                                //             behavior: HitTestBehavior.opaque,
-                                //             onTap: () {
-                                //               controller.historyExpanded.toggle();
-                                //             },
-                                //             child: Container(
-                                //               height: 40.w,
-                                //               width: 20.w,
-                                //               alignment: Alignment.center,
-                                //               child: Image.asset(
-                                //                 controller.historyExpanded.value
-                                //                     ? "assets/img/uimg/h_less.png"
-                                //                     : "assets/img/uimg/h_more.png",
-                                //                 width: 20.w,
-                                //                 height: 20.w,
-                                //               ),
-                                //             )),
-                                //       ),
-                                //     ))
-                              ],
-                            )),
-                ),
-              )),
-
-              //上方关键词联想列表
-              Positioned.fill(
-                  child: Obx(() => controller.showSuggestions.value
-                      ? Obx(() => Listener(
-                            onPointerDown: (e) {
-                              if (Get.focusScope?.hasFocus ?? false) {
-                                Get.focusScope?.unfocus();
-                              }
-                            },
-                            child: Container(
-                              color: Colors.white,
-                              child: ListView.separated(
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                    title: controller.list[index]["view"],
-                                    onTap: () {
-                                      var str = controller.list[index]["text"] ?? "";
-                                      controller.inputC.text = str;
-
-                                      controller.showClearBtn.value = true;
-                                      controller.toSearch(str);
-                                    },
-                                  );
-                                },
-                                separatorBuilder: (BuildContext context, int index) {
-                                  return SizedBox(
-                                    height: 1.w,
-                                  );
-                                },
-                                itemCount: controller.list.length,
                               ),
-                            ),
-                          ))
-                      : Container()))
-            ],
+                    onLoading:
+                        //历史记录
+                        Obx(() => controller.historyList.isEmpty
+                            ? Container()
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: 16.w,
+                                  ),
+                                  //标题
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 12.w,
+                                      ),
+                                      Text(
+                                        "History record".tr,
+                                        style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold),
+                                      ),
+                                      Spacer(),
+                                      GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () {
+                                            Get.dialog(BaseDialog(
+                                              title: "Delete".tr,
+                                              content: "deleteStr".tr,
+                                              lBtnText: "Cancel".tr,
+                                              rBtnText: "Confirm".tr,
+                                              rBtnOnTap: () async {
+                                                var box = await Hive.openBox(DBKey.mySearchHistoryData);
+                                                //删除全部
+                                                await box.clear();
+                                                controller.historyList.clear();
+                                                // Get.back();
+                                              },
+                                              lBtnOnTap: () {
+                                                // Get.back();
+                                              },
+                                            ));
+                                          },
+                                          child: Image.asset(
+                                            "assets/oimg/icon_s_del.png",
+                                            width: 24.w,
+                                            height: 24.w,
+                                          )),
+                                      SizedBox(
+                                        width: 12.w,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 16.w,
+                                  ),
+                                  // 数据
+                                  Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                      child: Obx(
+                                        () => ExtendedWrap(
+                                          spacing: 12.w,
+                                          runSpacing: 16.w,
+                                          children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
+                                          maxLines: 3,
+
+                                          // maxLines: controller.historyExpanded.value
+                                          //     ? 100
+                                          //     : 2,
+                                          // minLines: 2,
+                                          // // overflowWidget: TextButton(
+                                          // //     onPressed: () {
+                                          // //       controller
+                                          // //           .historyExpanded
+                                          // //           .toggle();
+                                          // //     },
+                                          // //     child: Text(controller
+                                          // //             .historyExpanded
+                                          // //             .value
+                                          // //         ? "Less"
+                                          // //         : "More")),
+                                          //
+                                          // overflowWidget: GestureDetector(
+                                          //     behavior: HitTestBehavior.opaque,
+                                          //     onTap: () {
+                                          //       controller.historyExpanded.toggle();
+                                          //     },
+                                          //     child: Container(
+                                          //       height: 40.w,
+                                          //       width: 20.w,
+                                          //       alignment: Alignment.center,
+                                          //       child: Image.asset(
+                                          //         controller.historyExpanded.value
+                                          //             ? "assets/img/uimg/h_less.png"
+                                          //             : "assets/img/uimg/h_more.png",
+                                          //         width: 20.w,
+                                          //         height: 20.w,
+                                          //       ),
+                                          //     )),
+                                        ),
+                                      ))
+
+                                  //数据
+                                  // Container(
+                                  //     width: double.infinity,
+                                  //     padding:
+                                  //         EdgeInsets.symmetric(horizontal: 12.w),
+                                  //     child: Obx(
+                                  //       () => ExtendedWrap(
+                                  //         spacing: 12.w,
+                                  //         runSpacing: 16.w,
+                                  //         children: controller.historyList
+                                  //             .map((e) => getHistoryItem(e))
+                                  //             .toList(),
+                                  //         maxLines: controller.historyExpanded.value
+                                  //             ? 100
+                                  //             : 2,
+                                  //         minLines: 2,
+                                  //         // overflowWidget: TextButton(
+                                  //         //     onPressed: () {
+                                  //         //       controller
+                                  //         //           .historyExpanded
+                                  //         //           .toggle();
+                                  //         //     },
+                                  //         //     child: Text(controller
+                                  //         //             .historyExpanded
+                                  //         //             .value
+                                  //         //         ? "Less"
+                                  //         //         : "More")),
+                                  //
+                                  //         overflowWidget: GestureDetector(
+                                  //             behavior: HitTestBehavior.opaque,
+                                  //             onTap: () {
+                                  //               controller.historyExpanded.toggle();
+                                  //             },
+                                  //             child: Container(
+                                  //               height: 40.w,
+                                  //               width: 20.w,
+                                  //               alignment: Alignment.center,
+                                  //               child: Image.asset(
+                                  //                 controller.historyExpanded.value
+                                  //                     ? "assets/img/uimg/h_less.png"
+                                  //                     : "assets/img/uimg/h_more.png",
+                                  //                 width: 20.w,
+                                  //                 height: 20.w,
+                                  //               ),
+                                  //             )),
+                                  //       ),
+                                  //     ))
+                                ],
+                              )),
+                  ),
+                )),
+
+                //上方关键词联想列表
+                Positioned.fill(
+                    child: Obx(() => controller.showSuggestions.value
+                        ? Obx(() => Listener(
+                              onPointerDown: (e) {
+                                if (Get.focusScope?.hasFocus ?? false) {
+                                  Get.focusScope?.unfocus();
+                                }
+                              },
+                              child: Container(
+                                color: Colors.white,
+                                child: ListView.separated(
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                      title: controller.list[index]["view"],
+                                      onTap: () {
+                                        var str = controller.list[index]["text"] ?? "";
+                                        controller.inputC.text = str;
+
+                                        controller.showClearBtn.value = true;
+                                        controller.toSearch(str);
+                                      },
+                                    );
+                                  },
+                                  separatorBuilder: (BuildContext context, int index) {
+                                    return SizedBox(
+                                      height: 1.w,
+                                    );
+                                  },
+                                  itemCount: controller.list.length,
+                                ),
+                              ),
+                            ))
+                        : Container()))
+              ],
+            ),
           ),
         ),
       ),
