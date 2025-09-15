@@ -838,159 +838,162 @@ class UserPlayInfoController extends GetxController {
 
     overlayEntry = OverlayEntry(builder: (c) {
       return Obx(() {
-        return Positioned(
-            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom,
-            left: 0,
-            right: 0,
-            child: Material(
-              color: Colors.transparent,
-              child: Stack(
-                children: [
-                  InkWell(
-                    onTap: () async {
-                      // Get.to(UserPlayInfo());
-                      hideFloatingWidget();
-                      // checkShowDownloadGuide();
-                      await Get.bottomSheet(
-                          Container(
-                            child: const UserPlayInfo(),
-                            // padding: EdgeInsets.only(
-                            //     top: Get.mediaQuery.padding.top),
-                          ),
-                          isScrollControlled: true);
-                      showFloatingWidget();
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: 54.w,
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      margin: EdgeInsets.symmetric(horizontal: 8.w),
-                      decoration: BoxDecoration(
-                          color: const Color(0xffF1F1FF),
-                          boxShadow: [BoxShadow(color: const Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
-                          borderRadius: BorderRadius.circular(27.w)),
-                      child: Row(
-                        children: [
-                          //封面
-                          Container(
-                              height: 36.w,
-                              width: 36.w,
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
-                              child: Obx(() => NetImageView(
-                                    imgUrl: nowData["cover"] ?? "",
-                                    fit: BoxFit.cover,
-                                  ))),
+        return Visibility(
+          visible: Get.find<Application>().isShowingBottomSheet.isFalse,
+          child: Positioned(
+              bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom,
+              left: 0,
+              right: 0,
+              child: Material(
+                color: Colors.transparent,
+                child: Stack(
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        // Get.to(UserPlayInfo());
+                        hideFloatingWidget();
+                        // checkShowDownloadGuide();
+                        await Get.bottomSheet(
+                            Container(
+                              child: const UserPlayInfo(),
+                              // padding: EdgeInsets.only(
+                              //     top: Get.mediaQuery.padding.top),
+                            ),
+                            isScrollControlled: true);
+                        showFloatingWidget();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 54.w,
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        margin: EdgeInsets.symmetric(horizontal: 8.w),
+                        decoration: BoxDecoration(
+                            color: const Color(0xffF1F1FF),
+                            boxShadow: [BoxShadow(color: const Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
+                            borderRadius: BorderRadius.circular(27.w)),
+                        child: Row(
+                          children: [
+                            //封面
+                            Container(
+                                height: 36.w,
+                                width: 36.w,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
+                                child: Obx(() => NetImageView(
+                                      imgUrl: nowData["cover"] ?? "",
+                                      fit: BoxFit.cover,
+                                    ))),
 
-                          SizedBox(
-                            width: 12.w,
-                          ),
-                          //标题
-                          Expanded(
-                              child: Obx(() => Text(
-                                    nowData["title"],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 14.w),
-                                  ))),
+                            SizedBox(
+                              width: 12.w,
+                            ),
+                            //标题
+                            Expanded(
+                                child: Obx(() => Text(
+                                      nowData["title"],
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 14.w),
+                                    ))),
 
-                          //按钮
-                          Obx(() => isLoaded.value
-                              ? Obx(() => InkWell(
-                                    child: SizedBox(
-                                      width: 32.w,
-                                      height: 32.w,
-                                      child: Image.asset(isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
-                                    ),
-                                    onTap: () async {
-                                      //判断视频是否加载
-                                      if (!(player?.value.isInitialized ?? false) && (!isPlaying.value)) {
-                                        //先加载
-                                        realPlay(nowIndex);
-                                        return;
-                                      }
+                            //按钮
+                            Obx(() => isLoaded.value
+                                ? Obx(() => InkWell(
+                                      child: SizedBox(
+                                        width: 32.w,
+                                        height: 32.w,
+                                        child: Image.asset(isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
+                                      ),
+                                      onTap: () async {
+                                        //判断视频是否加载
+                                        if (!(player?.value.isInitialized ?? false) && (!isPlaying.value)) {
+                                          //先加载
+                                          realPlay(nowIndex);
+                                          return;
+                                        }
 
-                                      //判断是否首次
-                                      var isInitBar = player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
+                                        //判断是否首次
+                                        var isInitBar = player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
 
-                                      if (isInitBar) {
-                                        EventUtils.instance.addEvent("play_click", data: {
-                                          "song_id": playList[nowIndex]["videoId"],
-                                          "song_name": playList[nowIndex]["title"],
-                                          "artist_name": playList[nowIndex]["subtitle"],
-                                          "playlist_id": playlistId,
-                                          "station": "tab"
-                                        });
-                                      }
+                                        if (isInitBar) {
+                                          EventUtils.instance.addEvent("play_click", data: {
+                                            "song_id": playList[nowIndex]["videoId"],
+                                            "song_name": playList[nowIndex]["title"],
+                                            "artist_name": playList[nowIndex]["subtitle"],
+                                            "playlist_id": playlistId,
+                                            "station": "tab"
+                                          });
+                                        }
 
-                                      if (isPlaying.value) {
-                                        await player?.pause();
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-                                      } else {
-                                        await player?.play();
-                                        //暂停其他页面的播放
-                                        EventUtils.instance.addEvent("play_num", data: {
-                                          "song_id": nowData["videoId"],
-                                          "song_name": nowData["title"],
-                                          "artist_name": nowData["subtitle"],
-                                        });
-                                        EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-                                      }
-                                      isPlaying.toggle();
-                                    },
-                                  ))
-                              : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
+                                        if (isPlaying.value) {
+                                          await player?.pause();
+                                          AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                        } else {
+                                          await player?.play();
+                                          //暂停其他页面的播放
+                                          EventUtils.instance.addEvent("play_num", data: {
+                                            "song_id": nowData["videoId"],
+                                            "song_name": nowData["title"],
+                                            "artist_name": nowData["subtitle"],
+                                          });
+                                          EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
+                                          AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                        }
+                                        isPlaying.toggle();
+                                      },
+                                    ))
+                                : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
 
-                          SizedBox(
-                            width: 6.w,
-                          ),
-                          Obx(() {
-                            return InkWell(
-                              child: SizedBox(
-                                width: 32.w,
-                                height: 32.w,
-                                child: Image.asset(
-                                  "assets/oimg/icon_bar_next.png",
-                                  color: canNext.value ? Colors.black : Colors.grey,
+                            SizedBox(
+                              width: 6.w,
+                            ),
+                            Obx(() {
+                              return InkWell(
+                                child: SizedBox(
+                                  width: 32.w,
+                                  height: 32.w,
+                                  child: Image.asset(
+                                    "assets/oimg/icon_bar_next.png",
+                                    color: canNext.value ? Colors.black : Colors.grey,
+                                  ),
                                 ),
-                              ),
-                              onTap: () {
-                                if (!canNext.value) {
-                                  return;
-                                }
+                                onTap: () {
+                                  if (!canNext.value) {
+                                    return;
+                                  }
 
-                                // EventUtils.instance.addEvent("play_click",
-                                //     data: {
-                                //       "song_id": playList[nowIndex + 1],
-                                //       "station": "tab"
-                                //     });
-                                playNext(isBar: true);
-                                // playItemWithIndex(nowIndex + 1);
-                              },
-                            );
-                          }),
-                        ],
+                                  // EventUtils.instance.addEvent("play_click",
+                                  //     data: {
+                                  //       "song_id": playList[nowIndex + 1],
+                                  //       "station": "tab"
+                                  //     });
+                                  playNext(isBar: true);
+                                  // playItemWithIndex(nowIndex + 1);
+                                },
+                              );
+                            }),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  //进度条
+                    //进度条
 
-                  Positioned(
-                      left: 32.w,
-                      bottom: 3.w,
-                      right: 32.w,
-                      child: Obx(() => LinearProgressIndicator(
-                            minHeight: 2.w,
-                            borderRadius: BorderRadius.circular(1.w),
-                            backgroundColor: const Color(0xff141414).withOpacity(0.2),
-                            color: const Color(0xff141414).withOpacity(0.75),
-                            value: sliderValue.value,
-                          )))
-                ],
-              ),
-            ));
+                    Positioned(
+                        left: 32.w,
+                        bottom: 3.w,
+                        right: 32.w,
+                        child: Obx(() => LinearProgressIndicator(
+                              minHeight: 2.w,
+                              borderRadius: BorderRadius.circular(1.w),
+                              backgroundColor: const Color(0xff141414).withOpacity(0.2),
+                              color: const Color(0xff141414).withOpacity(0.75),
+                              value: sliderValue.value,
+                            )))
+                  ],
+                ),
+              )),
+        );
       });
     });
     Overlay.of(Get.overlayContext!).insertAll([overlayEntry!]);

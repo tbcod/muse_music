@@ -571,7 +571,7 @@ class AdUtils {
 
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
-    AppLog.e("广告网络：$connectivityResult");
+    // AppLog.e("广告网络：$connectivityResult");
     if (!connectivityResult.contains(ConnectivityResult.wifi) &&
         !connectivityResult.contains(ConnectivityResult.mobile) &&
         !connectivityResult.contains(ConnectivityResult.ethernet)) {
@@ -646,16 +646,19 @@ class AdUtils {
 
     EventUtils.instance.addEvent("ad_chance");
 
-    // if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
-    //   Get.bottomSheet(
-    //     const LaunchLoadingPage(),
-    //     isScrollControlled: true,
-    //     enableDrag: false,
-    //     isDismissible: false,
-    //     backgroundColor: Colors.black,
-    //     useRootNavigator: true,
-    //   );
-    // }
+    if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
+      Get.bottomSheet(
+        const LaunchLoadingPage(),
+        isScrollControlled: true,
+        enableDrag: false,
+        isDismissible: false,
+        backgroundColor: Colors.black,
+        useRootNavigator: true,
+        enterBottomSheetDuration: Duration.zero,
+        exitBottomSheetDuration: Duration.zero,
+        settings: const RouteSettings(name: "LaunchLoad"),
+      );
+    }
 
     var isShowAd = false;
     for (var item in configList) {

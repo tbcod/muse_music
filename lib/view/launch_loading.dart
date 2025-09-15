@@ -100,12 +100,12 @@ class LaunchLoadingPageController extends GetxController {
   void onInit() {
     super.onInit();
     bus.isLaunchLoadingAdShowing = true;
-    if (Get.isRegistered<UserPlayInfoController>()) {
-      Get.find<UserPlayInfoController>().hideFloatingWidget();
-    }
-    if (Get.isRegistered<PlayPageController>()) {
-      Get.find<PlayPageController>().hideFloatingWidget();
-    }
+    // if (Get.isRegistered<UserPlayInfoController>()) {
+    //   Get.find<UserPlayInfoController>().hideFloatingWidget();
+    // }
+    // if (Get.isRegistered<PlayPageController>()) {
+    //   Get.find<PlayPageController>().hideFloatingWidget();
+    // }
     DateTime startDate = DateTime.now();
     _timer = Timer.periodic(const Duration(milliseconds: 100), (t) {
       int diff = (DateTime.now().difference(startDate)).inMilliseconds;
@@ -121,7 +121,7 @@ class LaunchLoadingPageController extends GetxController {
             adScene: AdScene.openHot,
             onShow: ShowCallback(onShowFail: (adId, e) {
               AppLog.e("onShowFail currentRoute:${Get.currentRoute}");
-              _closePage();
+              // _closePage();
             }, onShow: (adId) {
               _closePage();
             }, onClose: (adId) {
@@ -137,26 +137,30 @@ class LaunchLoadingPageController extends GetxController {
     _timer = null;
     _timer2?.cancel();
     _timer2 = null;
-    if (bus.isLaunchLoadingAdShowing) {
-      Get.back();
-    }
+    // if (bus.isLaunchLoadingAdShowing) {
+    //   Get.back();
+    // }
+    Navigator.of(Get.context!).popUntil((route) {
+      return route.settings.name != "LaunchLoad"; // 只保留非 LaunchLoad
+    });
+
     bus.isLaunchLoadingAdShowing = false;
   }
 
   @override
   void onClose() {
     bus.isLaunchLoadingAdShowing = false;
-    final previous = Get.currentRoute;
-    if (!previous.contains("BOTTOMSHEET")) {
-      Future.delayed(const Duration(seconds: 1)).then((v) {
-        if (Get.isRegistered<UserPlayInfoController>()) {
-          Get.find<UserPlayInfoController>().showFloatingWidget();
-        }
-        if (Get.isRegistered<PlayPageController>()) {
-          Get.find<PlayPageController>().showFloatingWidget();
-        }
-      });
-    }
+    // final previous = Get.currentRoute;
+    // if (!previous.contains("BOTTOMSHEET")) {
+    //   Future.delayed(const Duration(seconds: 1)).then((v) {
+    //     if (Get.isRegistered<UserPlayInfoController>()) {
+    //       Get.find<UserPlayInfoController>().showFloatingWidget();
+    //     }
+    //     if (Get.isRegistered<PlayPageController>()) {
+    //       Get.find<PlayPageController>().showFloatingWidget();
+    //     }
+    //   });
+    // }
     super.onClose();
   }
 }

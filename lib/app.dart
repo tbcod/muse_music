@@ -43,6 +43,8 @@ class Application extends GetxService {
 
   var isMainPage = false.obs;
 
+  var isShowingBottomSheet = false.obs;
+
   var visitorData = "";
 
   //使用的资源  no/yt/ytm
