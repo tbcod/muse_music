@@ -1,8 +1,10 @@
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
+import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -19,12 +21,20 @@ class CUtil extends BaseApi {
   }
 
   Future<BaseModel> checkCloak() async {
+
+    // if (kDebugMode) {
+    //   await museSp.setBool("isOpenUser", false);
+    //   return BaseModel(code: -1, data: "excerpt1");
+    // }
+    
     // httpClient.baseUrl =
     //     GetPlatform.isIOS ? "https://jocose.littlemusicmuse.com" : "";
+
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;
     // var netResult = await Connectivity().checkConnectivity();
+
 
     if (GetPlatform.isAndroid) {
       return BaseModel(code: -1);

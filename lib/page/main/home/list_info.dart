@@ -9,6 +9,7 @@ import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/page/main/home.dart';
 import 'package:music_muse/page/main/home/list_add.dart';
 import 'package:music_muse/page/main/home/play.dart';
+import 'package:music_muse/page/main/home/player_bar_a.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
 
@@ -23,295 +24,297 @@ class ListInfo extends GetView<ListInfoController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => ListInfoController());
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            Container(
-              height: 146.w,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  // color: Colors.red,
-                  image: DecorationImage(
-                image: AssetImage("assets/img/all_appbar_bg.png"),
-                fit: BoxFit.fill,
-              )),
-            ),
-            Positioned.fill(
-                child: Column(
-              children: [
-                AppBar(
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        showMoreListView(controller.infoData);
-                      },
-                      // icon: Image.asset(
-                      //   "assets/img/icon_edit.png",
-                      //   width: 24.w,
-                      //   height: 24.w,
-                      // )
-                      icon: Icon(Icons.more_vert),
-                    )
-                  ],
-                ),
-                Expanded(
-                    child: Obx(() => controller.infoData.isEmpty
-                        ? Container()
-                        : Container(
-                            child: MediaQuery.removePadding(
-                              removeTop: true,
-                              context: context,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 142.w,
-                                    width: double.infinity,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 12.w),
-                                    child: Row(
-                                      children: [
-                                        //封面
-                                        Container(
-                                          height: 142.w,
-                                          width: 172.w,
-                                          child: Stack(
-                                            children: [
-                                              //底部
-                                              Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: controller
-                                                            .infoData["type"] ==
-                                                        1
-                                                    ? Container(
-                                                        width: 132.w,
-                                                        height: 132.w,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        66.w),
-                                                            color:
-                                                                Colors.black),
-                                                      )
-                                                    : Container(
-                                                        width: 128.w,
-                                                        height: 128.w,
-                                                        margin: EdgeInsets.only(
-                                                            right: 20.w),
-                                                        decoration: BoxDecoration(
-                                                            color: Color(
-                                                                    0xff141414)
-                                                                .withOpacity(
-                                                                    0.15),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.w)),
-                                                      ),
-                                              ),
+      body: PlayerBarA(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Container(
+                height: 146.w,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    // color: Colors.red,
+                    image: DecorationImage(
+                  image: AssetImage("assets/img/all_appbar_bg.png"),
+                  fit: BoxFit.fill,
+                )),
+              ),
+              Positioned.fill(
+                  child: Column(
+                children: [
+                  AppBar(
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          showMoreListView(controller.infoData);
+                        },
+                        // icon: Image.asset(
+                        //   "assets/img/icon_edit.png",
+                        //   width: 24.w,
+                        //   height: 24.w,
+                        // )
+                        icon: Icon(Icons.more_vert),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                      child: Obx(() => controller.infoData.isEmpty
+                          ? Container()
+                          : Container(
+                              child: MediaQuery.removePadding(
+                                removeTop: true,
+                                context: context,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: 142.w,
+                                      width: double.infinity,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 12.w),
+                                      child: Row(
+                                        children: [
+                                          //封面
+                                          Container(
+                                            height: 142.w,
+                                            width: 172.w,
+                                            child: Stack(
+                                              children: [
+                                                //底部
+                                                Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: controller
+                                                              .infoData["type"] ==
+                                                          1
+                                                      ? Container(
+                                                          width: 132.w,
+                                                          height: 132.w,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          66.w),
+                                                              color:
+                                                                  Colors.black),
+                                                        )
+                                                      : Container(
+                                                          width: 128.w,
+                                                          height: 128.w,
+                                                          margin: EdgeInsets.only(
+                                                              right: 20.w),
+                                                          decoration: BoxDecoration(
+                                                              color: Color(
+                                                                      0xff141414)
+                                                                  .withOpacity(
+                                                                      0.15),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.w)),
+                                                        ),
+                                                ),
 
-                                              //封面
-                                              Container(
-                                                width: 142.w,
-                                                height: 142.w,
-                                                clipBehavior: Clip.hardEdge,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.w)),
-                                                child: Image.memory(
-                                                  controller.infoData["cover"],
-                                                  fit: BoxFit.cover,
+                                                //封面
+                                                Container(
+                                                  width: 142.w,
+                                                  height: 142.w,
+                                                  clipBehavior: Clip.hardEdge,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.w)),
+                                                  child: Image.memory(
+                                                    controller.infoData["cover"],
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 20.w,
+                                          ),
+
+                                          Expanded(
+                                              child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                controller.infoData["title"],
+                                                maxLines: 4,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(fontSize: 16.w),
+                                              ),
+                                              SizedBox(
+                                                height: 20.w,
+                                              ),
+                                              Obx(() => Text(
+                                                    "${controller.list.length} songs",
+                                                    style: TextStyle(
+                                                        fontSize: 12.w,
+                                                        color: Color(0xff141414)
+                                                            .withOpacity(0.75)),
+                                                  )),
+                                            ],
+                                          )),
+                                          SizedBox(
+                                            width: 20.w,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 24.w,
+                                    ),
+                                    Obx(() => controller.list.isEmpty
+                                        ? Container()
+                                        : Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w),
+                                            child: Row(
+                                              children: [
+                                                Obx(() => Text(
+                                                      "Playlist  (${controller.list.length})  ",
+                                                      style: TextStyle(
+                                                          fontSize: 20.w),
+                                                    )),
+                                                //播放全部按钮
+                                                if (controller.infoData["type"] ==
+                                                    1)
+                                                  InkWell(
+                                                    onTap: () {
+                                                      // if (!controller.isMusic) {
+                                                      //   ToastUtil.showToast(
+                                                      //       msg: "仅支持音乐歌单");
+                                                      //   return;
+                                                      // }
+
+                                                      Get.find<
+                                                              PlayPageController>()
+                                                          .setDataAndPlay({
+                                                        "item":
+                                                            controller.list[0],
+                                                        "list": controller.list
+                                                      });
+                                                      Get.to(PlayPage());
+                                                    },
+                                                    child: Container(
+                                                      height: 26.w,
+                                                      decoration: BoxDecoration(
+                                                          color: Color(0xffCBBFFF)
+                                                              .withOpacity(0.3),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      13.w)),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 6.w),
+                                                      child: Row(
+                                                        children: [
+                                                          Image.asset(
+                                                            "assets/img/icon_list_play.png",
+                                                            width: 14.w,
+                                                            height: 14.w,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 2.w,
+                                                          ),
+                                                          Text(
+                                                            "Play All",
+                                                            style: TextStyle(
+                                                                fontSize: 10.w,
+                                                                color: Color(
+                                                                    0xff824EFF)),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )
+                                              ],
+                                            ),
+                                          )),
+                                    SizedBox(
+                                      height: 14.w,
+                                    ),
+                                    Expanded(child: Obx(() {
+                                      if (controller.list.isEmpty) {
+                                        //空布局
+                                        return Container(
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 40.w,
+                                              ),
+                                              Image.asset(
+                                                "assets/img/icon_empty.png",
+                                                width: 140.w,
+                                                height: 140.w,
+                                              ),
+                                              Text(
+                                                "No content now, Add songs you like",
+                                                style: TextStyle(fontSize: 14.w),
+                                              ),
+                                              SizedBox(height: 32.w),
+                                              InkWell(
+                                                onTap: () {
+                                                  Get.to(ListAddPage(),
+                                                      arguments: controller.id);
+                                                },
+                                                child: Container(
+                                                  height: 48.w,
+                                                  width: 112.w,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              24.w),
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                          color:
+                                                              Color(0xff141414),
+                                                          width: 1.w)),
+                                                  child: Text(
+                                                    "Add",
+                                                    style:
+                                                        TextStyle(fontSize: 14.w),
+                                                  ),
                                                 ),
                                               )
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: 20.w,
-                                        ),
+                                        );
+                                      }
 
-                                        Expanded(
-                                            child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              controller.infoData["title"],
-                                              maxLines: 4,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: 16.w),
-                                            ),
-                                            SizedBox(
-                                              height: 20.w,
-                                            ),
-                                            Obx(() => Text(
-                                                  "${controller.list.length} songs",
-                                                  style: TextStyle(
-                                                      fontSize: 12.w,
-                                                      color: Color(0xff141414)
-                                                          .withOpacity(0.75)),
-                                                )),
-                                          ],
-                                        )),
-                                        SizedBox(
-                                          width: 20.w,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 24.w,
-                                  ),
-                                  Obx(() => controller.list.isEmpty
-                                      ? Container()
-                                      : Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12.w),
-                                          child: Row(
-                                            children: [
-                                              Obx(() => Text(
-                                                    "Playlist  (${controller.list.length})  ",
-                                                    style: TextStyle(
-                                                        fontSize: 20.w),
-                                                  )),
-                                              //播放全部按钮
-                                              if (controller.infoData["type"] ==
-                                                  1)
-                                                InkWell(
-                                                  onTap: () {
-                                                    // if (!controller.isMusic) {
-                                                    //   ToastUtil.showToast(
-                                                    //       msg: "仅支持音乐歌单");
-                                                    //   return;
-                                                    // }
-
-                                                    Get.find<
-                                                            PlayPageController>()
-                                                        .setDataAndPlay({
-                                                      "item":
-                                                          controller.list[0],
-                                                      "list": controller.list
-                                                    });
-                                                    Get.to(PlayPage());
-                                                  },
-                                                  child: Container(
-                                                    height: 26.w,
-                                                    decoration: BoxDecoration(
-                                                        color: Color(0xffCBBFFF)
-                                                            .withOpacity(0.3),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    13.w)),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 6.w),
-                                                    child: Row(
-                                                      children: [
-                                                        Image.asset(
-                                                          "assets/img/icon_list_play.png",
-                                                          width: 14.w,
-                                                          height: 14.w,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 2.w,
-                                                        ),
-                                                        Text(
-                                                          "Play All",
-                                                          style: TextStyle(
-                                                              fontSize: 10.w,
-                                                              color: Color(
-                                                                  0xff824EFF)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                            ],
-                                          ),
-                                        )),
-                                  SizedBox(
-                                    height: 14.w,
-                                  ),
-                                  Expanded(child: Obx(() {
-                                    if (controller.list.isEmpty) {
-                                      //空布局
-                                      return Container(
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 40.w,
-                                            ),
-                                            Image.asset(
-                                              "assets/img/icon_empty.png",
-                                              width: 140.w,
-                                              height: 140.w,
-                                            ),
-                                            Text(
-                                              "No content now, Add songs you like",
-                                              style: TextStyle(fontSize: 14.w),
-                                            ),
-                                            SizedBox(height: 32.w),
-                                            InkWell(
-                                              onTap: () {
-                                                Get.to(ListAddPage(),
-                                                    arguments: controller.id);
-                                              },
-                                              child: Container(
-                                                height: 48.w,
-                                                width: 112.w,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            24.w),
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                        color:
-                                                            Color(0xff141414),
-                                                        width: 1.w)),
-                                                child: Text(
-                                                  "Add",
-                                                  style:
-                                                      TextStyle(fontSize: 14.w),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    return ListView.separated(
-                                        padding: EdgeInsets.only(
-                                            bottom:
-                                                Get.mediaQuery.padding.bottom +
-                                                    8.w +
-                                                    50.w),
-                                        itemBuilder: (_, i) {
-                                          if (controller.isMusic) {
-                                            return getList2Item(i);
-                                          }
-                                          return getList1Item(i);
-                                        },
-                                        separatorBuilder: (_, i) {
-                                          return SizedBox(height: 18.w);
-                                        },
-                                        itemCount: controller.list.length);
-                                  }))
-                                ],
+                                      return ListView.separated(
+                                          padding: EdgeInsets.only(
+                                              bottom:
+                                                  Get.mediaQuery.padding.bottom +
+                                                      8.w +
+                                                      50.w),
+                                          itemBuilder: (_, i) {
+                                            if (controller.isMusic) {
+                                              return getList2Item(i);
+                                            }
+                                            return getList1Item(i);
+                                          },
+                                          separatorBuilder: (_, i) {
+                                            return SizedBox(height: 18.w);
+                                          },
+                                          itemCount: controller.list.length);
+                                    }))
+                                  ],
+                                ),
                               ),
-                            ),
-                          )))
-              ],
-            ))
-          ],
+                            )))
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     );

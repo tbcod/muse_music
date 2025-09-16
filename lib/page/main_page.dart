@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/page/main/home.dart';
 import 'package:music_muse/page/main/home/play.dart';
+import 'package:music_muse/page/main/home/player_bar_a.dart';
 import 'package:music_muse/page/main/setting.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
@@ -85,10 +86,12 @@ class MainPage extends GetView<MainPageController> {
                     label: "Setting"),
               ]);
         }),
-        body: PageView(
-          controller: controller.pageC,
-          physics: const NeverScrollableScrollPhysics(),
-          children: const [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())],
+        body: PlayerBarA(
+          child: PageView(
+            controller: controller.pageC,
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())],
+          ),
         ),
       ),
     );
