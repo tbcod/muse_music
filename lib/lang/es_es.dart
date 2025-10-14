@@ -22,6 +22,7 @@ const Map<String, String> esES = {
   "Liked songs": "Canciones favoritas",
   "Local songs": "Canciones locales",
   "Liked Artist": "Artista favorito",
+  "like": "Favorito",
   "Search for music/artist/playlist":
       "Buscar música / artista / lista de reproducción",
   "History record": "Registro de historial",

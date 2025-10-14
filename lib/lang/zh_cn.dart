@@ -21,6 +21,7 @@ const Map<String, String> zhCN = {
   "Liked songs": "喜欢的歌曲",
   "Local songs": "本地歌曲",
   "Liked Artist": "喜欢的艺术家",
+  "like": "喜欢",
   "Search for music/artist/playlist": "搜索音乐 / 艺术家 / 播放列表",
   "History record": "历史记录",
   "Delete": "删除",

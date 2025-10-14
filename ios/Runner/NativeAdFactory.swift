@@ -66,7 +66,7 @@ class NativeAdFactory: FLTNativeAdFactory{
             make.top.equalToSuperview().offset(16)     // 距离顶部 16pt
         }
         
-        
+
         let iconADView = UIImageView()
         iconADView.contentMode = .scaleToFill
         iconADView.image = nativeAd.icon?.image

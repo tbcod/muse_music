@@ -69,39 +69,32 @@ const Map<String, String> enUS = {
   "Followed this singer": "Followed this singer",
   "Followed this playlist": "Followed this playlist",
   "Followed this song": "Followed this song",
-  "You have canceled following this singer":
-      "You have canceled following this singer",
-  "You have canceled following this playlist":
-      "You have canceled following this playlist",
-  "You have canceled following this song":
-      "You have canceled following this song",
+  "You have canceled following this singer": "You have canceled following this singer",
+  "You have canceled following this playlist": "You have canceled following this playlist",
+  "You have canceled following this song": "You have canceled following this song",
   "Please enter content": "Please enter content",
   "Please enter email": "Please enter email",
   "Please enter a playlist name": "Please enter a playlist name",
   "deleteStr": "Do you want to delete the history record?",
   "addToPlaylistOk": "Added to playlist",
   "alreadyAdd": "This song is already on the list",
-  "noWifiStr":
-      "The current non-wifi environment, please pay attention to data consumption",
+  "noWifiStr": "The current non-wifi environment, please pay attention to data consumption",
   "noNetworkStr1": "Network outage, download paused",
   "noNetworkStr2": "There is no internet connection",
-  "otherAppDialogText1":
-      "Please note that the current app is no longer supported. Kindly download our new app to continue enjoying all music.",
-  "otherAppDialogText2":
-      "The current app is no longer receiving updates. For an enhanced experience, we recommend downloading our new app.",
-  "playCopyrightStr":
-      "Due to copyright reasons, the current song does not support playback",
+  "otherAppDialogText1": "Please note that the current app is no longer supported. Kindly download our new app to continue enjoying all music.",
+  "otherAppDialogText2": "The current app is no longer receiving updates. For an enhanced experience, we recommend downloading our new app.",
+  "playCopyrightStr": "Due to copyright reasons, the current song does not support playback",
   "ratingStr": "Your support is our greatest motivation for progress!",
-  "downloadGuideStr":
-      "Access your favorite tracks instantly with a click here.",
+  "downloadGuideStr": "Access your favorite tracks instantly with a click here.",
   "loadMoreFailStr": "No network,please retry.",
   "noMoreStr": "No more content.",
   "noNetPlayStr": "No network, please check your network status",
-  "addedDownloadQueue":"Added to download queue",
-  "downloadCompleted":"Download completed",
-  "downloadFailed":"Download failed",
+  "addedDownloadQueue": "Added to download queue",
+  "downloadCompleted": "Download completed",
+  "downloadFailed": "Download failed",
   "pops": "Privacy Options",
   "popDetail": "Would you like to reset your privacy authorization settings?",
   "success": "Success!",
-  "reset": "Reset"
+  "reset": "Reset",
+  "like": "Like"
 };

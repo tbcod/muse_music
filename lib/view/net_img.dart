@@ -9,60 +9,67 @@ class NetImageView extends GetView {
   final String? errorAsset;
   final BoxFit fit;
   final Color? bgColor;
+  final double? radius;
+
   const NetImageView({
     Key? key,
     required this.imgUrl,
     this.width,
     this.height,
-    this.fit = BoxFit.contain,
+    this.fit = BoxFit.cover,
     this.errorAsset,
     this.bgColor,
+    this.radius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: imgUrl,
-      width: width,
-      height: height,
-      fit: fit,
-      placeholder: (c, url) {
-        return errorAsset == null
-            ? Container(
-                color: bgColor ?? Colors.black.withOpacity(0.08),
-                // child: const Center(
-                //   child: Icon(Icons.error),
-                // ),
-              )
-            : Image.asset(
-                errorAsset!,
-                fit: BoxFit.cover,
-              );
+    return ClipRRect(
+      borderRadius:
+          radius == null ? BorderRadius.zero : BorderRadius.circular(radius!),
+      child: CachedNetworkImage(
+        imageUrl: imgUrl,
+        width: width,
+        height: height,
+        fit: fit,
+        placeholder: (c, url) {
+          return errorAsset == null
+              ? Container(
+                  color: bgColor ?? Colors.black.withOpacity(0.08),
+                  // child: const Center(
+                  //   child: Icon(Icons.error),
+                  // ),
+                )
+              : Image.asset(
+                  errorAsset!,
+                  fit: BoxFit.cover,
+                );
 
-        // return Container(
-        //   color: bgColor ?? Colors.black.withOpacity(0.08),
-        //   // child: const Center(
-        //   //   child: CircularProgressIndicator(),
-        //   // ),
-        // );
-      },
-      errorWidget: (c, url, error) {
-        // return Container(
-        //   color: bgColor ?? Colors.black.withOpacity(0.08),
-        // );
+          // return Container(
+          //   color: bgColor ?? Colors.black.withOpacity(0.08),
+          //   // child: const Center(
+          //   //   child: CircularProgressIndicator(),
+          //   // ),
+          // );
+        },
+        errorWidget: (c, url, error) {
+          // return Container(
+          //   color: bgColor ?? Colors.black.withOpacity(0.08),
+          // );
 
-        return errorAsset == null
-            ? Container(
-                color: bgColor ?? Colors.black.withOpacity(0.08),
-                // child: const Center(
-                //   child: Icon(Icons.error),
-                // ),
-              )
-            : Image.asset(
-                errorAsset!,
-                fit: BoxFit.cover,
-              );
-      },
+          return errorAsset == null
+              ? Container(
+                  color: bgColor ?? Colors.black.withOpacity(0.08),
+                  // child: const Center(
+                  //   child: Icon(Icons.error),
+                  // ),
+                )
+              : Image.asset(
+                  errorAsset!,
+                  fit: BoxFit.cover,
+                );
+        },
+      ),
     );
   }
 }
@@ -74,6 +81,7 @@ class NetAvatarView extends GetView {
   final double borderWidth;
   final Color borderColor;
   final Color bgColor;
+
   const NetAvatarView(
       {Key? key,
       required this.imgUrl,

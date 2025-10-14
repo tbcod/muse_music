@@ -22,6 +22,7 @@ const Map<String, String> frFR = {
   "Liked songs": "Chansons favorites",
   "Local songs": "Chansons locales",
   "Liked Artist": "Artiste préféré",
+  "like": "Favorites",
   "Search for music/artist/playlist":
       "Rechercher de la musique/un artiste/une playlist",
   "History record": "Enregistrement d'historique",

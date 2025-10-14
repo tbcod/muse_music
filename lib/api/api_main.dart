@@ -181,8 +181,8 @@ class ApiMain extends BaseApi {
     if (nextData != null) {
       url += "?continuation=${nextData["continuation"]}";
     }
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {"context": _webRemixContext, "query": input, "params": params};
     return httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
