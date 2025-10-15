@@ -572,9 +572,7 @@ class AdUtils {
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
     // AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
-        !connectivityResult.contains(ConnectivityResult.mobile) &&
-        !connectivityResult.contains(ConnectivityResult.ethernet)) {
+    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile) && !connectivityResult.contains(ConnectivityResult.ethernet)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
@@ -644,7 +642,7 @@ class AdUtils {
 
     AppLog.i("开始显示广告:$key");
 
-    EventUtils.instance.addEvent("ad_chance");
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key});
 
     if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
       Get.bottomSheet(

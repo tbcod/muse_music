@@ -122,8 +122,8 @@ class BaseApi {
     } on DioException catch (e) {
       AppLog.e('DioException：code: ${e.response?.statusCode}, msg:${e.message}');
       return BaseModel(code: -1, message: "httpError".tr);
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e, s) {
+      AppLog.e("e:$e,$s");
 
       if (toastError) {
         ToastUtil.showToast(msg: "httpError".tr);
