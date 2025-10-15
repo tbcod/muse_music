@@ -117,6 +117,12 @@ class PlayerBottomBarView extends StatelessWidget {
                                           "artist_name": controller.nowData["subtitle"] ?? "",
                                         });
                                         EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
+                                        EventUtils.instance.addEvent("play_click", data: {
+                                          "song_id": controller.nowData["videoId"] ?? "",
+                                          "song_name": controller.nowData["title"] ?? "",
+                                          "artist_name": controller.nowData["subtitle"] ?? "",
+                                          "station":"tab"
+                                        });
                                         AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                       }
                                       controller.isPlaying.toggle();

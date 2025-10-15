@@ -96,5 +96,10 @@ const Map<String, String> enUS = {
   "popDetail": "Would you like to reset your privacy authorization settings?",
   "success": "Success!",
   "reset": "Reset",
-  "like": "Like"
+  "like": "Like",
+  "Songs": "Songs",
+  "Videos": "Videos",
+  "Albums": "Albums",
+  "Artists": "Artists",
+  "playlists": "playlists"
 };

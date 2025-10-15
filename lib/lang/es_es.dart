@@ -107,5 +107,10 @@ const Map<String, String> esES = {
   "pops": "Opciones de privacidad",
   "popDetail": "¿Desea restablecer la configuración de autorización de privacidad?",
   "success": "¡Éxito!",
-  "reset": "Restablecer"
+  "reset": "Restablecer",
+  "Songs": "Canciones",
+  "Videos": "Vídeos",
+  "Albums": "Álbumes",
+  "Artists": "Artistas",
+  "playlists": "Listas de la comunidad"
 };

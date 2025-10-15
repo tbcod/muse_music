@@ -109,5 +109,10 @@ const Map<String, String> frFR = {
   "pops": "Options de confidentialité",
   "popDetail": "Voulez-vous réinitialiser vos paramètres d'autorisation de confidentialité ?",
   "success": "Succès !",
-  "reset": "Réinitialiser"
+  "reset": "Réinitialiser",
+  "Songs": "Titres",
+  "Videos": "Vidéos",
+  "Albums": "Albums",
+  "Artists": "Artistes",
+  "playlists": "Playlists de la communauté"
 };

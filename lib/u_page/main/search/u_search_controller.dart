@@ -11,6 +11,7 @@ import 'package:music_muse/util/dialog_util.dart';
 import 'package:music_muse/util/format_data.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
+import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
 
 class UserSearchController extends GetxController with StateMixin {
@@ -20,12 +21,15 @@ class UserSearchController extends GetxController with StateMixin {
   //搜索结果
   var resultList = [];
   var tabList = [].obs;
+  var tabEnList = [];
 
   var showSuggestions = false.obs;
 
   var tabKey = GlobalKey();
 
   var inputC = TextEditingController();
+
+  Map<String, dynamic> _tabParamsMap = {};
 
   // Map<String, dynamic> bestResultList = {};
 
@@ -40,6 +44,9 @@ class UserSearchController extends GetxController with StateMixin {
     MyDialogUtils.instance.showRateDialog();
 
     EventUtils.instance.addEvent("search_home");
+
+    TbaUtils.instance.checkUnFinishedEvent();
+
   }
 
   void getSearchList(String str) async {
@@ -48,7 +55,8 @@ class UserSearchController extends GetxController with StateMixin {
       //解析搜索联想词
 
       //第一条为联想词，第二条为有图片的联想
-      List oldList = result.data["contents"].first["searchSuggestionsSectionRenderer"]["contents"];
+      List contents = result.data["contents"] ?? [];
+      List oldList = contents.firstOrNull?["searchSuggestionsSectionRenderer"]?["contents"] ?? [];
       var newList = [];
       for (var item in oldList) {
         List childTextList = item["searchSuggestionRenderer"]["suggestion"]["runs"];
@@ -171,9 +179,17 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
+    // "Songs": "Songs",
+    // "Videos": "Videos",
+    // "Albums": "Albums",
+    // "Artists": "Artists",
+    // "playlists": "playlists"
+
     //设置上方tab
     tabList.value = ["All".tr];
-    tabList.addAll(["Tracks".tr, "Video".tr, "Artist".tr, "Album".tr, "Playlist".tr]);
+    tabList.addAll(["Songs".tr, "Videos".tr, "Artists".tr, "Albums".tr, "playlists".tr]);
+
+    tabEnList = ["all", "song", "video", "artist", "album", "playlist"];
 
     //清空搜索记录
     resultList.clear();
@@ -260,7 +276,7 @@ class UserSearchController extends GetxController with StateMixin {
                   "subtitle": childSubtitle,
                   "cover": cover,
                   "videoId": videoId,
-                  "browseId":videoId,
+                  "browseId": videoId,
                   "type": type,
                 },
                 "content": contents,
@@ -297,6 +313,18 @@ class UserSearchController extends GetxController with StateMixin {
         change("", status: RxStatus.success());
 
         EventUtils.instance.addEvent("search_result");
+
+        List chips = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["header"]?["chipCloudRenderer"]?["chips"] ?? [];
+        for (final chip in chips) {
+          Map render = chip?["chipCloudChipRenderer"] ?? {};
+          String? uniqueId = render["uniqueId"];
+          if (uniqueId != null) {
+            final params = render["navigationEndpoint"]?["searchEndpoint"]?["params"];
+            if (params != null) {
+              _tabParamsMap[uniqueId] = params;
+            }
+          }
+        }
       } catch (e) {
         AppLog.e(e.toString());
       }
@@ -308,6 +336,19 @@ class UserSearchController extends GetxController with StateMixin {
     lastWords = str;
 
     await searchOtherList(str);
+  }
+
+  String? getTabParams(String title) {
+    String fullTitle = title;
+    for (final key in _tabParamsMap.keys) {
+      if (key.contains(title)) {
+        fullTitle = key;
+        break;
+      }
+    }
+    final param = _tabParamsMap[fullTitle];
+    AppLog.i("title:$title,param:$param");
+    return param;
   }
 
   // void toSearch(String str) async {
@@ -544,13 +585,15 @@ class UserSearchController extends GetxController with StateMixin {
   var inputFocusNode = FocusNode();
   var showClearBtn = false.obs;
 
-  Future searchSong(String str) async {
+  Future searchSong(String str, {String? param}) async {
     //搜索结果
-    songList.clear();
-    songNextData = {};
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
+
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
+      songList.clear();
+      songNextData = {};
+
       //解析搜索结果
       List oldList = [];
 
@@ -582,12 +625,11 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future moreSong() async {
+  Future moreSong({String? param}) async {
     if (songNextData.isEmpty) {
       return;
     }
-
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -617,10 +659,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future searchVideo(String str) async {
+  Future searchVideo(String str, {String? param}) async {
+
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
+
     videoList.clear();
     videoNextData = {};
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -659,12 +703,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future moreVideo() async {
+  Future moreVideo({String? param}) async {
     if (videoNextData.isEmpty) {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -697,10 +741,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future searchArtist(String str) async {
+  Future searchArtist(String str, {String? param}) async {
+
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
+
     artistList.clear();
     artistNextData = {};
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -740,12 +786,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future moreArtist() async {
+  Future moreArtist({String? param}) async {
     if (artistNextData.isEmpty) {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -777,10 +823,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future searchAlbum(String str) async {
+  Future searchAlbum(String str, {String? param}) async {
+
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
+
     albumList.clear();
     albumNextData = {};
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -826,12 +874,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future moreAlbum() async {
+  Future moreAlbum({String? param}) async {
     if (albumNextData.isEmpty) {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -863,10 +911,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future searchPlaylist(String str) async {
+  Future searchPlaylist(String str, {String? param}) async {
+
+    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
+
     playlistList.clear();
     playlistNextData = {};
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -906,12 +956,12 @@ class UserSearchController extends GetxController with StateMixin {
     }
   }
 
-  Future morePlaylist() async {
+  Future morePlaylist({String? param}) async {
     if (playlistNextData.isEmpty) {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
+    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果

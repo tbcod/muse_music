@@ -43,7 +43,7 @@ class Application extends GetxService {
 
   var isMainPage = false.obs;
 
-  var isShowingBottomSheet = false.obs;
+  // var isShowingBottomSheet = false.obs;
 
   var visitorData = "";
 
@@ -116,6 +116,8 @@ class Application extends GetxService {
     await initAppsflyer();
 
     await initSdk();
+
+    await TbaUtils.instance.initSdk();
 
     return this;
   }

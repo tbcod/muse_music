@@ -604,18 +604,18 @@ class AdUtils {
       key = "sod_local_int";
     }
 
-    AppLog.i("准备展示广告, $key");
+    // AppLog.i("准备展示广告, $key");
 
     if (key != "level_h" && key != "sod_local_int") {
       bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
-      AppLog.i("先展示高价位, $key， $isHighSuc");
+      // AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
         return true;
       }
     }
 
     if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告:$key, 不展示");
+      // AppLog.e("没有对应广告:$key, 不展示");
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "show key error"));
       }

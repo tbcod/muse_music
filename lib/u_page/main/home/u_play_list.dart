@@ -9,6 +9,7 @@ import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/player_bottom_bar.dart';
 
@@ -54,7 +55,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
               child: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    backgroundColor: Color(0xfffafafa),
+                    backgroundColor: const Color(0xfffafafa),
                     centerTitle: true,
                     pinned: true,
                     title: Obx(() => controller.showTitle.value ? Text(controller.info["title"], style: TextStyle(fontSize: 16.w)) : Container()),
@@ -93,7 +94,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                     child: Container(
                       height: 142.w,
                       width: double.infinity,
-                      color: Color(0xfffafafa),
+                      color: const Color(0xfffafafa),
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                       child: Row(
                         children: [
@@ -110,7 +111,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                                     width: 128.w,
                                     height: 128.w,
                                     margin: EdgeInsets.only(right: 20.w),
-                                    decoration: BoxDecoration(color: Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)),
+                                    decoration: BoxDecoration(color: const Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)),
                                   ),
                                 ),
 
@@ -149,7 +150,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                               ),
                               Text(
                                 controller.info["songNumStr"] ?? "",
-                                style: TextStyle(fontSize: 12.w, color: Color(0xff121212)),
+                                style: TextStyle(fontSize: 12.w, color: const Color(0xff121212)),
                               )
                             ],
                           )),
@@ -164,7 +165,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                           80.w,
                           Container(
                             height: 80.w,
-                            color: Color(0xfffafafa),
+                            color: const Color(0xfffafafa),
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
                             child: Row(
                               children: [
@@ -185,7 +186,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                                   },
                                   child: Container(
                                     height: 42.w,
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: Color(0xff7453FF)),
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: const Color(0xff7453FF)),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
@@ -237,18 +238,18 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                                     height: 42.w,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(21.w),
-                                        border: Border.all(color: Color(0xff7453FF), width: 2.w),
+                                        border: Border.all(color: const Color(0xff7453FF), width: 2.w),
                                         color: Colors.white),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: Color(0xff7453FF)),
+                                        Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: const Color(0xff7453FF)),
                                         SizedBox(
                                           width: 8.w,
                                         ),
                                         Text(
                                           "Shuffle".tr,
-                                          style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
+                                          style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: const Color(0xff7453FF)),
                                         )
                                       ],
                                     ),
@@ -562,7 +563,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
         return Container(
           height: 70.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          decoration: BoxDecoration(color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
+          decoration: BoxDecoration(color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
           child: Row(
             children: [
               controller.isAlbum
@@ -573,7 +574,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                         style: TextStyle(
                           fontSize: 14.w,
                           fontWeight: FontWeight.bold,
-                          color: isCheck ? Color(0xff8569FF) : Colors.black,
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black,
                         ),
                       ),
                     )
@@ -603,7 +604,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                     style: TextStyle(
                       fontSize: 14.w,
                       fontWeight: FontWeight.w500,
-                      color: isCheck ? Color(0xff8569FF) : Colors.black,
+                      color: isCheck ? const Color(0xff8569FF) : Colors.black,
                     ),
                   ),
                   SizedBox(
@@ -631,7 +632,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.w,
-                          color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75),
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                         ),
                       ))
                     ],
@@ -747,6 +748,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     browseId = Get.arguments?["browseId"] ?? "";
     playlistId = Get.arguments?["playlistId"] ?? "";
 
+    TbaUtils.instance.checkUnFinishedEvent();
+
     if (browseId.isEmpty) {
       browseId = playlistId;
       bindYoutubeData();
@@ -772,8 +775,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
       var artistStr = "";
       var cover = "";
       try {
-        List list = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
-        var infoData = list.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]["contents"]?[0]?["musicResponsiveHeaderRenderer"];
+        List list = result.data?["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
+        var infoData = list.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"]?[0]?["musicResponsiveHeaderRenderer"];
         list = infoData?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
         cover = list.lastOrNull["url"];
         list = infoData["title"]?["runs"] ?? [];
@@ -814,72 +817,78 @@ class UserPlayListInfoController extends GetxController with StateMixin {
           "browseId": browseId
         };
 
-        AppLog.e(info);
+        // AppLog.e(info);
 
-        oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-            ["musicPlaylistShelfRenderer"]["contents"];
+        oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"][0]
+            ["musicPlaylistShelfRenderer"]?["contents"] ?? [];
 
-        nextData = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-                ["musicPlaylistShelfRenderer"]["continuations"]?[0]?["nextContinuationData"] ??
-            {};
+        if(oldList.isNotEmpty){
+          nextData = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"][0]
+          ["musicPlaylistShelfRenderer"]?["continuations"]?[0]?["nextContinuationData"] ??
+              {};
 
-        for (Map item in oldList) {
-          String videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]?["videoId"] ?? '';
+          for (Map item in oldList) {
+            String videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]?["videoId"] ?? '';
 
-          List list = item["musicResponsiveListItemRenderer"]?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
-          var cover = list.firstOrNull?["url"];
-          list = item["musicResponsiveListItemRenderer"]["flexColumns"] ?? [];
-          if (list.isEmpty) continue;
-          var title = list.first["musicResponsiveListItemFlexColumnRenderer"]?["text"]["runs"][0]["text"];
-          var subtitle = list[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-          list = item["musicResponsiveListItemRenderer"]?["fixedColumns"] ?? [];
-          list = list.firstOrNull?["musicResponsiveListItemFixedColumnRenderer"]?["text"]?["runs"] ?? [];
-          var timeStr = list.firstOrNull?["text"];
+            List list = item["musicResponsiveListItemRenderer"]?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+            var cover = list.firstOrNull?["url"];
+            list = item["musicResponsiveListItemRenderer"]["flexColumns"] ?? [];
+            if (list.isEmpty) continue;
+            var title = list.first["musicResponsiveListItemFlexColumnRenderer"]?["text"]["runs"][0]["text"];
+            var subtitle = list[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+            list = item["musicResponsiveListItemRenderer"]?["fixedColumns"] ?? [];
+            list = list.firstOrNull?["musicResponsiveListItemFixedColumnRenderer"]?["text"]?["runs"] ?? [];
+            var timeStr = list.firstOrNull?["text"];
 
-          newList.add({
-            "cover": cover,
-            "title": title,
-            "subtitle": subtitle,
-            "timeStr": timeStr,
-            "videoId": videoId,
-          });
+            newList.add({
+              "cover": cover,
+              "title": title,
+              "subtitle": subtitle,
+              "timeStr": timeStr,
+              "videoId": videoId,
+            });
+          }
+        }else{
+          isAlbum = true;
+
+          oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"]?[0]
+          ["musicShelfRenderer"]?["contents"] ??
+              [];
+          for (Map item in oldList) {
+            // var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
+            //             ?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"]
+            //         ?[0]?["url"] ??
+            //     "-";
+            var title =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+            // var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
+            //         [2]["musicResponsiveListItemFlexColumnRenderer"]["text"]
+            //     ["runs"][0]["text"];
+            var subtitle = artistStr;
+
+            var timeStr =
+            item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+
+            var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
+            if(videoId == null) continue;
+
+            newList.add({
+              "cover": cover,
+              "title": title,
+              "subtitle": subtitle,
+              "timeStr": timeStr,
+              "videoId": videoId,
+            });
+          }
         }
-      } catch (e) {
+
+
+      } catch (e,s) {
         // print(e);
-        AppLog.e("解析出错：${e.toString()}");
+        AppLog.e("解析出错：${e.toString()}, \n$s");
 
         //这里是专辑，数据结构不一样
-        isAlbum = true;
 
-        oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-                ["musicShelfRenderer"]?["contents"] ??
-            [];
-        for (Map item in oldList) {
-          // var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-          //             ?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"]
-          //         ?[0]?["url"] ??
-          //     "-";
-          var title =
-              item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-          // var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-          //         [2]["musicResponsiveListItemFlexColumnRenderer"]["text"]
-          //     ["runs"][0]["text"];
-          var subtitle = artistStr;
-
-          var timeStr =
-              item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
-
-          var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
-          if(videoId == null) continue;
-
-          newList.add({
-            "cover": cover,
-            "title": title,
-            "subtitle": subtitle,
-            "timeStr": timeStr,
-            "videoId": videoId,
-          });
-        }
       }
 
       list = newList;
@@ -909,7 +918,7 @@ class UserPlayListInfoController extends GetxController with StateMixin {
 
     var result = await ApiMain.instance.getData(browseId, nextData: nextData);
 
-    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["contents"] ?? [];
+    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]?["contents"] ?? [];
 
     nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
@@ -1072,8 +1081,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     var oldList = [];
     var newList = [];
 
-    oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]
-            ["itemSectionRenderer"]["contents"][0]["playlistVideoListRenderer"]["contents"] ??
+    oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]?["contents"][0]
+            ["itemSectionRenderer"]?["contents"][0]["playlistVideoListRenderer"]?["contents"] ??
         [];
 
     for (var item in oldList) {

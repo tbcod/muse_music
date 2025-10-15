@@ -95,7 +95,9 @@ class ApiMain extends BaseApi {
       //请求成功
       // AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
 
-      EventUtils.instance.addEvent("source_get");
+      if(nextData == null){
+        EventUtils.instance.addEvent("source_get");
+      }
     }
 
     return result;
@@ -128,7 +130,7 @@ class ApiMain extends BaseApi {
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;
 
-    AppLog.i("request:$url,$body");
+    // AppLog.i("request:$url,$body");
     BaseModel result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     //判断是否有链接
@@ -329,7 +331,7 @@ class ApiMain extends BaseApi {
       final data = result.data;
       final playbackUrl = data?["playbackTracking"]?["videostatsPlaybackUrl"]?['baseUrl'];
       final watchTimeUrl = data?["playbackTracking"]?["videostatsWatchtimeUrl"]?['baseUrl'];
-      AppLog.i("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
+      // AppLog.i("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
       if (playbackUrl == null || watchTimeUrl == null) {
         final playabilityStatus = data?["playabilityStatus"]?["status"];
         final reason = data?["playabilityStatus"]?["reason"];
@@ -416,7 +418,7 @@ class ApiMain extends BaseApi {
     header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
     BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
 
-    AppLog.i("postPlaybackUrl:$url, result:${result.code}");
+    // AppLog.i("postPlaybackUrl:$url, result:${result.code}");
   }
 
   _postWatchTime(String? url,

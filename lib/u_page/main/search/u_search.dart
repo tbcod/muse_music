@@ -11,6 +11,8 @@ import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/u_page/u_main.dart';
+import 'package:music_muse/util/download/download_util.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/view/base_view.dart';
@@ -79,7 +81,6 @@ class UserSearch extends GetView<UserSearchController> {
                             controller.inputC.text = "";
                             controller.showClearBtn.value = false;
                             controller.showSuggestions.value = false;
-
                             controller.inputFocusNode.requestFocus();
 
                             // controller.bindSearchWordsData();
@@ -142,23 +143,21 @@ class UserSearch extends GetView<UserSearchController> {
                     (state) =>
                         //搜索结果
                         Get.find<Application>().typeSo == "yt"
-                            ? Container(
-                                child: Obx(() => EasyRefresh(
-                                    onLoad: () async {
-                                      await controller.moreYoutubeSearch();
-                                      return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                            ? Obx(() => EasyRefresh(
+                                onLoad: () async {
+                                  await controller.moreYoutubeSearch();
+                                  return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+                                },
+                                child: ListView.separated(
+                                    itemBuilder: (_, i) {
+                                      return getYTItem(i);
                                     },
-                                    child: ListView.separated(
-                                        itemBuilder: (_, i) {
-                                          return getYTItem(i);
-                                        },
-                                        separatorBuilder: (_, i) {
-                                          return SizedBox(
-                                            height: 10.w,
-                                          );
-                                        },
-                                        itemCount: controller.ytList.length))),
-                              )
+                                    separatorBuilder: (_, i) {
+                                      return SizedBox(
+                                        height: 10.w,
+                                      );
+                                    },
+                                    itemCount: controller.ytList.length)))
                             : DefaultTabController(
                                 length: controller.tabList.length,
                                 child: Column(
@@ -166,8 +165,8 @@ class UserSearch extends GetView<UserSearchController> {
                                   children: [
                                     Container(
                                       width: double.infinity,
-                                      height: 30.w,
-                                      padding: EdgeInsets.symmetric(horizontal: 4.w),
+                                      height: 30,
+                                      padding: const EdgeInsets.symmetric(horizontal: 4),
                                       child: TabBar(
                                         tabs: controller.tabList
                                             .map((e) => Tab(
@@ -177,17 +176,25 @@ class UserSearch extends GetView<UserSearchController> {
                                         onTap: (int index) {
                                           if (index == 0) {
                                             EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "all"});
+                                          } else {
+                                            EventUtils.instance.addEvent("search_result_click", data: {
+                                              "detail_click": controller.tabEnList.length == controller.tabList.length ? controller.tabEnList[index] : controller.tabList[index],
+                                            });
                                           }
                                         },
                                         isScrollable: true,
-                                        labelPadding: EdgeInsets.only(left: 12.w, right: 12.w),
-                                        indicatorPadding: const EdgeInsets.all(0),
+                                        labelPadding: const EdgeInsets.only(left: 12, right: 12),
+                                        indicatorPadding: const EdgeInsets.only(right: 6, left: 6),
+                                        indicatorWeight: 4,
+                                        indicatorSize: TabBarIndicatorSize.label,
                                         tabAlignment: TabAlignment.start,
-                                        unselectedLabelStyle: TextStyle(fontSize: 14.w),
-                                        unselectedLabelColor: Colors.black.withOpacity(0.5),
+                                        unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                        unselectedLabelColor: Colors.black.withValues(alpha: 0.5),
                                         labelColor: const Color(0xff8468FF),
                                         indicatorColor: const Color(0xff8468FF),
-                                        labelStyle: TextStyle(fontSize: 18.w),
+                                        labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                                        dividerHeight: 1,
+                                        dividerColor: const Color(0xff141414).withValues(alpha: 0.08),
                                       ),
                                     ),
                                     Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
@@ -256,9 +263,8 @@ class UserSearch extends GetView<UserSearchController> {
                                         () => ExtendedWrap(
                                           spacing: 12.w,
                                           runSpacing: 16.w,
-                                          children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
                                           maxLines: 3,
-
+                                          children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
                                           // maxLines: controller.historyExpanded.value
                                           //     ? 100
                                           //     : 2,
@@ -390,9 +396,10 @@ class UserSearch extends GetView<UserSearchController> {
   }
 
   getPage(String title) {
+    final param = controller.getTabParams(title);
     if (title == "All".tr) {
       return ListView.builder(
-        padding: EdgeInsets.only(top: 24.w, bottom: 60.w + Get.mediaQuery.padding.bottom),
+        padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
         itemBuilder: (_, i) {
           return getBigItem(i);
         },
@@ -401,143 +408,133 @@ class UserSearch extends GetView<UserSearchController> {
     }
 
     //其他显示一个listview
-    if (title == "Tracks".tr) {
+    if (title == "Songs".tr) {
       //歌曲列表
-      return Container(
-        child: Obx(
-          () {
-            if (controller.songList.isEmpty) {
-              return const EmotyView();
-            }
-            return EasyRefresh(
-                onRefresh: () async {
-                  await controller.searchSong("");
-                },
-                onLoad: () async {
-                  await controller.moreSong();
-                  return controller.songNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                },
-                child: ListView.separated(
-                    padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
-                    itemBuilder: (_, i) {
-                      return getMusicItem(controller.songList[i]);
-                    },
-                    separatorBuilder: (_, i) {
-                      return const SizedBox();
-                    },
-                    itemCount: controller.songList.length));
-          },
-        ),
-      );
-    } else if (title == "Video".tr) {
-      //视频列表
-      return Container(
-        child: Obx(
-          () {
-            if (controller.videoList.isEmpty) {
-              return const EmotyView();
-            }
-            return EasyRefresh(
-                onRefresh: () async {
-                  await controller.searchVideo("");
-                },
-                onLoad: () async {
-                  await controller.moreVideo();
-                  return controller.videoNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                },
-                child: ListView.separated(
-                    padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
-                    itemBuilder: (_, i) {
-                      return getVideoItem(controller.videoList[i]);
-                    },
-                    separatorBuilder: (_, i) {
-                      return const SizedBox();
-                    },
-                    itemCount: controller.videoList.length));
-          },
-        ),
-      );
-    } else if (title == "Artist".tr) {
-      //歌手列表
-      return Container(
-        child: Obx(
-          () {
-            if (controller.artistList.isEmpty) {
-              return const EmotyView();
-            }
-            return EasyRefresh(
-                onRefresh: () async {
-                  await controller.searchArtist("");
-                },
-                onLoad: () async {
-                  await controller.moreArtist();
-                  return controller.artistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                },
-                child: ListView.separated(
-                    padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
-                    itemBuilder: (_, i) {
-                      return getArtistItem(controller.artistList[i]);
-                    },
-                    separatorBuilder: (_, i) {
-                      return const SizedBox();
-                    },
-                    itemCount: controller.artistList.length));
-          },
-        ),
-      );
-    } else if (title == "Album".tr) {
-      //专辑
-      return Container(
-        child: Obx(() {
-          if (controller.albumList.isEmpty) {
+      return Obx(
+        () {
+          if (controller.songList.isEmpty) {
             return const EmotyView();
           }
           return EasyRefresh(
-              onLoad: () async {
-                await controller.moreAlbum();
-                return controller.albumNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-              },
               onRefresh: () async {
-                await controller.searchAlbum("");
+                await controller.searchSong("", param: param);
+              },
+              onLoad: () async {
+                await controller.moreSong(param: param);
+                return controller.songNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
               },
               child: ListView.separated(
-                  padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
+                  padding: EdgeInsets.only(top: 12, bottom: 60 + Get.mediaQuery.padding.bottom),
                   itemBuilder: (_, i) {
-                    return getPlayListItem(controller.albumList[i]);
+                    return getMusicItem(controller.songList[i]);
                   },
                   separatorBuilder: (_, i) {
                     return const SizedBox();
                   },
-                  itemCount: controller.albumList.length));
-        }),
+                  itemCount: controller.songList.length));
+        },
       );
+    } else if (title == "Videos".tr) {
+      //视频列表
+      return Obx(
+        () {
+          if (controller.videoList.isEmpty) {
+            return const EmotyView();
+          }
+          return EasyRefresh(
+              onRefresh: () async {
+                await controller.searchVideo("", param: param);
+              },
+              onLoad: () async {
+                await controller.moreVideo(param: param);
+                return controller.videoNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+              },
+              child: ListView.separated(
+                  padding: EdgeInsets.only(top: 12, bottom: 60 + Get.mediaQuery.padding.bottom),
+                  itemBuilder: (_, i) {
+                    return getVideoItem(controller.videoList[i]);
+                  },
+                  separatorBuilder: (_, i) {
+                    return const SizedBox();
+                  },
+                  itemCount: controller.videoList.length));
+        },
+      );
+    } else if (title == "Artist".tr) {
+      //歌手列表
+      return Obx(
+        () {
+          if (controller.artistList.isEmpty) {
+            return const EmotyView();
+          }
+          return EasyRefresh(
+              onRefresh: () async {
+                await controller.searchArtist("", param: param);
+              },
+              onLoad: () async {
+                await controller.moreArtist(param: param);
+                return controller.artistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+              },
+              child: ListView.separated(
+                  padding: EdgeInsets.only(top: 12, bottom: 60 + Get.mediaQuery.padding.bottom),
+                  itemBuilder: (_, i) {
+                    return getArtistItem(controller.artistList[i]);
+                  },
+                  separatorBuilder: (_, i) {
+                    return const SizedBox();
+                  },
+                  itemCount: controller.artistList.length));
+        },
+      );
+    } else if (title == "Album".tr) {
+      //专辑
+      return Obx(() {
+        if (controller.albumList.isEmpty) {
+          return const EmotyView();
+        }
+        return EasyRefresh(
+            onLoad: () async {
+              await controller.moreAlbum(param: param);
+              return controller.albumNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+            },
+            onRefresh: () async {
+              await controller.searchAlbum("", param: param);
+            },
+            child: ListView.separated(
+                padding: EdgeInsets.only(top: 12, bottom: 60 + Get.mediaQuery.padding.bottom),
+                itemBuilder: (_, i) {
+                  return getPlayListItem(controller.albumList[i]);
+                },
+                separatorBuilder: (_, i) {
+                  return const SizedBox();
+                },
+                itemCount: controller.albumList.length));
+      });
     } else if (title == "Playlist".tr) {
       //歌单
-      return Container(
-        child: Obx(
-          () {
-            if (controller.playlistList.isEmpty) {
-              return const EmotyView();
-            }
-            return EasyRefresh(
-                onRefresh: () async {
-                  await controller.searchPlaylist("");
-                },
-                onLoad: () async {
-                  await controller.morePlaylist();
-                  return controller.playlistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                },
-                child: ListView.separated(
-                    padding: EdgeInsets.only(top: 24, bottom: 60 + Get.mediaQuery.padding.bottom),
-                    itemBuilder: (_, i) {
-                      return getPlayListItem(controller.playlistList[i]);
-                    },
-                    separatorBuilder: (_, i) {
-                      return const SizedBox();
-                    },
-                    itemCount: controller.playlistList.length));
-          },
-        ),
+      return Obx(
+        () {
+          if (controller.playlistList.isEmpty) {
+            return const EmotyView();
+          }
+          return EasyRefresh(
+              onRefresh: () async {
+                await controller.searchPlaylist("", param: param);
+              },
+              onLoad: () async {
+                await controller.morePlaylist(param: param);
+                return controller.playlistNextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
+              },
+              child: ListView.separated(
+                  padding: EdgeInsets.only(top: 12, bottom: 60 + Get.mediaQuery.padding.bottom),
+                  itemBuilder: (_, i) {
+                    return getPlayListItem(controller.playlistList[i]);
+                  },
+                  separatorBuilder: (_, i) {
+                    return const SizedBox();
+                  },
+                  itemCount: controller.playlistList.length));
+        },
       );
     }
 
@@ -568,7 +565,7 @@ class UserSearch extends GetView<UserSearchController> {
       List content = item["content"];
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0xffe1e1e1).withValues(alpha: 0.35),
+          color: const Color(0xffe1e1f1).withValues(alpha: 0.35),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.only(bottom: 12),
@@ -578,78 +575,86 @@ class UserSearch extends GetView<UserSearchController> {
             _bestHeader(header, content),
             ...content.map((item) {
               if (item['type'] == 'more') return Container();
-              return Obx(() {
-                var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
-                return Container(
-                  height: 70,
-                  decoration: BoxDecoration(color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 54,
-                        height: 54,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                        child: NetImageView(imgUrl: item["cover"] ?? ""),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            item["title"] ?? "",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: isCheck ? const Color(0xff8569FF) : Colors.black,
+              return GestureDetector(
+                onTap: () {
+                  Debounce(500).run(() {
+                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                    Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                  });
+                },
+                child: Obx(() {
+                  var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+                  return Container(
+                    height: 70,
+                    decoration: BoxDecoration(color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 54,
+                          height: 54,
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                          child: NetImageView(imgUrl: item["cover"] ?? ""),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              item["title"] ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Obx(() {
-                                var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
-                                if (isLike) {
-                                  return Container(
-                                    width: 16,
-                                    height: 16,
-                                    margin: const EdgeInsets.only(right: 4),
-                                    child: Image.asset("assets/oimg/icon_like_on.png"),
-                                  );
-                                }
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Obx(() {
+                                  var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
+                                  if (isLike) {
+                                    return Container(
+                                      width: 16,
+                                      height: 16,
+                                      margin: const EdgeInsets.only(right: 4),
+                                      child: Image.asset("assets/oimg/icon_like_on.png"),
+                                    );
+                                  }
 
-                                return Container();
-                              }),
-                              Expanded(
-                                  child: Text(
-                                item["subtitle"] ?? "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isCheck ? const Color(0xff8569FF) : Colors.black.withValues(alpha: 0.75),
-                                ),
-                              ))
-                            ],
-                          ),
-                        ],
-                      )),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      getDownloadAndMoreBtn(item, "search")
-                    ],
-                  ),
-                );
-              });
+                                  return Container();
+                                }),
+                                Expanded(
+                                    child: Text(
+                                  item["subtitle"] ?? "",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withValues(alpha: 0.75),
+                                  ),
+                                ))
+                              ],
+                            ),
+                          ],
+                        )),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        getDownloadAndMoreBtn(item, "search")
+                      ],
+                    ),
+                  );
+                }),
+              );
             }),
           ],
         ),
@@ -751,9 +756,6 @@ class UserSearch extends GetView<UserSearchController> {
                 Get.to(() => UserPlayListInfo(isFormSearch: true), arguments: item);
               } else {
                 EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
-
-                EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
-
                 Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
               }
             },
@@ -842,7 +844,7 @@ class UserSearch extends GetView<UserSearchController> {
 
   _getHeaderActionBtn(Map item, List content) {
     String type = item["type"];
-    bool isVideo = (type == 'MUSIC_VIDEO_TYPE_UGC' || type == 'MUSIC_VIDEO_TYPE_OMV');
+    // bool isVideo = (type == 'MUSIC_VIDEO_TYPE_UGC' || type == 'MUSIC_VIDEO_TYPE_OMV');
     bool isArtist = type == 'MUSIC_PAGE_TYPE_ARTIST';
     bool isPlaylist = type == 'MUSIC_PAGE_TYPE_ALBUM' || type == 'MUSIC_PAGE_TYPE_PLAYLIST';
 
@@ -851,33 +853,26 @@ class UserSearch extends GetView<UserSearchController> {
         Expanded(
           child: InkWell(
             onTap: () {
-              if (isArtist || isPlaylist) {
-                if (content.isNotEmpty) {
-                  final item = content.first;
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
-                  EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
-                  Get.find<UserPlayInfoController>().setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
-                } else {
-                  List list = controller.resultList;
-                  if (list.isNotEmpty) {
-                    list.removeAt(0);
-                    final item = list.first;
+              Debounce(500).run(() {
+                if (isArtist || isPlaylist) {
+                  if (content.isNotEmpty) {
+                    final item = content.first;
                     EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
-                    EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
-                    Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                    Get.find<UserPlayInfoController>().setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
+                  } else {
+                    List list = controller.resultList;
+                    if (list.isNotEmpty) {
+                      list.removeAt(0);
+                      final item = list.first;
+                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                      Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                    }
                   }
+                } else {
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                  Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                 }
-              } else {
-                EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
-
-                EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
-
-                Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
-              }
-              // EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "play_all"});
-              // Get.find<UserPlayInfoController>()
-              //     .setDataAndPlayItem(controller.list, controller.list.first, pid: controller.browseId, clickType: clickTypeStr);
-              // Get.to(UserPlayInfo());
+              });
             },
             child: Container(
               height: 42,
@@ -906,7 +901,26 @@ class UserSearch extends GetView<UserSearchController> {
           child: (isArtist || isPlaylist)
               ? InkWell(
                   onTap: () {
-                    if (isPlaylist) {}
+                    Debounce(500).run(() {
+                      if (isPlaylist) {
+                        final browseId = item["browseId"];
+                        var isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
+                        if (isLike) {
+                          LikeUtil.instance.unlikeList(browseId);
+                        } else {
+                          LikeUtil.instance.likeList(browseId, item, "");
+                        }
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "collection"});
+                      } else if (isArtist) {
+                        final browseId = item["browseId"];
+                        var isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
+                        if (isLike) {
+                          LikeUtil.instance.unlikeArtist(browseId);
+                        } else {
+                          LikeUtil.instance.likeArtist(browseId, item);
+                        }
+                      }
+                    });
                   },
                   child: Container(
                     height: 42,
@@ -914,7 +928,16 @@ class UserSearch extends GetView<UserSearchController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset("assets/oimg/ic_like.png", width: 24, height: 24, color: const Color(0xff7453FF)),
+                        Obx(() {
+                          final browseId = item["browseId"];
+                          var isLike = false;
+                          if (isArtist) {
+                            isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
+                          } else {
+                            isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
+                          }
+                          return Image.asset(isLike ? "assets/oimg/ic_like_x.png" : "assets/oimg/ic_like.png", width: 24, height: 24, color: const Color(0xff7453FF));
+                        }),
                         const SizedBox(width: 8),
                         Text(
                           "like".tr,
@@ -926,14 +949,17 @@ class UserSearch extends GetView<UserSearchController> {
                 )
               : InkWell(
                   onTap: () {
-                    // Get.find<UserPlayInfoController>()
-                    //     .setDataAndPlayItem(playList, playList.first, pid: controller.browseId, clickType: clickTypeStr);
-
-                    // Get.find<UserPlayInfoController>()
-                    //     .setDataAndPlayItem(controller.list,
-                    //         controller.list.first,
-                    //         clickType: "h_detail");
-                    // Get.to(UserPlayInfo());
+                    Debounce(500).run(() {
+                      var videoId = item["videoId"];
+                      var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"];
+                      if (state == 1 || state == 3) {
+                        DownloadUtils.instance.remove(videoId, state: state);
+                      } else if (state == 2) {
+                        DownloadUtils.instance.remove(videoId, state: state);
+                      } else {
+                        DownloadUtils.instance.download(videoId, item, clickType: "search");
+                      }
+                    });
                   },
                   child: Container(
                     height: 42,
@@ -941,7 +967,52 @@ class UserSearch extends GetView<UserSearchController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset("assets/oimg/ic_download.png", width: 24, height: 24, color: const Color(0xff7453FF)),
+                        Obx(() {
+                          //获取下载状态
+                          var videoId = item["videoId"];
+
+                          if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
+                            //有添加过下载
+                            var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+                            double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+
+                            // AppLog.e(
+                            //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
+
+                            if (state == 1 || state == 3) {
+                              //下载中\下载暂停
+                              return Container(
+                                height: 24,
+                                width: 24,
+                                padding: const EdgeInsets.all(2.5),
+                                alignment: Alignment.center,
+                                child: CircularProgressIndicator(
+                                  value: progress,
+                                  strokeWidth: 2.5,
+                                  backgroundColor: const Color(0xff7453ff).withValues(alpha: 0.35),
+                                  color: const Color(0xff7453ff),
+                                ),
+                              );
+                            } else if (state == 2) {
+                              return InkWell(
+                                onTap: () {
+                                  DownloadUtils.instance.remove(videoId, state: state);
+                                },
+                                child: Image.asset(
+                                  "assets/oimg/ic_download_x.png",
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              );
+                            }
+                          }
+
+                          return Image.asset(
+                            "assets/oimg/ic_download.png",
+                            width: 24,
+                            height: 24,
+                          );
+                        }),
                         const SizedBox(width: 8),
                         Text(
                           "Offline".tr,
@@ -974,8 +1045,7 @@ class UserSearch extends GetView<UserSearchController> {
       //歌手
       return getArtistItem(item);
     } else {
-      AppLog.e("不支持的类型");
-      AppLog.e(type);
+      AppLog.e("不支持的类型:$type");
       return Container();
     }
   }

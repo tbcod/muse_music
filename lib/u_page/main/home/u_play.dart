@@ -19,6 +19,7 @@ import 'package:music_muse/util/download/download_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/more_sheet_util.dart';
+import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/net_img.dart';
 import 'package:path_provider/path_provider.dart';
@@ -46,8 +47,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
       children: [
         Positioned.fill(
             child: Container(
-          decoration:
-              const BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+          decoration: const BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             // appBar: AppBar(
@@ -178,8 +178,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                         child: SizedBox(
                           width: 32.w,
                           height: 32.w,
-                          child:
-                              Obx(() => Image.asset(controller.singleLoop.value ? "assets/oimg/icon_loop_on.png" : "assets/oimg/icon_loop_off.png")),
+                          child: Obx(() => Image.asset(controller.singleLoop.value ? "assets/oimg/icon_loop_on.png" : "assets/oimg/icon_loop_off.png")),
                         ),
                         onTap: () {
                           EventUtils.instance.addEvent("play_page_click", data: {"click": "single"});
@@ -247,6 +246,14 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                       "artist_name": controller.nowData["subtitle"],
                                       "playlist_id": controller.playlistId,
                                     });
+                                    EventUtils.instance.addEvent("play_click", data: {
+                                      "song_id": controller.nowData["videoId"],
+                                      "song_name": controller.nowData["title"],
+                                      "artist_name": controller.nowData["subtitle"],
+                                      "playlist_id": controller.playlistId,
+                                      "station": "play_center"
+                                    });
+
                                     EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
                                     controller.player?.play();
                                     AdUtils.instance.showAd("behavior", adScene: AdScene.play);
@@ -257,7 +264,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   controller.isPlaying.toggle();
                                 },
                               ))
-                          : SizedBox(width: 48.w, height: 48.w, child: const CircularProgressIndicator())),
+                          : Container(width: 48.w, height: 48.w,padding: const EdgeInsets.all(4), child: const CircularProgressIndicator(strokeWidth: 4))),
                       SizedBox(
                         width: 35.w,
                       ),
@@ -552,10 +559,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 Container(
                                   width: 72.w,
                                   height: 72.w,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: const Color(0xff876CFF), width: 2.w),
-                                      borderRadius: BorderRadius.circular(36.w)),
+                                  decoration: BoxDecoration(color: Colors.white, border: Border.all(color: const Color(0xff876CFF), width: 2.w), borderRadius: BorderRadius.circular(36.w)),
                                   alignment: Alignment.center,
                                   child: Obx(() {
                                     //获取下载状态
@@ -795,6 +799,9 @@ class UserPlayInfoController extends GetxController {
     myHandler = await AudioService.init(builder: () => MyVideoHandler());
 
     checkShowDownloadGuide();
+
+    TbaUtils.instance.checkUnFinishedEvent();
+
   }
 
   _startTimer() {
@@ -829,186 +836,187 @@ class UserPlayInfoController extends GetxController {
   }
 
   showFloatingWidget() async {
-  //   if (nowData.isEmpty) {
-  //     // hideFloatingWidget();
-  //     return;
-  //   }
-  //   hideFloatingWidget();
-  //   // await Future.delayed(Duration(milliseconds: 500));
-  //
-  //   overlayEntry = OverlayEntry(builder: (c) {
-  //     return Obx(() {
-  //       return Visibility(
-  //         visible: Get.find<Application>().isShowingBottomSheet.isFalse,
-  //         child: Positioned(
-  //             bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom,
-  //             left: 0,
-  //             right: 0,
-  //             child: Material(
-  //               color: Colors.transparent,
-  //               child: Stack(
-  //                 children: [
-  //                   InkWell(
-  //                     onTap: () async {
-  //                       // Get.to(UserPlayInfo());
-  //                       hideFloatingWidget();
-  //                       // checkShowDownloadGuide();
-  //                       await Get.bottomSheet(
-  //                           Container(
-  //                             child: const UserPlayInfo(),
-  //                             // padding: EdgeInsets.only(
-  //                             //     top: Get.mediaQuery.padding.top),
-  //                           ),
-  //                           isScrollControlled: true);
-  //                       showFloatingWidget();
-  //                     },
-  //                     child: Container(
-  //                       width: double.infinity,
-  //                       height: 54.w,
-  //                       padding: EdgeInsets.symmetric(horizontal: 24.w),
-  //                       margin: EdgeInsets.symmetric(horizontal: 8.w),
-  //                       decoration: BoxDecoration(
-  //                           color: const Color(0xffF1F1FF),
-  //                           boxShadow: [BoxShadow(color: const Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
-  //                           borderRadius: BorderRadius.circular(27.w)),
-  //                       child: Row(
-  //                         children: [
-  //                           //封面
-  //                           Container(
-  //                               height: 36.w,
-  //                               width: 36.w,
-  //                               clipBehavior: Clip.hardEdge,
-  //                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
-  //                               child: Obx(() => NetImageView(
-  //                                     imgUrl: nowData["cover"] ?? "",
-  //                                     fit: BoxFit.cover,
-  //                                   ))),
-  //
-  //                           SizedBox(
-  //                             width: 12.w,
-  //                           ),
-  //                           //标题
-  //                           Expanded(
-  //                               child: Obx(() => Text(
-  //                                     nowData["title"],
-  //                                     maxLines: 1,
-  //                                     overflow: TextOverflow.ellipsis,
-  //                                     style: TextStyle(fontSize: 14.w),
-  //                                   ))),
-  //
-  //                           //按钮
-  //                           Obx(() => isLoaded.value
-  //                               ? Obx(() => InkWell(
-  //                                     child: SizedBox(
-  //                                       width: 32.w,
-  //                                       height: 32.w,
-  //                                       child: Image.asset(isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
-  //                                     ),
-  //                                     onTap: () async {
-  //                                       //判断视频是否加载
-  //                                       if (!(player?.value.isInitialized ?? false) && (!isPlaying.value)) {
-  //                                         //先加载
-  //                                         realPlay(nowIndex);
-  //                                         return;
-  //                                       }
-  //
-  //                                       //判断是否首次
-  //                                       var isInitBar = player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
-  //
-  //                                       if (isInitBar) {
-  //                                         EventUtils.instance.addEvent("play_click", data: {
-  //                                           "song_id": playList[nowIndex]["videoId"],
-  //                                           "song_name": playList[nowIndex]["title"],
-  //                                           "artist_name": playList[nowIndex]["subtitle"],
-  //                                           "playlist_id": playlistId,
-  //                                           "station": "tab"
-  //                                         });
-  //                                       }
-  //
-  //                                       if (isPlaying.value) {
-  //                                         await player?.pause();
-  //                                         AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-  //                                       } else {
-  //                                         await player?.play();
-  //                                         //暂停其他页面的播放
-  //                                         EventUtils.instance.addEvent("play_num", data: {
-  //                                           "song_id": nowData["videoId"],
-  //                                           "song_name": nowData["title"],
-  //                                           "artist_name": nowData["subtitle"],
-  //                                         });
-  //                                         EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
-  //                                         AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-  //                                       }
-  //                                       isPlaying.toggle();
-  //                                     },
-  //                                   ))
-  //                               : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
-  //
-  //                           SizedBox(
-  //                             width: 6.w,
-  //                           ),
-  //                           Obx(() {
-  //                             return InkWell(
-  //                               child: SizedBox(
-  //                                 width: 32.w,
-  //                                 height: 32.w,
-  //                                 child: Image.asset(
-  //                                   "assets/oimg/icon_bar_next.png",
-  //                                   color: canNext.value ? Colors.black : Colors.grey,
-  //                                 ),
-  //                               ),
-  //                               onTap: () {
-  //                                 if (!canNext.value) {
-  //                                   return;
-  //                                 }
-  //
-  //                                 // EventUtils.instance.addEvent("play_click",
-  //                                 //     data: {
-  //                                 //       "song_id": playList[nowIndex + 1],
-  //                                 //       "station": "tab"
-  //                                 //     });
-  //                                 playNext(isBar: true);
-  //                                 // playItemWithIndex(nowIndex + 1);
-  //                               },
-  //                             );
-  //                           }),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //
-  //                   //进度条
-  //
-  //                   Positioned(
-  //                       left: 32.w,
-  //                       bottom: 3.w,
-  //                       right: 32.w,
-  //                       child: Obx(() => LinearProgressIndicator(
-  //                             minHeight: 2.w,
-  //                             borderRadius: BorderRadius.circular(1.w),
-  //                             backgroundColor: const Color(0xff141414).withOpacity(0.2),
-  //                             color: const Color(0xff141414).withOpacity(0.75),
-  //                             value: sliderValue.value,
-  //                           )))
-  //                 ],
-  //               ),
-  //             )),
-  //       );
-  //     });
-  //   });
-  //   Overlay.of(Get.overlayContext!).insertAll([overlayEntry!]);
+    //   if (nowData.isEmpty) {
+    //     // hideFloatingWidget();
+    //     return;
+    //   }
+    //   hideFloatingWidget();
+    //   // await Future.delayed(Duration(milliseconds: 500));
+    //
+    //   overlayEntry = OverlayEntry(builder: (c) {
+    //     return Obx(() {
+    //       return Visibility(
+    //         visible: Get.find<Application>().isShowingBottomSheet.isFalse,
+    //         child: Positioned(
+    //             bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom,
+    //             left: 0,
+    //             right: 0,
+    //             child: Material(
+    //               color: Colors.transparent,
+    //               child: Stack(
+    //                 children: [
+    //                   InkWell(
+    //                     onTap: () async {
+    //                       // Get.to(UserPlayInfo());
+    //                       hideFloatingWidget();
+    //                       // checkShowDownloadGuide();
+    //                       await Get.bottomSheet(
+    //                           Container(
+    //                             child: const UserPlayInfo(),
+    //                             // padding: EdgeInsets.only(
+    //                             //     top: Get.mediaQuery.padding.top),
+    //                           ),
+    //                           isScrollControlled: true);
+    //                       showFloatingWidget();
+    //                     },
+    //                     child: Container(
+    //                       width: double.infinity,
+    //                       height: 54.w,
+    //                       padding: EdgeInsets.symmetric(horizontal: 24.w),
+    //                       margin: EdgeInsets.symmetric(horizontal: 8.w),
+    //                       decoration: BoxDecoration(
+    //                           color: const Color(0xffF1F1FF),
+    //                           boxShadow: [BoxShadow(color: const Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
+    //                           borderRadius: BorderRadius.circular(27.w)),
+    //                       child: Row(
+    //                         children: [
+    //                           //封面
+    //                           Container(
+    //                               height: 36.w,
+    //                               width: 36.w,
+    //                               clipBehavior: Clip.hardEdge,
+    //                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
+    //                               child: Obx(() => NetImageView(
+    //                                     imgUrl: nowData["cover"] ?? "",
+    //                                     fit: BoxFit.cover,
+    //                                   ))),
+    //
+    //                           SizedBox(
+    //                             width: 12.w,
+    //                           ),
+    //                           //标题
+    //                           Expanded(
+    //                               child: Obx(() => Text(
+    //                                     nowData["title"],
+    //                                     maxLines: 1,
+    //                                     overflow: TextOverflow.ellipsis,
+    //                                     style: TextStyle(fontSize: 14.w),
+    //                                   ))),
+    //
+    //                           //按钮
+    //                           Obx(() => isLoaded.value
+    //                               ? Obx(() => InkWell(
+    //                                     child: SizedBox(
+    //                                       width: 32.w,
+    //                                       height: 32.w,
+    //                                       child: Image.asset(isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
+    //                                     ),
+    //                                     onTap: () async {
+    //                                       //判断视频是否加载
+    //                                       if (!(player?.value.isInitialized ?? false) && (!isPlaying.value)) {
+    //                                         //先加载
+    //                                         realPlay(nowIndex);
+    //                                         return;
+    //                                       }
+    //
+    //                                       //判断是否首次
+    //                                       var isInitBar = player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
+    //
+    //                                       if (isInitBar) {
+    //                                         EventUtils.instance.addEvent("play_click", data: {
+    //                                           "song_id": playList[nowIndex]["videoId"],
+    //                                           "song_name": playList[nowIndex]["title"],
+    //                                           "artist_name": playList[nowIndex]["subtitle"],
+    //                                           "playlist_id": playlistId,
+    //                                           "station": "tab"
+    //                                         });
+    //                                       }
+    //
+    //                                       if (isPlaying.value) {
+    //                                         await player?.pause();
+    //                                         AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+    //                                       } else {
+    //                                         await player?.play();
+    //                                         //暂停其他页面的播放
+    //                                         EventUtils.instance.addEvent("play_num", data: {
+    //                                           "song_id": nowData["videoId"],
+    //                                           "song_name": nowData["title"],
+    //                                           "artist_name": nowData["subtitle"],
+    //                                         });
+    //                                         EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
+    //                                         AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+    //                                       }
+    //                                       isPlaying.toggle();
+    //                                     },
+    //                                   ))
+    //                               : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
+    //
+    //                           SizedBox(
+    //                             width: 6.w,
+    //                           ),
+    //                           Obx(() {
+    //                             return InkWell(
+    //                               child: SizedBox(
+    //                                 width: 32.w,
+    //                                 height: 32.w,
+    //                                 child: Image.asset(
+    //                                   "assets/oimg/icon_bar_next.png",
+    //                                   color: canNext.value ? Colors.black : Colors.grey,
+    //                                 ),
+    //                               ),
+    //                               onTap: () {
+    //                                 if (!canNext.value) {
+    //                                   return;
+    //                                 }
+    //
+    //                                 // EventUtils.instance.addEvent("play_click",
+    //                                 //     data: {
+    //                                 //       "song_id": playList[nowIndex + 1],
+    //                                 //       "station": "tab"
+    //                                 //     });
+    //                                 playNext(isBar: true);
+    //                                 // playItemWithIndex(nowIndex + 1);
+    //                               },
+    //                             );
+    //                           }),
+    //                         ],
+    //                       ),
+    //                     ),
+    //                   ),
+    //
+    //                   //进度条
+    //
+    //                   Positioned(
+    //                       left: 32.w,
+    //                       bottom: 3.w,
+    //                       right: 32.w,
+    //                       child: Obx(() => LinearProgressIndicator(
+    //                             minHeight: 2.w,
+    //                             borderRadius: BorderRadius.circular(1.w),
+    //                             backgroundColor: const Color(0xff141414).withOpacity(0.2),
+    //                             color: const Color(0xff141414).withOpacity(0.75),
+    //                             value: sliderValue.value,
+    //                           )))
+    //                 ],
+    //               ),
+    //             )),
+    //       );
+    //     });
+    //   });
+    //   Overlay.of(Get.overlayContext!).insertAll([overlayEntry!]);
   }
+
   //
   hideFloatingWidget() {
-  //   try {
-  //     if (overlayEntry != null) {
-  //       overlayEntry?.remove();
-  //       overlayEntry?.dispose();
-  //       overlayEntry = null;
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
+    //   try {
+    //     if (overlayEntry != null) {
+    //       overlayEntry?.remove();
+    //       overlayEntry?.dispose();
+    //       overlayEntry = null;
+    //     }
+    //   } catch (e) {
+    //     print(e);
+    //   }
   }
 
   ///  loadNextData. 范围：搜索结果、首页单曲推荐（包括MV）、音乐人 video 模块、（音乐人主页热门歌曲，为热门歌曲【更多内容】为歌单）
@@ -1038,13 +1046,7 @@ class UserPlayInfoController extends GetxController {
 
     EventUtils.instance.addEvent("play_page", data: {"song_id": item["videoId"]});
 
-    EventUtils.instance.addEvent("play_click", data: {
-      "song_id": item["videoId"],
-      "song_name": item["title"],
-      "artist_name": item["subtitle"],
-      "playlist_id": playlistId,
-      "station": clickType
-    });
+    EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": playlistId, "station": clickType});
 
     playItemWithIndex(nowIndex);
 
@@ -1077,9 +1079,7 @@ class UserPlayInfoController extends GetxController {
         List oldList = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"] ?? [];
 
         try {
-          moreContinuation = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["continuations"][0]
-                  ["nextContinuationData"]["continuation"] ??
-              "";
+          moreContinuation = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["continuations"][0]["nextContinuationData"]["continuation"] ?? "";
         } catch (e) {
           moreContinuation = "";
 
@@ -1113,8 +1113,8 @@ class UserPlayInfoController extends GetxController {
 
     var result = await ApiMain.instance.getVideoNext(nowData["videoId"], isMoreVideo: true);
     if (result.code == HttpCode.success) {
-      List oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"]
-              [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"] ??
+      List oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+              ["content"]["playlistPanelRenderer"]["contents"] ??
           [];
 
       // try {
@@ -1165,8 +1165,7 @@ class UserPlayInfoController extends GetxController {
       List oldList = result.data["continuationContents"]["playlistPanelContinuation"]["contents"] ?? [];
 
       try {
-        moreContinuation =
-            result.data["continuationContents"]["playlistPanelContinuation"]["continuations"][0]["nextRadioContinuationData"]["continuation"] ?? "";
+        moreContinuation = result.data["continuationContents"]["playlistPanelContinuation"]["continuations"][0]["nextRadioContinuationData"]["continuation"] ?? "";
       } catch (e) {
         print(e);
         moreContinuation = "";
@@ -1566,13 +1565,8 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isNotif) {
-        EventUtils.instance.addEvent("play_click", data: {
-          "song_id": playList[rIndex]["videoId"],
-          "song_name": playList[rIndex]["title"],
-          "artist_name": playList[rIndex]["subtitle"],
-          "playlist_id": playlistId,
-          "station": "notif"
-        });
+        EventUtils.instance.addEvent("play_click",
+            data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "notif"});
       }
       playItemWithIndex(rIndex, clickNext: true);
       return;
@@ -1598,22 +1592,12 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isBar) {
-        EventUtils.instance.addEvent("play_click", data: {
-          "song_id": playList[rIndex]["videoId"],
-          "song_name": playList[rIndex]["title"],
-          "artist_name": playList[rIndex]["subtitle"],
-          "playlist_id": playlistId,
-          "station": "tab"
-        });
+        EventUtils.instance.addEvent("play_click",
+            data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "tab"});
       } else {
         if (isNotif) {
-          EventUtils.instance.addEvent("play_click", data: {
-            "song_id": playList[rIndex]["videoId"],
-            "song_name": playList[rIndex]["title"],
-            "artist_name": playList[rIndex]["subtitle"],
-            "playlist_id": playlistId,
-            "station": "notif"
-          });
+          EventUtils.instance.addEvent("play_click",
+              data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "notif"});
         }
       }
       playItemWithIndex(rIndex, isAutoNext: isAutoNext, clickNext: true);
@@ -1810,9 +1794,7 @@ class UserPlayInfoController extends GetxController {
                           child: Container(
                             height: 48.w,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(color: const Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: const Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
                               style: TextStyle(fontSize: 14.w, color: const Color(0xff824EFF).withOpacity(0.75)),
@@ -2097,13 +2079,8 @@ class UserPlayInfoController extends GetxController {
             if (isCheck) {
               return;
             }
-            EventUtils.instance.addEvent("play_click", data: {
-              "song_id": item["videoId"],
-              "song_name": item["title"],
-              "artist_name": item["subtitle"],
-              "playlist_id": playlistId,
-              "station": "play_center"
-            });
+            EventUtils.instance
+                .addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": playlistId, "station": "play_center"});
 
             //切换播放
             playItemWithIndex(i);
@@ -2361,8 +2338,17 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       Get.find<UserPlayInfoController>().reLoadAndPlay();
       return;
     }
-
     await _player?.play();
+
+    final controller = Get.find<UserPlayInfoController>();
+    EventUtils.instance.addEvent("play_num", data: {
+      "song_id": controller.nowData["videoId"] ?? "",
+      "song_name": controller.nowData["title"] ?? "",
+      "artist_name": controller.nowData["subtitle"] ?? "",
+    });
+    EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
+    EventUtils.instance.addEvent("play_click",
+        data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? "", "station": "tab"});
   }
 
   @override

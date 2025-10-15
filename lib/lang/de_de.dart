@@ -95,5 +95,10 @@ const Map<String, String> deDE = {
   "pops": "Datenschutzoptionen",
   "popDetail": "Möchten Sie Ihre Datenschutzeinstellungen zurücksetzen?",
   "success": "Erfolg!",
-  "reset": "Zurücksetzen"
+  "reset": "Zurücksetzen",
+  "Songs": "Titel",
+  "Videos": "Videos",
+  "Albums": "Alben",
+  "Artists": "Künstler",
+  "playlists": "Playlists"
 };

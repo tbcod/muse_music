@@ -105,5 +105,10 @@ const Map<String, String> ptPT = {
   "pops": "Opções de privacidade",
   "popDetail": "Deseja redefinir as configurações de autorização de privacidade?",
   "success": "Sucesso!",
-  "reset": "Redefinir"
+  "reset": "Redefinir",
+  "Songs": "Músicas",
+  "Videos": "Vídeos",
+  "Albums": "Álbuns",
+  "Artists": "Artistas",
+  "playlists": "Playlists da comunidade"
 };
