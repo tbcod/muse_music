@@ -264,7 +264,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   controller.isPlaying.toggle();
                                 },
                               ))
-                          : Container(width: 48.w, height: 48.w,padding: const EdgeInsets.all(4), child: const CircularProgressIndicator(strokeWidth: 4))),
+                          : Container(width: 48.w, height: 48.w, padding: const EdgeInsets.all(4), child: const CircularProgressIndicator(strokeWidth: 4))),
                       SizedBox(
                         width: 35.w,
                       ),
@@ -801,7 +801,6 @@ class UserPlayInfoController extends GetxController {
     checkShowDownloadGuide();
 
     TbaUtils.instance.checkUnFinishedEvent();
-
   }
 
   _startTimer() {
@@ -1076,18 +1075,19 @@ class UserPlayInfoController extends GetxController {
       if (result.code == HttpCode.success) {
         //解析数据
 
-        List oldList = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"] ?? [];
+        List oldList = [];
 
         try {
+          oldList = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"] ?? [];
           moreContinuation = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["continuations"][0]["nextContinuationData"]["continuation"] ?? "";
-        } catch (e) {
+        } catch (e, s) {
           moreContinuation = "";
 
           Map r1 = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"].last;
 
           moreContinuation = r1["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
 
-          print(e);
+          AppLog.e("$e,$s");
         }
 
         for (Map itemMap in oldList) {

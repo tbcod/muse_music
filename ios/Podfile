@@ -41,7 +41,6 @@ target 'Runner' do
   pod 'GoogleMobileAdsMediationVungle'
   pod 'GoogleMobileAdsMediationMintegral'
   pod 'GoogleMobileAdsMediationPangle'
-#   pod 'GoogleMobileAdsMediationUnity'
   pod 'GoogleMobileAdsMediationFacebook'
   pod 'GoogleMobileAdsMediationMoloco'
 
@@ -49,7 +48,6 @@ target 'Runner' do
   pod 'AppLovinMediationVungleAdapter'
   pod 'AppLovinMediationMintegralAdapter'
   pod 'AppLovinMediationByteDanceAdapter'
-#   pod 'AppLovinMediationUnityAdsAdapter'
   pod 'AppLovinMediationFacebookAdapter'
   pod 'AppLovinMediationBidMachineAdapter'
   pod 'AppLovinMediationMolocoAdapter'

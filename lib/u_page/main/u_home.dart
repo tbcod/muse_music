@@ -966,13 +966,13 @@ class UserHome extends GetView<UserHomeController> {
                       var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
-                          AppLog.e(childItem);
+                          // AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
                           Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
-                        child: Container(
+                        child: SizedBox(
                           width: 248.w,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1150,10 +1150,10 @@ class UserHomeController extends GetxController with StateMixin {
       sp.setString("visitorData", visitorData);
     }
 
-    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ?? {};
+    nextData = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
-    List bigList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["contents"];
-
+    List bigList = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
+    bigList = [];
     // AppLog.e(bigList);
 
     List realList = [];
@@ -1278,7 +1278,7 @@ class UserHomeController extends GetxController with StateMixin {
     bindYoutubeMusicNextData();
 
     if (source == 'drop_down') {
-      ToastUtil.showToast(msg: "Refresh successful");
+      ToastUtil.showToast(msg: "Refresh successful!");
     }
     // Get.find<UserPlayInfoController>().showLastPlayBar();
   }

@@ -6,7 +6,6 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -160,16 +159,16 @@ class Application extends GetxService {
 
   initFireBaseOther() async {
     //测试环境异常上报
-    // if (!MuseConfig.isUser) {
-    //   FlutterError.onError = (errorDetails) {
-    //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    //   };
-    //   // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    //   PlatformDispatcher.instance.onError = (error, stack) {
-    //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //     return true;
-    //   };
-    // }
+    if (!MuseConfig.isUser) {
+      FlutterError.onError = (errorDetails) {
+        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      };
+      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        return true;
+      };
+    }
 
     // if (GetPlatform.isIOS) {
     //   AdUtils.instance.adJson = MuseConfig.adJsonIos;
