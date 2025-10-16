@@ -1153,7 +1153,7 @@ class UserHomeController extends GetxController with StateMixin {
     nextData = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
     List bigList = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
-    bigList = [];
+    // bigList = [];
     // AppLog.e(bigList);
 
     List realList = [];

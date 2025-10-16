@@ -46,7 +46,6 @@ class UserSearchController extends GetxController with StateMixin {
     EventUtils.instance.addEvent("search_home");
 
     TbaUtils.instance.checkUnFinishedEvent();
-
   }
 
   void getSearchList(String str) async {
@@ -143,8 +142,8 @@ class UserSearchController extends GetxController with StateMixin {
         youtubeMoreToken = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][1]["continuationItemRenderer"]?["continuationEndpoint"]
                 ?["continuationCommand"]?["token"] ??
             "";
-      } catch (e) {
-        AppLog.e(e);
+      } catch (e, s) {
+        AppLog.e("$e,$s");
         youtubeMoreToken = "";
       }
 
@@ -152,7 +151,7 @@ class UserSearchController extends GetxController with StateMixin {
       for (Map item in oldList) {
         if (item.containsKey("videoRenderer")) {
           //视频
-          AppLog.e(item);
+          // AppLog.e(item);
 
           var videoId = item["videoRenderer"]["videoId"];
           var cover = item["videoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
@@ -213,10 +212,10 @@ class UserSearchController extends GetxController with StateMixin {
         for (Map item in oldList) {
           if (item.containsKey("musicCardShelfRenderer")) {
             try {
-              //精准搜索
+              //best
               final musicCardShelfRenderer = item["musicCardShelfRenderer"];
 
-              List runs = item["musicCardShelfRenderer"]?["title"]?["runs"] ?? [];
+              List runs = musicCardShelfRenderer["title"]?["runs"] ?? [];
               if (runs.isEmpty) continue;
 
               final title = runs.first["text"];
@@ -231,6 +230,12 @@ class UserSearchController extends GetxController with StateMixin {
               if (videoId == null || type == null) {
                 type = runs.first["navigationEndpoint"]?["browseEndpoint"]?["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"];
                 videoId = runs.first["navigationEndpoint"]["browseEndpoint"]["browseId"];
+              }
+              if (videoId == null) {
+                continue;
+              }
+              if (type == null || !_isNeedType(type)) {
+                continue;
               }
 
               List contents = [];
@@ -336,6 +341,18 @@ class UserSearchController extends GetxController with StateMixin {
     lastWords = str;
 
     await searchOtherList(str);
+  }
+
+  bool _isNeedType(type) {
+    if (type != "MUSIC_VIDEO_TYPE_OMV" &&
+        type != "MUSIC_VIDEO_TYPE_UGC" &&
+        type != "MUSIC_VIDEO_TYPE_ATV" &&
+        type != "MUSIC_PAGE_TYPE_PLAYLIST" &&
+        type != "MUSIC_PAGE_TYPE_ALBUM" &&
+        type != "MUSIC_PAGE_TYPE_ARTIST") {
+      return false;
+    }
+    return true;
   }
 
   String? getTabParams(String title) {
@@ -660,7 +677,6 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchVideo(String str, {String? param}) async {
-
     BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
 
     videoList.clear();
@@ -742,7 +758,6 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchArtist(String str, {String? param}) async {
-
     BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
 
     artistList.clear();
@@ -824,7 +839,6 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchAlbum(String str, {String? param}) async {
-
     BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
 
     albumList.clear();
@@ -912,7 +926,6 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchPlaylist(String str, {String? param}) async {
-
     BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
 
     playlistList.clear();

@@ -1087,7 +1087,7 @@ class UserPlayInfoController extends GetxController {
 
           moreContinuation = r1["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
 
-          AppLog.e("$e,$s");
+          // AppLog.e("$e,$s");
         }
 
         for (Map itemMap in oldList) {
@@ -1097,6 +1097,16 @@ class UserPlayInfoController extends GetxController {
             String title = itemMap["compactVideoRenderer"]["title"]["simpleText"] ?? "";
             String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
             String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
+
+            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+          }else if(itemMap.containsKey("lockupViewModel")){
+            //歌曲
+            String? videoId = itemMap["lockupViewModel"]["contentId"];
+            if(videoId == null) continue;
+            String? cover = itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
+            cover ??= itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
+            String? title = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]?["title"]?["content"];
+            String? subtitle = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["metadata"]["contentMetadataViewModel"]["metadataRows"][0]["metadataParts"][0]["text"]["content"];
 
             playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
           }

@@ -740,106 +740,114 @@ class UserSearch extends GetView<UserSearchController> {
     bool isVideo = (type == 'MUSIC_VIDEO_TYPE_UGC' || type == 'MUSIC_VIDEO_TYPE_OMV');
     bool isArtist = type == 'MUSIC_PAGE_TYPE_ARTIST';
     bool isPlaylist = type == 'MUSIC_PAGE_TYPE_ALBUM' || type == 'MUSIC_PAGE_TYPE_PLAYLIST';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              if (isArtist) {
-                EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
-                EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
-                Get.to(() => UserArtistInfo(), arguments: item);
-              } else if (isPlaylist) {
-                EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
-                EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
-                Get.to(() => UserPlayListInfo(isFormSearch: true), arguments: item);
-              } else {
-                EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
-                Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
-              }
-            },
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              children: [
-                isArtist
-                    ? NetImageView(
-                        radius: 27,
-                        imgUrl: item["cover"] ?? "",
-                        fit: BoxFit.cover,
-                        width: 54,
-                        height: 54,
-                      )
-                    : isVideo
-                        ? NetImageView(
-                            radius: 4,
-                            imgUrl: item["cover"] ?? "",
-                            fit: BoxFit.cover,
-                            width: 88,
-                            height: 50,
-                          )
-                        : NetImageView(
-                            radius: 8,
-                            imgUrl: item["cover"] ?? "",
-                            fit: BoxFit.cover,
-                            width: 54,
-                            height: 54,
-                          ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item["title"] ?? "",
-                        style: const TextStyle(fontSize: 14, color: Color(0xff141414), fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item["subtitle"] ?? "",
-                        maxLines: 1,
-                        style: TextStyle(fontSize: 12, color: const Color(0xff141414).withValues(alpha: 0.75)),
-                      ),
-                    ],
-                  ),
-                ),
-                isArtist || isPlaylist
-                    ? Container(
-                        padding: const EdgeInsets.all(6),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Image.asset("assets/oimg/ic_more.png"),
-                        ),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          if (type == "net_playlist" || type == "loc_playlist") {
-                            EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
-                          }
-                          if (type == "artist_more_song" || type == "artist") {
-                            EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
-                          }
+    return Obx(() {
+      var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+      return Container(
+        color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (isArtist) {
+                  EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
+                  Get.to(() => UserArtistInfo(), arguments: item);
+                } else if (isPlaylist) {
+                  EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
+                  Get.to(() => UserPlayListInfo(isFormSearch: true), arguments: item);
+                } else {
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                  Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                }
+              },
+              behavior: HitTestBehavior.opaque,
 
-                          MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
-                        },
-                        child: Container(
+              // return Container(
+              //   height: 70,
+              //   decoration: BoxDecoration(color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
+              child: Row(
+                children: [
+                  isArtist
+                      ? NetImageView(
+                          radius: 27,
+                          imgUrl: item["cover"] ?? "",
+                          fit: BoxFit.cover,
+                          width: 54,
+                          height: 54,
+                        )
+                      : isVideo
+                          ? NetImageView(
+                              radius: 4,
+                              imgUrl: item["cover"] ?? "",
+                              fit: BoxFit.cover,
+                              width: 88,
+                              height: 50,
+                            )
+                          : NetImageView(
+                              radius: 8,
+                              imgUrl: item["cover"] ?? "",
+                              fit: BoxFit.cover,
+                              width: 54,
+                              height: 54,
+                            ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item["title"] ?? "",
+                          style: TextStyle(fontSize: 14, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414), fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          item["subtitle"] ?? "",
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withValues(alpha: 0.75)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  isArtist || isPlaylist
+                      ? Container(
                           padding: const EdgeInsets.all(6),
                           child: SizedBox(
                             width: 20,
                             height: 20,
-                            child: Image.asset("assets/oimg/icon_more.png"),
+                            child: Image.asset("assets/oimg/ic_more.png"),
                           ),
-                        ),
-                      )
-              ],
+                        )
+                      : InkWell(
+                          onTap: () {
+                            if (type == "net_playlist" || type == "loc_playlist") {
+                              EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
+                            }
+                            if (type == "artist_more_song" || type == "artist") {
+                              EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
+                            }
+
+                            MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset("assets/oimg/icon_more.png"),
+                            ),
+                          ),
+                        )
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          _getHeaderActionBtn(item, content),
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            _getHeaderActionBtn(item, content),
+          ],
+        ),
+      );
+    });
   }
 
   _getHeaderActionBtn(Map item, List content) {
