@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../util/download/download_util.dart';
 import '../../../util/more_sheet_util.dart';
@@ -48,18 +49,20 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
             //     icon: Icon(Icons.delete))
           ],
         ),
-        body: Obx(() => ListView.separated(
-            padding:
-                EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
-            itemBuilder: (_, i) {
-              return getArtistItem(controller.list[i]);
-            },
-            separatorBuilder: (_, i) {
-              return SizedBox(
-                height: 10.w,
-              );
-            },
-            itemCount: controller.list.length)),
+        body: PlayerBottomBarView(
+          child: Obx(() => ListView.separated(
+              padding:
+                  EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
+              itemBuilder: (_, i) {
+                return getArtistItem(controller.list[i]);
+              },
+              separatorBuilder: (_, i) {
+                return SizedBox(
+                  height: 10.w,
+                );
+              },
+              itemCount: controller.list.length)),
+        ),
       ),
     );
   }

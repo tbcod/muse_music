@@ -17,6 +17,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../util/log.dart';
 import 'list_info.dart';
+import 'player_bar_a.dart';
 
 class AddList extends GetView<AddListController> {
   final Map? addMap;
@@ -32,243 +33,245 @@ class AddList extends GetView<AddListController> {
     }
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            Container(
-              height: 146.w,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  // color: Colors.red,
-                  image: DecorationImage(
-                image: AssetImage("assets/img/all_appbar_bg.png"),
-                fit: BoxFit.fill,
-              )),
-            ),
-            Positioned.fill(
-                child: Column(
-              children: [
-                AppBar(
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          controller.btnOk();
-                        },
-                        icon: Image.asset(
-                          "assets/img/icon_ok.png",
-                          width: 24.w,
-                          height: 24.w,
-                        ))
-                  ],
-                ),
-                Expanded(
-                    child: Container(
-                  child: MediaQuery.removePadding(
-                    removeTop: true,
-                    context: context,
-                    child: ListView(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 12.w, horizontal: 12.w),
-                      children: [
-                        //标题
-                        Text(
-                          "Playlist name",
-                          style: TextStyle(fontSize: 16.w),
-                        ),
-
-                        SizedBox(
-                          height: 10.w,
-                        ),
-                        Container(
-                          height: 54.w,
-                          child: CupertinoTextField(
-                            controller: controller.titleC,
-                            placeholder: "title",
-                            maxLength: 100,
-                            placeholderStyle: TextStyle(
-                                color: Color(0xff141414).withOpacity(0.5)),
-                            style: TextStyle(fontSize: 12.w),
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xff1F1F1F).withOpacity(0.08),
-                                    width: 1.w),
-                                borderRadius: BorderRadius.circular(12.w)),
+      body: PlayerBarA(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Container(
+                height: 146.w,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    // color: Colors.red,
+                    image: DecorationImage(
+                  image: AssetImage("assets/img/all_appbar_bg.png"),
+                  fit: BoxFit.fill,
+                )),
+              ),
+              Positioned.fill(
+                  child: Column(
+                children: [
+                  AppBar(
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            controller.btnOk();
+                          },
+                          icon: Image.asset(
+                            "assets/img/icon_ok.png",
+                            width: 24.w,
+                            height: 24.w,
+                          ))
+                    ],
+                  ),
+                  Expanded(
+                      child: Container(
+                    child: MediaQuery.removePadding(
+                      removeTop: true,
+                      context: context,
+                      child: ListView(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.w, horizontal: 12.w),
+                        children: [
+                          //标题
+                          Text(
+                            "Playlist name",
+                            style: TextStyle(fontSize: 16.w),
                           ),
-                        ),
 
-                        SizedBox(
-                          height: 32.w,
-                        ),
+                          SizedBox(
+                            height: 10.w,
+                          ),
+                          Container(
+                            height: 54.w,
+                            child: CupertinoTextField(
+                              controller: controller.titleC,
+                              placeholder: "title",
+                              maxLength: 100,
+                              placeholderStyle: TextStyle(
+                                  color: Color(0xff141414).withOpacity(0.5)),
+                              style: TextStyle(fontSize: 12.w),
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(0xff1F1F1F).withOpacity(0.08),
+                                      width: 1.w),
+                                  borderRadius: BorderRadius.circular(12.w)),
+                            ),
+                          ),
 
-                        //封面
-                        Text(
-                          "Cover",
-                          style: TextStyle(fontSize: 16.w),
-                        ),
-                        // SizedBox(
-                        //   height: 10.w,
-                        // ),
+                          SizedBox(
+                            height: 32.w,
+                          ),
 
-                        Row(
-                          children: [
-                            Container(
-                              // color: Colors.black,
-                              width: 110.w,
-                              height: 110.w,
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                      top: 10.w,
-                                      child: InkWell(
-                                        onTap: () {
-                                          controller.chooseImg();
-                                        },
+                          //封面
+                          Text(
+                            "Cover",
+                            style: TextStyle(fontSize: 16.w),
+                          ),
+                          // SizedBox(
+                          //   height: 10.w,
+                          // ),
+
+                          Row(
+                            children: [
+                              Container(
+                                // color: Colors.black,
+                                width: 110.w,
+                                height: 110.w,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                        top: 10.w,
+                                        child: InkWell(
+                                          onTap: () {
+                                            controller.chooseImg();
+                                          },
+                                          child: Obx(() {
+                                            if (controller.coverData.value ==
+                                                null) {
+                                              return Container(
+                                                width: 100.w,
+                                                height: 100.w,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.w)),
+                                                child: Icon(Icons.add),
+                                              );
+                                            } else {
+                                              //有图片
+                                              return Container(
+                                                width: 100.w,
+                                                height: 100.w,
+                                                clipBehavior: Clip.hardEdge,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.w)),
+                                                child: Image.memory(
+                                                  controller.coverData.value!,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              );
+                                            }
+                                          }),
+                                        )),
+                                    Positioned(
+                                        top: 0,
+                                        right: 0,
                                         child: Obx(() {
-                                          if (controller.coverData.value ==
+                                          if (controller.coverData.value !=
                                               null) {
-                                            return Container(
-                                              width: 100.w,
-                                              height: 100.w,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.w)),
-                                              child: Icon(Icons.add),
-                                            );
-                                          } else {
-                                            //有图片
-                                            return Container(
-                                              width: 100.w,
-                                              height: 100.w,
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.w)),
-                                              child: Image.memory(
-                                                controller.coverData.value!,
-                                                fit: BoxFit.cover,
+                                            return InkWell(
+                                              onTap: () {
+                                                controller.coverData.value = null;
+                                              },
+                                              child: Container(
+                                                height: 25.w,
+                                                width: 25.w,
+                                                alignment: Alignment.center,
+                                                // color: Colors.red,
+                                                child: Image.asset(
+                                                  "assets/img/icon_remove_cover.png",
+                                                  width: 14.w,
+                                                  height: 14.w,
+                                                ),
                                               ),
                                             );
                                           }
-                                        }),
-                                      )),
-                                  Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Obx(() {
-                                        if (controller.coverData.value !=
-                                            null) {
-                                          return InkWell(
-                                            onTap: () {
-                                              controller.coverData.value = null;
-                                            },
-                                            child: Container(
-                                              height: 25.w,
-                                              width: 25.w,
-                                              alignment: Alignment.center,
-                                              // color: Colors.red,
-                                              child: Image.asset(
-                                                "assets/img/icon_remove_cover.png",
-                                                width: 14.w,
-                                                height: 14.w,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        return Container();
-                                      }))
-                                ],
+                                          return Container();
+                                        }))
+                                  ],
+                                ),
                               ),
-                            ),
-                            Spacer(),
-                          ],
-                        ),
+                              Spacer(),
+                            ],
+                          ),
 
-                        SizedBox(
-                          height: 32.w,
-                        ),
+                          SizedBox(
+                            height: 32.w,
+                          ),
 
-                        Text(
-                          "Type",
-                          style: TextStyle(fontSize: 16.w),
-                        ),
-                        SizedBox(
-                          height: 10.w,
-                        ),
-                        GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 19.w,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          childAspectRatio: 166 / 86,
-                          children: (addMap == null ? [0, 1] : [1]).map((e) {
-                            var iconList = ["1", "2"];
-                            var titleList = ["Lyrics", "Tracks"];
+                          Text(
+                            "Type",
+                            style: TextStyle(fontSize: 16.w),
+                          ),
+                          SizedBox(
+                            height: 10.w,
+                          ),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 19.w,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            childAspectRatio: 166 / 86,
+                            children: (addMap == null ? [0, 1] : [1]).map((e) {
+                              var iconList = ["1", "2"];
+                              var titleList = ["Lyrics", "Tracks"];
 
-                            return InkWell(
-                              onTap: () {
-                                if (!controller.canChangeType) {
-                                  ToastUtil.showToast(
-                                      msg:
-                                          "There are songs or lyrics under this playlist, the type cannot be changed");
-                                  return;
-                                }
+                              return InkWell(
+                                onTap: () {
+                                  if (!controller.canChangeType) {
+                                    ToastUtil.showToast(
+                                        msg:
+                                            "There are songs or lyrics under this playlist, the type cannot be changed");
+                                    return;
+                                  }
 
-                                controller.checkIndex.value = e;
-                              },
-                              child: Obx(() {
-                                var isCheck = e == controller.checkIndex.value;
+                                  controller.checkIndex.value = e;
+                                },
+                                child: Obx(() {
+                                  var isCheck = e == controller.checkIndex.value;
 
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      color: isCheck
-                                          ? Color(0xffF7F8FF)
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(8.w),
-                                      border: Border.all(
-                                          width: 1.w,
-                                          color: isCheck
-                                              ? Color(0xff996EFE)
-                                              : Colors.white)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/img/icon_s_${iconList[e]}.png",
-                                        width: 32.w,
-                                        height: 32.w,
-                                      ),
-                                      SizedBox(
-                                        width: 6.w,
-                                      ),
-                                      Text(
-                                        titleList[e],
-                                        style: TextStyle(
-                                            fontSize: 12.w,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              }),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                        color: isCheck
+                                            ? Color(0xffF7F8FF)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(8.w),
+                                        border: Border.all(
+                                            width: 1.w,
+                                            color: isCheck
+                                                ? Color(0xff996EFE)
+                                                : Colors.white)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/img/icon_s_${iconList[e]}.png",
+                                          width: 32.w,
+                                          height: 32.w,
+                                        ),
+                                        SizedBox(
+                                          width: 6.w,
+                                        ),
+                                        Text(
+                                          titleList[e],
+                                          style: TextStyle(
+                                              fontSize: 12.w,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ))
-              ],
-            ))
-          ],
+                  ))
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     );

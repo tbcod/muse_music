@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +7,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/page/launch.dart';
-import 'package:music_muse/page/main_page.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/log.dart';
@@ -18,7 +16,6 @@ import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
-import 'const/env.dart';
 import 'muse_config.dart';
 
 void main() async {
@@ -101,6 +98,7 @@ class MyApp extends GetView {
 
             routingCallback: (Routing? routing) async {
               //路由跳转
+              AppLog.i("routingCallback current:${routing?.current}, isBottomSheet:${routing?.isBottomSheet}");
               if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
                 Get.find<Application>().isMainPage.value = true;
               } else {
@@ -170,6 +168,7 @@ class AppController extends SuperController {
         if (state == AppState.foreground) {
           Get.find<Application>().isAppBack = false;
           AppLog.i("进入前台");
+          TbaUtils.instance.checkUnFinishedEvent();
           TbaUtils.instance.postSession();
 
           //判断新老用户
@@ -179,43 +178,45 @@ class AppController extends SuperController {
           isNewUser = tempD.inHours < 24;
           TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
 
-
-          if(AdUtils.instance.adIsShowing){
+          if (AdUtils.instance.adIsShowing) {
             if (Get.isRegistered<UserPlayInfoController>()) {
               Get.find<UserPlayInfoController>().recoverPlay(isForce: true);
             }
           }
 
-          AdUtils.instance.showAd("open",
-              adScene: AdScene.openHot,
-              onShow: ShowCallback(
-                onShowFail: (adId, e) {
-                  AppLog.e("前台加载广告失败：$adId, $e");
-                },
-                onClose: (adId) {
-                  if (bus.isLaunchLoadingAdShowing) {
-                    Get.back();
-                  }
-                },
-                onShow: (adId) {
-                  if (bus.isLaunchLoadingAdShowing) {
-                    Get.back();
-                  }
-                },
-              ),);
+          AdUtils.instance.showAd(
+            "open",
+            adScene: AdScene.openHot,
+            onShow: ShowCallback(
+              onShowFail: (adId, e) {
+                AppLog.e("前台加载广告失败：$adId, $e");
+              },
+              onClose: (adId) {
+                if (bus.isLaunchLoadingAdShowing) {
+                  Get.back();
+                }
+              },
+              onShow: (adId) {
+                if (bus.isLaunchLoadingAdShowing) {
+                  Get.back();
+                }
+              },
+            ),
+          );
         } else if (state == AppState.background) {
           Get.find<Application>().isAppBack = true;
           // AppLog.i("后台");
           //判断是否在播放
+          TbaUtils.instance.checkUnFinishedEvent();
           try {
             if (Get.find<UserPlayInfoController>().player?.value.isPlaying ?? false) {
-              await Future.delayed(const Duration(milliseconds: 100));
-              await Get.find<UserPlayInfoController>().player?.play();
-              await Future.delayed(const Duration(milliseconds: 100));
-              await Get.find<UserPlayInfoController>().player?.play();
-              await Future.delayed(const Duration(milliseconds: 100));
-              await Get.find<UserPlayInfoController>().player?.play();
               EventUtils.instance.addEvent("background_play");
+              await Future.delayed(const Duration(milliseconds: 100));
+              await Get.find<UserPlayInfoController>().player?.play();
+              await Future.delayed(const Duration(milliseconds: 100));
+              await Get.find<UserPlayInfoController>().player?.play();
+              await Future.delayed(const Duration(milliseconds: 00));
+              await Get.find<UserPlayInfoController>().player?.play();
             }
           } catch (e) {
             print(e);

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/u_page/main/libray/u_loc_add_song.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../const/db_key.dart';
 import '../../../util/download/download_util.dart';
@@ -37,17 +38,19 @@ class UserLoaAllChoose extends GetView<UserLoaAllChooseController> {
                 height: 24.w,
               )),
         ),
-        body: Obx(() => ListView.separated(
-              itemBuilder: (BuildContext context, int index) {
-                return getItem(controller.allList[index]);
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                  height: 10.w,
-                );
-              },
-              itemCount: controller.allList.length,
-            )),
+        body: PlayerBottomBarView(
+          child: Obx(() => ListView.separated(
+                itemBuilder: (BuildContext context, int index) {
+                  return getItem(controller.allList[index]);
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: 10.w,
+                  );
+                },
+                itemCount: controller.allList.length,
+              )),
+        ),
       ),
     );
   }

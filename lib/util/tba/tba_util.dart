@@ -13,15 +13,25 @@ import '../log.dart';
 
 class TbaUtils {
   TbaUtils._internal();
+
   static final TbaUtils _instance = TbaUtils._internal();
+
   static TbaUtils get instance {
     return _instance;
   }
 
+  Future initSdk() async {
+    await TbaIos.instance.initData();
+    checkUnFinishedEvent();
+  }
+
+  Future checkUnFinishedEvent() async {
+    await TbaIos.instance.postTbaErrorData();
+  }
+
   Future<BaseModel> postEvent(String id, Map<String, dynamic>? data) async {
     if (GetPlatform.isIOS) {
-      return await TbaIos.instance
-          .postData(TbaType.event, eventId: id, eventData: data);
+      return await TbaIos.instance.postData(TbaType.event, eventId: id, eventData: data);
     }
 
     //android
@@ -36,8 +46,7 @@ class TbaUtils {
       //     await AppTrackingTransparency.requestTrackingAuthorization();
       var userAgent = "";
       try {
-        var result =
-            await GetConnect(followRedirects: false).get("https://google.com");
+        var result = await GetConnect(followRedirects: false).get("https://google.com");
         userAgent = result.request?.headers["user-agent"] ?? "";
       } catch (e) {
         print(e);
@@ -46,8 +55,7 @@ class TbaUtils {
       return await TbaIos.instance.postData(TbaType.install, eventData: {
         "pupa": "build/${iosInfo.systemVersion}",
         "amelia": userAgent,
-        "riley":
-            idfaStatus != TrackingStatus.authorized ? "northrop" : "thieves",
+        "riley": idfaStatus != TrackingStatus.authorized ? "northrop" : "thieves",
         "they": "0",
         "rumford": "0",
         "domineer": "0",
@@ -128,11 +136,7 @@ class TbaUtils {
       } else if (ad_source == "topon") {
         afNetwork = AFMediationNetwork.topon;
       }
-      Get.find<Application>().appsflyerSdk?.logAdRevenue(AdRevenueData(
-          monetizationNetwork: ad_network,
-          mediationNetwork: afNetwork.value,
-          currencyIso4217Code: currency,
-          revenue: ecpm / 1000000));
+      Get.find<Application>().appsflyerSdk?.logAdRevenue(AdRevenueData(monetizationNetwork: ad_network, mediationNetwork: afNetwork.value, currencyIso4217Code: currency, revenue: ecpm / 1000000));
 
       //自定义ad_impression事件
       // Get.find<Application>()
@@ -142,22 +146,18 @@ class TbaUtils {
       //上报facebook价值
       FacebookAppEvents().logAdImpression(adType: ad_source);
       //自定义事件上报价值
-      FacebookAppEvents()
-          .logEvent(name: "ad_impression_revenue", valueToSum: ecpm / 1000000);
+      FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: ecpm / 1000000);
       FacebookAppEvents().logPurchase(amount: ecpm / 1000000, currency: "USD");
 
       //tba事件
-      TbaUtils.instance
-          .postEvent("ad_impression_revenue", {"value": ecpm / 1000000});
+      TbaUtils.instance.postEvent("ad_impression_revenue", {"value": ecpm / 1000000});
 
       //firebase事件
-      FirebaseAnalytics.instance
-          .logAdImpression(value: ecpm / 1000000, currency: currency);
+      FirebaseAnalytics.instance.logAdImpression(value: ecpm / 1000000, currency: currency);
       FirebaseAnalytics.instance.logEvent(
         name: "ad_impression_revenue",
         parameters: {"value": ecpm / 1000000},
       );
-
 
       return await TbaIos.instance.postData(TbaType.ad, eventData: {
         "platelet": ad_network,
@@ -177,8 +177,7 @@ class TbaUtils {
 
   Future<BaseModel> postUserData(Map<String, dynamic> data) async {
     if (GetPlatform.isIOS) {
-      return await TbaIos.instance
-          .postData(TbaType.event, eventId: "hamilton", eventData: data);
+      return await TbaIos.instance.postData(TbaType.event, eventId: "hamilton", eventData: data);
     }
 
     return BaseModel(code: -1);

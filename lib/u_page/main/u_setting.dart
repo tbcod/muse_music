@@ -12,6 +12,7 @@ import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/history_util.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -128,6 +129,9 @@ class UserSetting extends GetView<UserSettingController> {
       ),
       onTap: () async {
         if (itemTitle == "Feedback".tr) {
+          // if(!MuseConfig.isUser){
+          //   NativeUtils.instance.test();
+          // }
           //反馈
           Get.to(FeedbackPage());
         } else if (itemTitle == "Privacy Policy".tr) {

@@ -6,6 +6,7 @@ import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../util/like/like_util.dart';
 import '../../../util/log.dart';
@@ -38,19 +39,21 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
               )),
           title: Text("Artist".tr),
         ),
-        body: Container(
-          child: controller.obxView((s) => ListView.separated(
-              padding:
-                  EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
-              itemBuilder: (_, i) {
-                return getItem(i);
-              },
-              separatorBuilder: (_, i) {
-                return SizedBox(
-                  height: 10.w,
-                );
-              },
-              itemCount: controller.list.length)),
+        body: PlayerBottomBarView(
+          child: Container(
+            child: controller.obxView((s) => ListView.separated(
+                padding:
+                    EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
+                itemBuilder: (_, i) {
+                  return getItem(i);
+                },
+                separatorBuilder: (_, i) {
+                  return SizedBox(
+                    height: 10.w,
+                  );
+                },
+                itemCount: controller.list.length)),
+          ),
         ),
       ),
     );

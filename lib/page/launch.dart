@@ -1,4 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -169,7 +170,7 @@ class LaunchPageController extends GetxController {
     if (bus.isFirstAppLaunch) {
       // sp.setBool("isFirstLoadAd", false);
       if (isA) {
-        AdUtils.instance.loadAd("sod_local_int");
+        AdUtils.instance.loadAd("muse_local_int");
         toMainPage();
       } else {
         AdUtils.instance.loadAd("level_h");
@@ -199,7 +200,7 @@ class LaunchPageController extends GetxController {
   }
 
   loadAndShowAAd() {
-    AdUtils.instance.loadAd("sod_local_int", onLoad: (adId, isOk, e) {
+    AdUtils.instance.loadAd("muse_local_int", onLoad: (adId, isOk, e) {
       AppLog.i("启动页加载广告A结果:$isOk, $adId, $e");
 
       if (isOk) {
@@ -213,7 +214,7 @@ class LaunchPageController extends GetxController {
         }
 
         //显示广告
-        AdUtils.instance.showAd("sod_local_int",
+        AdUtils.instance.showAd("muse_local_int",
             adScene: AdScene.openCool,
             onShow: ShowCallback(onShowFail: (adId, e) {
               toMainPage();

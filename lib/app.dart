@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,6 +18,7 @@ import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
+
 // import 'package:music_muse/util/ad/topon_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
@@ -25,6 +26,7 @@ import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
+import 'package:music_muse/util/toast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
@@ -42,6 +44,8 @@ class Application extends GetxService {
   String userAppUuid = "";
 
   var isMainPage = false.obs;
+
+  // var isShowingBottomSheet = false.obs;
 
   var visitorData = "";
 
@@ -62,7 +66,7 @@ class Application extends GetxService {
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark));
 
-     await MuseSP.instance.init();
+    await MuseSP.instance.init();
     // final sp = await SharedPreferences.getInstance();
 
     bus.setAppLaunchCount();
@@ -91,12 +95,7 @@ class Application extends GetxService {
 
     //设置下拉刷新
     EasyRefresh.defaultHeaderBuilder = () {
-      return const ClassicHeader(
-          iconTheme: IconThemeData(color: Color(0xff8569FF)),
-          showMessage: false,
-          showText: false,
-          infiniteHitOver: true,
-          processedDuration: Duration.zero);
+      return const ClassicHeader(iconTheme: IconThemeData(color: Color(0xff8569FF)), showMessage: false, showText: false, infiniteHitOver: true, processedDuration: Duration.zero);
     };
 
     EasyRefresh.defaultFooterBuilder = () {
@@ -114,6 +113,8 @@ class Application extends GetxService {
     await initAppsflyer();
 
     await initSdk();
+
+    await TbaUtils.instance.initSdk();
 
     return this;
   }
@@ -147,7 +148,7 @@ class Application extends GetxService {
 
   Future<void> initSdk() async {
     await Firebase.initializeApp();
-    AppLog.e("firebase初始化完成");
+    AppLog.i("firebase初始化完成");
     //异步，否则会卡在启动
     initFireBaseOther();
 
@@ -155,21 +156,24 @@ class Application extends GetxService {
   }
 
   initFireBaseOther() async {
-    //测试环境异常上报
-    // if (!MuseConfig.isUser) {
-    //   FlutterError.onError = (errorDetails) {
-    //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    //   };
-    //   // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    //   PlatformDispatcher.instance.onError = (error, stack) {
-    //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //     return true;
-    //   };
-    // }
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
-    // if (GetPlatform.isIOS) {
-    //   AdUtils.instance.adJson = MuseConfig.adJsonIos;
-    // }
+    FlutterError.onError = (errorDetails) {
+      AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      if (error is DioException) {
+        AppLog.e("异常不上报：PlatformDispatcher 网络异常，不上报 onError:$error,$stack");
+      } else {
+        AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
+        // ToastUtil.showToast(msg: "err", type: IconType.error);
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      }
+      return true;
+    };
+
     RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 
     // var adData = await AdUtils.instance.initFirebaseRemoteSdk();
@@ -240,7 +244,7 @@ class Application extends GetxService {
     var sp = await SharedPreferences.getInstance();
     typeSo = sp.getString("lastTypeSo") ?? "no";
 
-    AppLog.e("nowtypeso:$typeSo");
+    AppLog.i("nowtypeso:$typeSo");
   }
 
   Future initNetPush() async {
@@ -297,8 +301,7 @@ class Application extends GetxService {
     if (d != null) {
       EventUtils.instance.addEvent("push_click");
     }
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings, onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
       // 处理用户点击通知后的回调逻辑，例如打开对应的页面等，按需编写逻辑
       EventUtils.instance.addEvent("push_click");
     });

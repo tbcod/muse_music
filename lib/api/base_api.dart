@@ -109,11 +109,11 @@ class BaseApi extends GetConnect {
         }
         return data;
       } else {
-        AppLog.e("请求失败：${response.request?.url}, ${response.statusText}, code:${response.statusCode}");
+        AppLog.e("请求失败：${response.request?.url}, ${response.bodyString ?? response.statusText}, code:${response.statusCode}");
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);
         }
-        return BaseModel(code: response.statusCode ?? -1, message: "httpError".tr);
+        return BaseModel(code: response.statusCode ?? -1, message: response.bodyString ?? response.statusText ?? "httpError".tr);
       }
     } catch (e) {
       AppLog.e("请求失败:$e");

@@ -21,6 +21,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 
@@ -95,21 +96,23 @@ class UserMain extends GetView<UserMainController> {
                   ),
                   label: e["name"]);
             }).toList())),
-        body: Container(
-          child: Obx(() => PageView(
-              controller: controller.pageC,
-              physics: NeverScrollableScrollPhysics(),
-              children: controller.bottomList.map((e) {
-                if (e["name"] == "Home".tr) {
-                  return const KeepStateView(child: UserHome());
-                } else if (e["name"] == "Library".tr) {
-                  return const KeepStateView(child: UserLibrary());
-                } else if (e["name"] == "Setting".tr) {
-                  return const KeepStateView(child: UserSetting());
-                } else {
-                  return Container();
-                }
-              }).toList())),
+        body: PlayerBottomBarView(
+          child: Container(
+            child: Obx(() => PageView(
+                controller: controller.pageC,
+                physics: NeverScrollableScrollPhysics(),
+                children: controller.bottomList.map((e) {
+                  if (e["name"] == "Home".tr) {
+                    return const KeepStateView(child: UserHome());
+                  } else if (e["name"] == "Library".tr) {
+                    return const KeepStateView(child: UserLibrary());
+                  } else if (e["name"] == "Setting".tr) {
+                    return const KeepStateView(child: UserSetting());
+                  } else {
+                    return Container();
+                  }
+                }).toList())),
+          ),
         ),
       ),
     );

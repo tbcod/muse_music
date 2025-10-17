@@ -1,8 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/util/log.dart';
@@ -40,22 +36,22 @@ class ConsentRequest {
                   },
                 );
               } else {
-                AppLog.e("【ConsentRequest】 completer 1");
+                // AppLog.e("【ConsentRequest】 completer 1");
                 if (!completer.isCompleted) completer.complete(true);
               }
             },
             (formError) {
               if (!completer.isCompleted) completer.complete(true);
-              AppLog.e("【ConsentRequest】formError2: message:${formError.message}");
+              // AppLog.e("【ConsentRequest】formError2: message:${formError.message}");
             },
           );
         } else {
-          AppLog.e("【ConsentRequest】 completer 2");
+          // AppLog.e("【ConsentRequest】 completer 2");
           if (!completer.isCompleted) completer.complete(true);
         }
       },
       (FormError error) {
-        AppLog.e("【ConsentRequest】 completer 3, error:${error.message}");
+        // AppLog.e("【ConsentRequest】 completer 3, error:${error.message}");
         if (!completer.isCompleted) completer.complete(true);
       },
     );

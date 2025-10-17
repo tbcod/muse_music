@@ -10,6 +10,7 @@ import 'package:music_muse/util/log.dart';
 
 import 'list_info.dart';
 import 'lyrics_info.dart';
+import 'player_bar_a.dart';
 
 class SearchPage extends GetView<SearchPageController> {
   const SearchPage({super.key});
@@ -18,136 +19,138 @@ class SearchPage extends GetView<SearchPageController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => SearchPageController());
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            Container(
-              height: 146.w,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  // color: Colors.red,
-                  image: DecorationImage(
-                image: AssetImage("assets/img/all_appbar_bg.png"),
-                fit: BoxFit.fill,
-              )),
-            ),
-            Positioned.fill(
-                child: Column(
-              children: [
-                AppBar(
-                  automaticallyImplyLeading: false,
-                  titleSpacing: 0,
-                  title: Row(
-                    children: [
-                      SizedBox(
-                        width: 12.w,
-                      ),
-                      Expanded(
-                          child: Container(
-                        height: 44.w,
-                        child: CupertinoTextField(
-                          focusNode: controller.focusNode,
-                          controller: controller.inputC,
-                          autofocus: true,
-                          padding: EdgeInsets.only(left: 4.w, right: 4.w),
-                          placeholder: "Search your songs",
-                          style: TextStyle(fontSize: 12.w),
-                          onSubmitted: (str) {
-                            //关闭键盘
-                            Get.focusScope?.unfocus();
-                            controller.searchData(str);
-                          },
-                          onChanged: (str) {
-                            controller.showDel.value = str.isNotEmpty;
-
-                            if (str.isEmpty) {
-                              controller.allList.clear();
-                              return;
-                            }
-                            controller.searchData(str);
-                          },
-                          suffix: Obx(() => controller.showDel.value
-                              ? Container(
-                                  margin: EdgeInsets.only(right: 12.w),
-                                  child: InkWell(
-                                    child: Container(
-                                      // color: Colors.red,
-                                      padding: EdgeInsets.all(4.w),
-                                      child: Image.asset(
-                                        "assets/img/icon_s_remove.png",
-                                        width: 20.w,
-                                        height: 20.w,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      controller.inputC.clear();
-                                      controller.showDel.value = false;
-                                      controller.allList.clear();
-                                      controller.isEmpty.value = false;
-
-                                      //打开键盘
-                                      Get.focusScope
-                                          ?.requestFocus(controller.focusNode);
-                                    },
-                                  ),
-                                )
-                              : Container()),
-                          prefix: Container(
-                            margin: EdgeInsets.only(left: 12.w),
-                            child: Image.asset(
-                              "assets/img/icon_search.png",
-                              width: 20.w,
-                              height: 20.w,
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color(0xff141414).withOpacity(0.1),
-                                  width: 1.w),
-                              borderRadius: BorderRadius.circular(22.w),
-                              color: Colors.white),
+      body: PlayerBarA(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Container(
+                height: 146.w,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    // color: Colors.red,
+                    image: DecorationImage(
+                  image: AssetImage("assets/img/all_appbar_bg.png"),
+                  fit: BoxFit.fill,
+                )),
+              ),
+              Positioned.fill(
+                  child: Column(
+                children: [
+                  AppBar(
+                    automaticallyImplyLeading: false,
+                    titleSpacing: 0,
+                    title: Row(
+                      children: [
+                        SizedBox(
+                          width: 12.w,
                         ),
-                      )),
-                      TextButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          style: TextButton.styleFrom(
-                              foregroundColor: Color(0xff141414),
-                              textStyle:
-                                  TextStyle(fontWeight: FontWeight.normal)),
-                          child: Text("Cancel"))
-                    ],
+                        Expanded(
+                            child: Container(
+                          height: 44.w,
+                          child: CupertinoTextField(
+                            focusNode: controller.focusNode,
+                            controller: controller.inputC,
+                            autofocus: true,
+                            padding: EdgeInsets.only(left: 4.w, right: 4.w),
+                            placeholder: "Search your songs",
+                            style: TextStyle(fontSize: 12.w),
+                            onSubmitted: (str) {
+                              //关闭键盘
+                              Get.focusScope?.unfocus();
+                              controller.searchData(str);
+                            },
+                            onChanged: (str) {
+                              controller.showDel.value = str.isNotEmpty;
+
+                              if (str.isEmpty) {
+                                controller.allList.clear();
+                                return;
+                              }
+                              controller.searchData(str);
+                            },
+                            suffix: Obx(() => controller.showDel.value
+                                ? Container(
+                                    margin: EdgeInsets.only(right: 12.w),
+                                    child: InkWell(
+                                      child: Container(
+                                        // color: Colors.red,
+                                        padding: EdgeInsets.all(4.w),
+                                        child: Image.asset(
+                                          "assets/img/icon_s_remove.png",
+                                          width: 20.w,
+                                          height: 20.w,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        controller.inputC.clear();
+                                        controller.showDel.value = false;
+                                        controller.allList.clear();
+                                        controller.isEmpty.value = false;
+
+                                        //打开键盘
+                                        Get.focusScope
+                                            ?.requestFocus(controller.focusNode);
+                                      },
+                                    ),
+                                  )
+                                : Container()),
+                            prefix: Container(
+                              margin: EdgeInsets.only(left: 12.w),
+                              child: Image.asset(
+                                "assets/img/icon_search.png",
+                                width: 20.w,
+                                height: 20.w,
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(0xff141414).withOpacity(0.1),
+                                    width: 1.w),
+                                borderRadius: BorderRadius.circular(22.w),
+                                color: Colors.white),
+                          ),
+                        )),
+                        TextButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            style: TextButton.styleFrom(
+                                foregroundColor: Color(0xff141414),
+                                textStyle:
+                                    TextStyle(fontWeight: FontWeight.normal)),
+                            child: Text("Cancel"))
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                    child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: Obx(() => controller.isEmpty.value
-                      ? getEmptyView()
-                      : Obx(() => ListView.separated(
-                            padding: EdgeInsets.only(
-                                top: 24.w,
-                                bottom:
-                                    Get.mediaQuery.padding.bottom + 8.w + 50.w),
-                            itemBuilder: (BuildContext context, int index) {
-                              return getItem(index);
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                              return SizedBox(
-                                height: 10.w,
-                              );
-                            },
-                            itemCount: controller.allList.length,
-                          ))),
-                ))
-              ],
-            ))
-          ],
+                  Expanded(
+                      child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: Obx(() => controller.isEmpty.value
+                        ? getEmptyView()
+                        : Obx(() => ListView.separated(
+                              padding: EdgeInsets.only(
+                                  top: 24.w,
+                                  bottom:
+                                      Get.mediaQuery.padding.bottom + 8.w + 50.w),
+                              itemBuilder: (BuildContext context, int index) {
+                                return getItem(index);
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return SizedBox(
+                                  height: 10.w,
+                                );
+                              },
+                              itemCount: controller.allList.length,
+                            ))),
+                  ))
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     );

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/more_sheet_util.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/net_img.dart';
@@ -64,8 +67,7 @@ class UserHome extends GetView<UserHomeController> {
             child: Container(
               height: 44.w,
               width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white, border: Border.all(color: const Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
+              decoration: BoxDecoration(color: Colors.white, border: Border.all(color: const Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
               child: Row(
                 children: [
                   SizedBox(
@@ -308,8 +310,7 @@ class UserHome extends GetView<UserHomeController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style:
-                                    TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
+                                style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -353,11 +354,7 @@ class UserHome extends GetView<UserHomeController> {
                               Color(0xffE9E9FF),
                               Color(0xffffffff),
                             ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(12.w),
-                                bottomLeft: Radius.circular(12.w),
-                                bottomRight: Radius.circular(12.w),
-                                topRight: Radius.circular(24.w))),
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), bottomLeft: Radius.circular(12.w), bottomRight: Radius.circular(12.w), topRight: Radius.circular(24.w))),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: subList.map((subItem) {
@@ -382,8 +379,7 @@ class UserHome extends GetView<UserHomeController> {
                                   var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                                   return Container(
                                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12.w), color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
                                     child: Row(
                                       children: [
                                         Container(
@@ -407,10 +403,7 @@ class UserHome extends GetView<UserHomeController> {
                                               subItem["title"],
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  color: isCheck ? const Color(0xff8569FF) : Colors.black,
-                                                  fontSize: 14.w,
-                                                  fontWeight: FontWeight.w500),
+                                              style: TextStyle(color: isCheck ? const Color(0xff8569FF) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                                             ),
                                             SizedBox(
                                               height: 10.w,
@@ -435,10 +428,7 @@ class UserHome extends GetView<UserHomeController> {
                                                   subItem["subtitle"] ?? "",
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 12.w,
-                                                      fontWeight: FontWeight.w400,
-                                                      color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
+                                                  style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
                                                 ))
                                               ],
                                             ),
@@ -486,7 +476,7 @@ class UserHome extends GetView<UserHomeController> {
                                               } else if (state == 2) {
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId,state: state);
+                                                    DownloadUtils.instance.remove(videoId, state: state);
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -828,7 +818,7 @@ class UserHome extends GetView<UserHomeController> {
                     var childType = childItem["type"];
 
                     return InkWell(
-                      onTap: () {
+                      onTap: ()  {
                         if (childType == -1) {
                           //我喜欢的
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "collection"});
@@ -838,6 +828,12 @@ class UserHome extends GetView<UserHomeController> {
                           ));
                         } else if (childType == -2) {
                           //我下载的
+                          // throw Exception("这是我手动测试的异常2");
+                          // const invalidJson = '{"name": "Tom", "age": }'; // 错误 JSON
+                          // final data = json.decode(invalidJson);
+                          // final dio = Dio();
+                          // await dio.get('https://this-domain-does-not-exist.example.com');
+                          // FirebaseCrashlytics.instance.crash();
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "offline"});
                           Get.to(const UserDownloadSong(
                             isFormHome: true,
@@ -885,6 +881,12 @@ class UserHome extends GetView<UserHomeController> {
                             SizedBox(
                               height: 5.w,
                             ),
+                            // CachedNetworkImage(
+                            //   imageUrl: "123",
+                            //   fit: BoxFit.cover,
+                            //   width: 10,
+                            //   height: 1000,
+                            // ),
                             Container(
                               width: 88.w,
                               child: Text(
@@ -979,13 +981,13 @@ class UserHome extends GetView<UserHomeController> {
                       var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
-                          AppLog.e(childItem);
+                          // AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
                           Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
-                        child: Container(
+                        child: SizedBox(
                           width: 248.w,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1028,8 +1030,7 @@ class UserHome extends GetView<UserHomeController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style:
-                                    TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
+                                style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -1167,13 +1168,10 @@ class UserHomeController extends GetxController with StateMixin {
       sp.setString("visitorData", visitorData);
     }
 
-    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]
-            ["continuations"]?[0]?["nextContinuationData"] ??
-        {};
+    nextData = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
-    List bigList =
-        result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["contents"];
-
+    List bigList = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
+    // bigList = [];
     // AppLog.e(bigList);
 
     List realList = [];
@@ -1186,8 +1184,8 @@ class UserHomeController extends GetxController with StateMixin {
       List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
 
       //more id
-      moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]
-              ?["navigationEndpoint"]?["watchPlaylistEndpoint"]?["playlistId"] ??
+      moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["watchPlaylistEndpoint"]
+              ?["playlistId"] ??
           "";
 
       List realChildList = [];
@@ -1201,8 +1199,9 @@ class UserHomeController extends GetxController with StateMixin {
         if (childItem.containsKey("musicResponsiveListItemRenderer")) {
           //音乐
           List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-              ?["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+          var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+                  ["watchEndpointMusicConfig"]["musicVideoType"] ??
+              "";
 
           type = musicType;
 
@@ -1210,15 +1209,11 @@ class UserHomeController extends GetxController with StateMixin {
           var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
           var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
           //id
-          var videoId =
-              flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
-          var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ?["playlistId"] ??
-              "";
+          var videoId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
+          var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ?? "";
 
           //封面
-          var childItemCover =
-              childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
+          var childItemCover = childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
 
           if (type.isNotEmpty) {
             realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
@@ -1228,8 +1223,8 @@ class UserHomeController extends GetxController with StateMixin {
         } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
           //歌单
           //歌单、专辑、歌手
-          var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
-                  ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
+          var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
+                  ?["browseEndpointContextMusicConfig"]?["pageType"] ??
               "";
           type = childItemType;
 
@@ -1241,8 +1236,7 @@ class UserHomeController extends GetxController with StateMixin {
           String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
 
           //封面
-          var childItemCover =
-              childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
+          var childItemCover = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
 
           if (type.isNotEmpty && browseId.isNotEmpty) {
             realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
@@ -1301,8 +1295,8 @@ class UserHomeController extends GetxController with StateMixin {
 
     bindYoutubeMusicNextData();
 
-    if(source == 'drop_down'){
-      ToastUtil.showToast(msg: "Refresh successful");
+    if (source == 'drop_down') {
+      ToastUtil.showToast(msg: "Refresh successful!");
     }
     // Get.find<UserPlayInfoController>().showLastPlayBar();
   }
@@ -1362,8 +1356,9 @@ class UserHomeController extends GetxController with StateMixin {
             //音乐
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
             if (flexColumns.isEmpty) continue;
-            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
-                ["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+                    ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
+                "";
 
             type = musicType;
 
@@ -1371,16 +1366,11 @@ class UserHomeController extends GetxController with StateMixin {
             var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
             var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
             //id
-            var videoId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
-                    ["watchEndpoint"]?["videoId"] ??
-                "";
-            var playlistId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]
-                    ["watchEndpoint"]?["playlistId"] ??
-                "";
+            var videoId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ?? "";
+            var playlistId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ?? "";
 
             //封面
-            var childItemCover =
-                childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
+            var childItemCover = childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
 
             if (type.isNotEmpty) {
               realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
@@ -1401,8 +1391,8 @@ class UserHomeController extends GetxController with StateMixin {
             try {
               // List runs = childItem["musicTwoRowItemRenderer"]["title"]["runs"] ?? [];
               // if (runs.isEmpty) continue;
-              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]
-                      ["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
+              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
+                      ?["browseEndpointContextMusicConfig"]?["pageType"] ??
                   "";
 
               type = childItemType;
@@ -1415,24 +1405,21 @@ class UserHomeController extends GetxController with StateMixin {
               var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
 
               //封面
-              List thumbnails =
-                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+              List thumbnails = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
               var childItemCover = "";
               if (thumbnails.isNotEmpty) {
                 childItemCover = thumbnails.lastOrNull?["url"];
               }
               if (type.isNotEmpty) {
-                realChildList
-                    .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
+                realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "browseId": browseId});
               }
             } catch (e) {
               // AppLog.e("解析出错的item:$e");
               // AppLog.e("出错的item");
               // AppLog.e(childItem);
 
-              var childItemType = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]?["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
-                      ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
-                  "";
+              var childItemType =
+                  childItem["musicTwoRowItemRenderer"]?["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ?? "";
 
               type = childItemType;
 
@@ -1449,12 +1436,10 @@ class UserHomeController extends GetxController with StateMixin {
               var videoId = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
 
               //封面
-              var childItemCover =
-                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+              var childItemCover = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
 
               if (type.isNotEmpty) {
-                realChildList
-                    .add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
+                realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
               }
             }
           } else {
@@ -1645,11 +1630,9 @@ class UserHomeController extends GetxController with StateMixin {
 
     Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
 
-    List oldList =
-        result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ?? [];
+    List oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ?? [];
     if (oldList.isEmpty) {
-      oldList =
-          result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]?["contents"] ?? [];
+      oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]?["contents"] ?? [];
     }
     var realList = FormatMyData.instance.getYoutubeHomeList(oldList);
     AppLog.i("首页youtube数据, ${realList.length}");
@@ -1686,7 +1669,7 @@ final locTop =
     "XX0iNXhBOUlwZmRRdjRvbmhCMnJnSWVwUXZ4SWlqdDJXbzNMUCI6ImRJdHNpbHlhbHAiLCI1eEE5SXBmZFF2NG9uaEIycmdJZXBRdnhJaWp0MldvM0xQTFYiOiJkSWVzd29yYiIsIlE1WHR1UXU1b1J0N1NSUjVEaXBnSU53dUZGVEJMQzRuT0E9c3ImPUVBR0NoSUFBVVJBSWt3QXBxNHF5ckZTQndMRUNBTkNYRXdteWFvLT1wcXM/Z3BqLnRsdWFmZWRxaC8wNDB4ZUluMnJrZS9pdi9tb2MuZ21pdHkuaS8vOnNwdHRoIjoicmV2b2MiLCJ5bGlhZCBsYWJvbGcgc2dub3MgcG9UIjoiZWx0aXQieyx9InhuU1VULWM3UlhEdmpCNGV6Njg1a0V6WG04azB0VHpnTFAiOiJkSXRzaWx5YWxwIiwieG5TVVQtYzdSWER2akI0ZXo2ODVrRXpYbThrMHRUemdMUExWIjoiZEllc3dvcmIiLCJRWERJempjU1NPdF9FSG1kREo3ejV6RkZxU1JCTEM0bk9BPXNyJkJBVUE0WUFHQ0FCR0lvUUFpSFFBWUhBR0NoSUFBVVJBSWt4QXBxNHF5ckZTQndMRUNBTkNuRXdteWFvLT1wcXM/Z3BqLnRsdWFmZWRxaC8wNDB4ZUluMnJrZS9pdi9tb2MuZ21pdHkuaS8vOnNwdHRoIjoicmV2b2MiLCJ5bGtlZXcgbGFib2xnIHNnbm9zIHBvVCI6ImVsdGl0InssfSItVkpWb1BxUmUyeDFLU0NHYklEdDI5SDEza19nSWtKU0xQIjoiZEl0c2lseWFscCIsIi1WSlZvUHFSZTJ4MUtTQ0diSUR0MjlIMTNrX2dJa0pTTFBMViI6ImRJZXN3b3JiIiwiUVgwTVVicDh3SFRXVWpNSHRYbUNwN3ZTUnJzRExDNG5PQT1zciZCQVVBNFlBR0NBQkdJb1FBaUhRQVlIQUdDaElBQVVSQUlreEFwcTRxeXJGU0J3TEVDQU5DbkV3bXlhby09cHFzP2dwai50bHVhZmVkcWgva1hFeTZfMF9Oc1ovaXYvbW9jLmdtaXR5LmkvLzpzcHR0aCI6InJldm9jIiwibmFpbGl6YXJCIHNnbm9TIHBvVCI6ImVsdGl0InssfSJOODVHRHVTb2U0ZHBBVHBUQ3Y4TlJTWDRzSGs4b1N3T0xQIjoiZEl0c2lseWFscCIsIk44NUdEdVNvZTRkcEFUcFRDdjhOUlNYNHNIazhvU3dPTFBMViI6ImRJZXN3b3JiIiwiQW1tNHhsLXNyaG5JN3RGamw3ckFYTkNyeXpBRExDNG5PQT1zciZCQVVBNFlBR0NBQkdJb1FBaUhRQVlIQUdDaElBQVVSQUlreEFwcTRxeXJGU0J3TEVDQU5DbkV3bXlhby09cHFzP2dwai50bHVhZmVkcWgvY1lHXzBuY2lteV8vaXYvbW9jLmdtaXR5LmkvLzpzcHR0aCI6InJldm9jIiwib2NpeGVNIHNnbm9TIHBvVCI6ImVsdGl0InssfSJHdU1fWEhia013NVRCeEpWRHBZNG9ONl8wRDFPVi03T0xQIjoiZEl0c2lseWFscCIsIkd1TV9YSGJrTXc1VEJ4SlZEcFk0b042XzBEMU9WLTdPTFBMViI6ImRJZXN3b3JiIiwiUTlnSllFUlVyaXJvNExtQTdmeTlEY20zb1luQkxDNG5PQT1zciY9RUFHQ2hJQUFVUkFJa3dBcHE0cXlyRlNCd0xFQ0FOQ1hFd215YW8tPXBxcz9ncGoudGx1YWZlZHFoL2MtTHdLc2I3YVBrL2l2L21vYy5nbWl0eS5pLy86c3B0dGgiOiJyZXZvYyIsInNldGF0UyBkZXRpblUgc2dub1MgcG9UIjoiZWx0aXQie1s=";
 
 // {title: You Belong With Me, subtitle: Taylor Swift, cover: https://i.ytimg.com/vi/VuNIsY6JdUw/sddefault.jpg, type: MUSIC_VIDEO_TYPE_ATV, videoId: VuNIsY6JdUw}
-List  listenNowListData() {
+List listenNowListData() {
   List newList = [];
   List list = RemoteUtil.shareInstance.listenNowRecommend;
   for (Map obj in list) {

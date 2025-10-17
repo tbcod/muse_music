@@ -25,6 +25,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'player_bar_a.dart';
+
 class AddLyrics extends GetView<AddLyricsController> {
   const AddLyrics({super.key});
 
@@ -32,104 +34,106 @@ class AddLyrics extends GetView<AddLyricsController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => AddLyricsController());
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            Container(
-              height: 146.w,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  // color: Colors.red,
-                  image: DecorationImage(
-                image: AssetImage("assets/img/all_appbar_bg.png"),
-                fit: BoxFit.fill,
-              )),
-            ),
-            Positioned.fill(
-                child: Column(
-              children: [
-                AppBar(
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          controller.btnOk();
-                        },
-                        icon: Image.asset(
-                          "assets/img/icon_ok.png",
-                          width: 24.w,
-                          height: 24.w,
-                        ))
-                  ],
-                ),
-                Expanded(
-                    child: Container(
-                  child: MediaQuery.removePadding(
-                    removeTop: true,
-                    context: context,
-                    child: ListView(
-                      padding: EdgeInsets.symmetric(vertical: 12.w),
-                      children: [
-                        //录音
-                        getRecordingView(),
-
-                        SizedBox(
-                          height: 40.w,
-                        ),
-                        //标题
-                        Container(
-                          height: 54.w,
-                          margin: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: CupertinoTextField(
-                            controller: controller.titleC,
-                            maxLength: 100,
-                            placeholder: "title",
-                            placeholderStyle: TextStyle(
-                                color: Color(0xff141414).withOpacity(0.5)),
-                            style: TextStyle(fontSize: 12.w),
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xff1F1F1F).withOpacity(0.08),
-                                    width: 1.w),
-                                borderRadius: BorderRadius.circular(12.w)),
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 32.w,
-                        ),
-
-                        //歌词
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: CupertinoTextField(
-                            controller: controller.lyricsC,
-                            placeholder:
-                                "Write your lyrics\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
-                            placeholderStyle: TextStyle(
-                                color: Color(0xff141414).withOpacity(0.5)),
-                            maxLines: 15,
-                            style: TextStyle(fontSize: 12.w),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 18.w),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xff1F1F1F).withOpacity(0.08),
-                                    width: 1.w),
-                                borderRadius: BorderRadius.circular(12.w)),
-                          ),
-                        ),
-                      ],
-                    ),
+      body: PlayerBarA(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Container(
+                height: 146.w,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    // color: Colors.red,
+                    image: DecorationImage(
+                  image: AssetImage("assets/img/all_appbar_bg.png"),
+                  fit: BoxFit.fill,
+                )),
+              ),
+              Positioned.fill(
+                  child: Column(
+                children: [
+                  AppBar(
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            controller.btnOk();
+                          },
+                          icon: Image.asset(
+                            "assets/img/icon_ok.png",
+                            width: 24.w,
+                            height: 24.w,
+                          ))
+                    ],
                   ),
-                ))
-              ],
-            ))
-          ],
+                  Expanded(
+                      child: Container(
+                    child: MediaQuery.removePadding(
+                      removeTop: true,
+                      context: context,
+                      child: ListView(
+                        padding: EdgeInsets.symmetric(vertical: 12.w),
+                        children: [
+                          //录音
+                          getRecordingView(),
+
+                          SizedBox(
+                            height: 40.w,
+                          ),
+                          //标题
+                          Container(
+                            height: 54.w,
+                            margin: EdgeInsets.symmetric(horizontal: 12.w),
+                            child: CupertinoTextField(
+                              controller: controller.titleC,
+                              maxLength: 100,
+                              placeholder: "title",
+                              placeholderStyle: TextStyle(
+                                  color: Color(0xff141414).withOpacity(0.5)),
+                              style: TextStyle(fontSize: 12.w),
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(0xff1F1F1F).withOpacity(0.08),
+                                      width: 1.w),
+                                  borderRadius: BorderRadius.circular(12.w)),
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: 32.w,
+                          ),
+
+                          //歌词
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 12.w),
+                            child: CupertinoTextField(
+                              controller: controller.lyricsC,
+                              placeholder:
+                                  "Write your lyrics\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+                              placeholderStyle: TextStyle(
+                                  color: Color(0xff141414).withOpacity(0.5)),
+                              maxLines: 15,
+                              style: TextStyle(fontSize: 12.w),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 18.w),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color(0xff1F1F1F).withOpacity(0.08),
+                                      width: 1.w),
+                                  borderRadius: BorderRadius.circular(12.w)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ))
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     );

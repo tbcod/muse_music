@@ -9,7 +9,9 @@ import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../generated/assets.dart';
 import '../../../util/download/download_util.dart';
@@ -40,237 +42,239 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserPlayListInfoController(), tag: tag);
     return Scaffold(
-      body: controller.obxPage((state) => NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification notification) {
-              // AppLog.e(notification.metrics.pixels);
+      body: PlayerBottomBarView(
+        child: controller.obxPage((state) => NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification notification) {
+                // AppLog.e(notification.metrics.pixels);
 
-              var offset = notification.metrics.pixels;
-              controller.showTitle.value = offset > 100.w;
+                var offset = notification.metrics.pixels;
+                controller.showTitle.value = offset > 100.w;
 
-              return true;
-            },
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  backgroundColor: Color(0xfffafafa),
-                  centerTitle: true,
-                  pinned: true,
-                  title: Obx(() => controller.showTitle.value ? Text(controller.info["title"], style: TextStyle(fontSize: 16.w)) : Container()),
-                  leading: IconButton(
-                      onPressed: () {
-                        AdUtils.instance.showAd("behavior", adScene: AdScene.back);
-                        Get.back();
-                      },
-                      icon: Image.asset(
-                        "assets/oimg/icon_back.png",
-                        width: 24.w,
-                        height: 24.w,
-                      )),
-                  actions: [
-                    Obx(() {
-                      var isLike = LikeUtil.instance.allPlaylistMap.containsKey(controller.browseId);
+                return true;
+              },
+              child: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: const Color(0xfffafafa),
+                    centerTitle: true,
+                    pinned: true,
+                    title: Obx(() => controller.showTitle.value ? Text(controller.info["title"], style: TextStyle(fontSize: 16.w)) : Container()),
+                    leading: IconButton(
+                        onPressed: () {
+                          AdUtils.instance.showAd("behavior", adScene: AdScene.back);
+                          Get.back();
+                        },
+                        icon: Image.asset(
+                          "assets/oimg/icon_back.png",
+                          width: 24.w,
+                          height: 24.w,
+                        )),
+                    actions: [
+                      Obx(() {
+                        var isLike = LikeUtil.instance.allPlaylistMap.containsKey(controller.browseId);
 
-                      return IconButton(
-                          onPressed: () {
-                            if (isLike) {
-                              LikeUtil.instance.unlikeList(controller.browseId);
-                            } else {
-                              LikeUtil.instance.likeList(controller.browseId, controller.info, controller.info["songNumStr"] ?? "");
-                            }
-                            EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "collection"});
-                          },
-                          icon: Image.asset(
-                            isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png",
-                            width: 24.w,
-                            height: 24.w,
-                          ));
-                    })
-                  ],
-                ),
-                SliverToBoxAdapter(
-                  child: Container(
-                    height: 142.w,
-                    width: double.infinity,
-                    color: Color(0xfffafafa),
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    child: Row(
-                      children: [
-                        //封面
-                        Container(
-                          height: 142.w,
-                          width: 172.w,
-                          child: Stack(
+                        return IconButton(
+                            onPressed: () {
+                              if (isLike) {
+                                LikeUtil.instance.unlikeList(controller.browseId);
+                              } else {
+                                LikeUtil.instance.likeList(controller.browseId, controller.info, controller.info["songNumStr"] ?? "");
+                              }
+                              EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "collection"});
+                            },
+                            icon: Image.asset(
+                              isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png",
+                              width: 24.w,
+                              height: 24.w,
+                            ));
+                      })
+                    ],
+                  ),
+                  SliverToBoxAdapter(
+                    child: Container(
+                      height: 142.w,
+                      width: double.infinity,
+                      color: const Color(0xfffafafa),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      child: Row(
+                        children: [
+                          //封面
+                          Container(
+                            height: 142.w,
+                            width: 172.w,
+                            child: Stack(
+                              children: [
+                                //底部
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    width: 128.w,
+                                    height: 128.w,
+                                    margin: EdgeInsets.only(right: 20.w),
+                                    decoration: BoxDecoration(color: const Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)),
+                                  ),
+                                ),
+
+                                //封面
+
+                                Container(
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.w)),
+                                  child: NetImageView(
+                                    imgUrl: controller.info["cover"],
+                                    width: 142.w,
+                                    height: 142.w,
+                                    fit: BoxFit.cover,
+                                    errorAsset: Assets.oimgIconDItem,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              //底部
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  width: 128.w,
-                                  height: 128.w,
-                                  margin: EdgeInsets.only(right: 20.w),
-                                  decoration: BoxDecoration(color: Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)),
-                                ),
+                              Text(
+                                controller.info["title"],
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.w500),
                               ),
-
-                              //封面
-
-                              Container(
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.w)),
-                                child: NetImageView(
-                                  imgUrl: controller.info["cover"],
-                                  width: 142.w,
-                                  height: 142.w,
-                                  fit: BoxFit.cover,
-                                  errorAsset: Assets.oimgIconDItem,
-                                ),
+                              SizedBox(
+                                height: 12.w,
+                              ),
+                              Text(
+                                controller.info["songNumStr"] ?? "",
+                                style: TextStyle(fontSize: 12.w, color: const Color(0xff121212)),
                               )
                             ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Expanded(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              controller.info["title"],
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(
-                              height: 12.w,
-                            ),
-                            Text(
-                              controller.info["songNumStr"] ?? "",
-                              style: TextStyle(fontSize: 12.w, color: Color(0xff121212)),
-                            )
-                          ],
-                        )),
-                      ],
+                          )),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SliverPersistentHeader(
-                    pinned: true,
-                    delegate: MySliverDelegate(
-                        80.w,
-                        80.w,
-                        Container(
-                          height: 80.w,
-                          color: Color(0xfffafafa),
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: InkWell(
-                                onTap: () {
-                                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "play_all"});
+                  SliverPersistentHeader(
+                      pinned: true,
+                      delegate: MySliverDelegate(
+                          80.w,
+                          80.w,
+                          Container(
+                            height: 80.w,
+                            color: const Color(0xfffafafa),
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: InkWell(
+                                  onTap: () {
+                                    EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "play_all"});
 
-                                  var clickTypeStr = "";
-                                  if (controller.isAlbum) {
-                                    clickTypeStr = isFormSearch ? "s_detail_album" : "h_detail_album";
-                                  } else {
-                                    clickTypeStr = isFormSearch ? "s_detail_playlist" : "h_detail_playlist";
-                                  }
-                                  Get.find<UserPlayInfoController>()
-                                      .setDataAndPlayItem(controller.list, controller.list.first, pid: controller.browseId, clickType: clickTypeStr);
-                                  // Get.to(UserPlayInfo());
-                                },
-                                child: Container(
-                                  height: 42.w,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: Color(0xff7453FF)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/oimg/icon_play.png",
-                                        width: 24.w,
-                                        height: 24.w,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Text(
-                                        "Play".tr,
-                                        style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Colors.white),
-                                      )
-                                    ],
+                                    var clickTypeStr = "";
+                                    if (controller.isAlbum) {
+                                      clickTypeStr = isFormSearch ? "s_detail_album" : "h_detail_album";
+                                    } else {
+                                      clickTypeStr = isFormSearch ? "s_detail_playlist" : "h_detail_playlist";
+                                    }
+                                    Get.find<UserPlayInfoController>()
+                                        .setDataAndPlayItem(controller.list, controller.list.first, pid: controller.browseId, clickType: clickTypeStr);
+                                    // Get.to(UserPlayInfo());
+                                  },
+                                  child: Container(
+                                    height: 42.w,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: const Color(0xff7453FF)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/oimg/icon_play.png",
+                                          width: 24.w,
+                                          height: 24.w,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 8.w,
+                                        ),
+                                        Text(
+                                          "Play".tr,
+                                          style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Colors.white),
+                                        )
+                                      ],
+                                    ),
                                   ),
+                                )),
+                                SizedBox(
+                                  width: 15.w,
                                 ),
-                              )),
-                              SizedBox(
-                                width: 15.w,
-                              ),
-                              Expanded(
-                                  child: InkWell(
-                                onTap: () {
-                                  //TODO 随机打乱
+                                Expanded(
+                                    child: InkWell(
+                                  onTap: () {
+                                    //TODO 随机打乱
 
-                                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "shuffle"});
+                                    EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "shuffle"});
 
-                                  List playList = List.of(controller.list)..shuffle();
+                                    List playList = List.of(controller.list)..shuffle();
 
-                                  var clickTypeStr = "";
-                                  if (controller.isAlbum) {
-                                    clickTypeStr = isFormSearch ? "s_detail_album" : "h_detail_album";
-                                  } else {
-                                    clickTypeStr = isFormSearch ? "s_detail_playlist" : "h_detail_playlist";
-                                  }
-                                  Get.find<UserPlayInfoController>()
-                                      .setDataAndPlayItem(playList, playList.first, pid: controller.browseId, clickType: clickTypeStr);
+                                    var clickTypeStr = "";
+                                    if (controller.isAlbum) {
+                                      clickTypeStr = isFormSearch ? "s_detail_album" : "h_detail_album";
+                                    } else {
+                                      clickTypeStr = isFormSearch ? "s_detail_playlist" : "h_detail_playlist";
+                                    }
+                                    Get.find<UserPlayInfoController>()
+                                        .setDataAndPlayItem(playList, playList.first, pid: controller.browseId, clickType: clickTypeStr);
 
-                                  // Get.find<UserPlayInfoController>()
-                                  //     .setDataAndPlayItem(controller.list,
-                                  //         controller.list.first,
-                                  //         clickType: "h_detail");
-                                  // Get.to(UserPlayInfo());
-                                },
-                                child: Container(
-                                  height: 42.w,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(21.w),
-                                      border: Border.all(color: Color(0xff7453FF), width: 2.w),
-                                      color: Colors.white),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: Color(0xff7453FF)),
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Text(
-                                        "Shuffle".tr,
-                                        style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
-                                      )
-                                    ],
+                                    // Get.find<UserPlayInfoController>()
+                                    //     .setDataAndPlayItem(controller.list,
+                                    //         controller.list.first,
+                                    //         clickType: "h_detail");
+                                    // Get.to(UserPlayInfo());
+                                  },
+                                  child: Container(
+                                    height: 42.w,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(21.w),
+                                        border: Border.all(color: const Color(0xff7453FF), width: 2.w),
+                                        color: Colors.white),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: const Color(0xff7453FF)),
+                                        SizedBox(
+                                          width: 8.w,
+                                        ),
+                                        Text(
+                                          "Shuffle".tr,
+                                          style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: const Color(0xff7453FF)),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ))
-                            ],
-                          ),
-                        ))),
-                SliverPadding(
-                  padding: EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
-                  sliver: SliverList.separated(
-                      itemCount: controller.list.length,
-                      itemBuilder: (_, i) {
-                        return getItem(i);
-                      },
-                      separatorBuilder: (_, i) {
-                        return SizedBox(
-                          height: 8.w,
-                        );
-                      }),
-                ),
-              ],
-            ),
-          )),
+                                ))
+                              ],
+                            ),
+                          ))),
+                  SliverPadding(
+                    padding: EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
+                    sliver: SliverList.separated(
+                        itemCount: controller.list.length,
+                        itemBuilder: (_, i) {
+                          return getItem(i);
+                        },
+                        separatorBuilder: (_, i) {
+                          return SizedBox(
+                            height: 8.w,
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            )),
+      ),
 
       // appBar: AppBar(
       //   title: const Text("标题"),
@@ -559,7 +563,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
         return Container(
           height: 70.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          decoration: BoxDecoration(color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
+          decoration: BoxDecoration(color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
           child: Row(
             children: [
               controller.isAlbum
@@ -570,7 +574,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                         style: TextStyle(
                           fontSize: 14.w,
                           fontWeight: FontWeight.bold,
-                          color: isCheck ? Color(0xff8569FF) : Colors.black,
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black,
                         ),
                       ),
                     )
@@ -600,7 +604,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                     style: TextStyle(
                       fontSize: 14.w,
                       fontWeight: FontWeight.w500,
-                      color: isCheck ? Color(0xff8569FF) : Colors.black,
+                      color: isCheck ? const Color(0xff8569FF) : Colors.black,
                     ),
                   ),
                   SizedBox(
@@ -628,7 +632,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.w,
-                          color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75),
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                         ),
                       ))
                     ],
@@ -744,6 +748,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     browseId = Get.arguments?["browseId"] ?? "";
     playlistId = Get.arguments?["playlistId"] ?? "";
 
+    TbaUtils.instance.checkUnFinishedEvent();
+
     if (browseId.isEmpty) {
       browseId = playlistId;
       bindYoutubeData();
@@ -769,8 +775,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
       var artistStr = "";
       var cover = "";
       try {
-        List list = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
-        var infoData = list.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]["contents"]?[0]?["musicResponsiveHeaderRenderer"];
+        List list = result.data?["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
+        var infoData = list.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"]?[0]?["musicResponsiveHeaderRenderer"];
         list = infoData?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
         cover = list.lastOrNull["url"];
         list = infoData["title"]?["runs"] ?? [];
@@ -811,72 +817,78 @@ class UserPlayListInfoController extends GetxController with StateMixin {
           "browseId": browseId
         };
 
-        AppLog.e(info);
+        // AppLog.e(info);
 
-        oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-            ["musicPlaylistShelfRenderer"]["contents"];
+        oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"][0]
+            ["musicPlaylistShelfRenderer"]?["contents"] ?? [];
 
-        nextData = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-                ["musicPlaylistShelfRenderer"]["continuations"]?[0]?["nextContinuationData"] ??
-            {};
+        if(oldList.isNotEmpty){
+          nextData = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"][0]
+          ["musicPlaylistShelfRenderer"]?["continuations"]?[0]?["nextContinuationData"] ??
+              {};
 
-        for (Map item in oldList) {
-          String videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]?["videoId"] ?? '';
+          for (Map item in oldList) {
+            String videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]?["videoId"] ?? '';
 
-          List list = item["musicResponsiveListItemRenderer"]?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
-          var cover = list.firstOrNull?["url"];
-          list = item["musicResponsiveListItemRenderer"]["flexColumns"] ?? [];
-          if (list.isEmpty) continue;
-          var title = list.first["musicResponsiveListItemFlexColumnRenderer"]?["text"]["runs"][0]["text"];
-          var subtitle = list[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-          list = item["musicResponsiveListItemRenderer"]?["fixedColumns"] ?? [];
-          list = list.firstOrNull?["musicResponsiveListItemFixedColumnRenderer"]?["text"]?["runs"] ?? [];
-          var timeStr = list.firstOrNull?["text"];
+            List list = item["musicResponsiveListItemRenderer"]?["thumbnail"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+            var cover = list.firstOrNull?["url"];
+            list = item["musicResponsiveListItemRenderer"]["flexColumns"] ?? [];
+            if (list.isEmpty) continue;
+            var title = list.first["musicResponsiveListItemFlexColumnRenderer"]?["text"]["runs"][0]["text"];
+            var subtitle = list[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+            list = item["musicResponsiveListItemRenderer"]?["fixedColumns"] ?? [];
+            list = list.firstOrNull?["musicResponsiveListItemFixedColumnRenderer"]?["text"]?["runs"] ?? [];
+            var timeStr = list.firstOrNull?["text"];
 
-          newList.add({
-            "cover": cover,
-            "title": title,
-            "subtitle": subtitle,
-            "timeStr": timeStr,
-            "videoId": videoId,
-          });
+            newList.add({
+              "cover": cover,
+              "title": title,
+              "subtitle": subtitle,
+              "timeStr": timeStr,
+              "videoId": videoId,
+            });
+          }
+        }else{
+          isAlbum = true;
+
+          oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]?["contents"]?[0]
+          ["musicShelfRenderer"]?["contents"] ??
+              [];
+          for (Map item in oldList) {
+            // var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
+            //             ?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"]
+            //         ?[0]?["url"] ??
+            //     "-";
+            var title =
+            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+            // var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
+            //         [2]["musicResponsiveListItemFlexColumnRenderer"]["text"]
+            //     ["runs"][0]["text"];
+            var subtitle = artistStr;
+
+            var timeStr =
+            item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+
+            var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
+            if(videoId == null) continue;
+
+            newList.add({
+              "cover": cover,
+              "title": title,
+              "subtitle": subtitle,
+              "timeStr": timeStr,
+              "videoId": videoId,
+            });
+          }
         }
-      } catch (e) {
+
+
+      } catch (e,s) {
         // print(e);
-        AppLog.e("解析出错：${e.toString()}");
+        AppLog.e("解析出错：${e.toString()}, \n$s");
 
         //这里是专辑，数据结构不一样
-        isAlbum = true;
 
-        oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]
-                ["musicShelfRenderer"]?["contents"] ??
-            [];
-        for (Map item in oldList) {
-          // var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-          //             ?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"]
-          //         ?[0]?["url"] ??
-          //     "-";
-          var title =
-              item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-          // var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-          //         [2]["musicResponsiveListItemFlexColumnRenderer"]["text"]
-          //     ["runs"][0]["text"];
-          var subtitle = artistStr;
-
-          var timeStr =
-              item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
-
-          var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
-          if(videoId == null) continue;
-
-          newList.add({
-            "cover": cover,
-            "title": title,
-            "subtitle": subtitle,
-            "timeStr": timeStr,
-            "videoId": videoId,
-          });
-        }
       }
 
       list = newList;
@@ -906,7 +918,7 @@ class UserPlayListInfoController extends GetxController with StateMixin {
 
     var result = await ApiMain.instance.getData(browseId, nextData: nextData);
 
-    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["contents"] ?? [];
+    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]?["contents"] ?? [];
 
     nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
@@ -1069,8 +1081,8 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     var oldList = [];
     var newList = [];
 
-    oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]
-            ["itemSectionRenderer"]["contents"][0]["playlistVideoListRenderer"]["contents"] ??
+    oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]?["contents"][0]
+            ["itemSectionRenderer"]?["contents"][0]["playlistVideoListRenderer"]?["contents"] ??
         [];
 
     for (var item in oldList) {

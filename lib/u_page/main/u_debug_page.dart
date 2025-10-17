@@ -9,6 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/native_util.dart';
 
 class UDebugPage extends StatelessWidget {
   UDebugPage({super.key});
@@ -25,6 +26,18 @@ class UDebugPage extends StatelessWidget {
           style: TextStyle(fontSize: 20.w),
         ),
         titleSpacing: 12.w,
+        actions: [
+          CupertinoButton(
+              onPressed: () {
+                NativeUtils.instance.test();
+              },
+              child: const Text('Kill')),
+          CupertinoButton(
+              onPressed: () {
+                controller.throwAException();
+              },
+              child: const Text('App')),
+        ],
       ),
       body: Container(
         height: ScreenUtil().screenHeight,
@@ -60,8 +73,13 @@ class UDebugController extends GetxController {
   getAd(Map user) {
     var encoder = const JsonEncoder.withIndent("  "); // 两个空格缩进
     String prettyJson = encoder.convert(user);
-return prettyJson;
+    return prettyJson;
     // String formatted = user.entries.map((e) => "${e.key}: ${e.value}").join("\n");
     // return formatted;
+  }
+
+  throwAException() {
+    const invalidJson = '{"name": "Tom", "age": }'; // 错误 JSON
+    json.decode(invalidJson);
   }
 }

@@ -18,34 +18,54 @@ import '../../const/env.dart';
 import '../log.dart';
 
 class TbaIos extends BaseApi {
-  static final String host = MuseConfig.isUser
-      ? "https://levulose.littlemusicmuse.com/antenna/auric/ward"
-      : "https://test-levulose.littlemusicmuse.com/zazen/prop";
+  static final String host = MuseConfig.isUser ? "https://levulose.littlemusicmuse.com/antenna/auric/ward" : "https://test-levulose.littlemusicmuse.com/zazen/prop";
 
   TbaIos._internal() : super(host);
   static final TbaIos _instance = TbaIos._internal();
+
   static TbaIos get instance {
     return _instance;
   }
 
-  Future<BaseModel> postData(TbaType type,
-      {Map<String, dynamic>? eventData, String? eventId}) async {
+  late String idfa;
+  late List connectivityResult;
+  late IosDeviceInfo iosDeviceInfo;
+  late PackageInfo packageInfo;
+  late SharedPreferences sp;
+
+  Future initData() async {
+    idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    connectivityResult = await Connectivity().checkConnectivity();
+    packageInfo = await PackageInfo.fromPlatform();
+    iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
+    sp = await SharedPreferences.getInstance();
+  }
+
+  Future<BaseModel> postData(TbaType type, {Map<String, dynamic>? eventData, String? eventId}) async {
     // AppLog.e("事件上报：${type.name}:${eventId ?? ""}");
     // AppLog.e("事件数据：$eventData");
 
     //通用参数
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    IosDeviceInfo iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
+    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    // IosDeviceInfo iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
 
     var languageCode = Get.deviceLocale?.languageCode ?? "zh";
     var countryCode = Get.deviceLocale?.countryCode ?? "CN";
 
-    var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    if (connectivityResult.isEmpty) {
+      connectivityResult = await Connectivity().checkConnectivity();
+    }
 
-    var connectivityResult = await Connectivity().checkConnectivity();
+    var net = "";
+    if (connectivityResult.isNotEmpty) {
+      ConnectivityResult result = connectivityResult.first;
+      net = result.name;
+    }
+
+    // var connectivityResult = await Connectivity().checkConnectivity();
     var offsetHours = DateTime.now().timeZoneOffset.inHours;
 
-    var logId = Uuid().v1();
+    var logId = const Uuid().v1();
 
     Map<String, dynamic> generalMap = {
       "figurate": {
@@ -68,7 +88,7 @@ class TbaIos extends BaseApi {
         //os
         "garland": "school",
         //network_type
-        "irk": connectivityResult.map((e) => e.name).join(","),
+        "irk": net,
         //brand
         "mouse": "apple",
         //idfv
@@ -80,7 +100,7 @@ class TbaIos extends BaseApi {
         //bundle_id
         "environ": packageInfo.packageName,
         //client_ts
-        "anagram": DateTime.now().millisecondsSinceEpoch,
+        "anagram": DateTime.now().millisecondsSinceEpoch , //- 24*1000*3600*3
         //idfa
         "labour": idfa,
         //operator
@@ -104,89 +124,19 @@ class TbaIos extends BaseApi {
 
     //全局参数
     var isNewUser = false;
-    var sp = await SharedPreferences.getInstance();
 
     var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-    var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs)
-        .difference(DateTime.now());
+    var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
     isNewUser = tempD.inHours < 24;
 
-    generalMap["hammock"] = {
-      "new_user": isNewUser ? "new" : "old",
-      "type_so": Get.find<Application>().typeSo
-    };
-
-    //通用参数
-    // Map<String, dynamic> generalMap = {
-    //   "figurate": {
-    //     //app_version
-    //     "brent": packageInfo.version,
-    //     //os_version
-    //     "circus": iosDeviceInfo.systemVersion,
-    //     //system_language
-    //     "bassoon": "${languageCode}_$countryCode",
-    //     //distinct_id
-    //     "teapot": Get.find<Application>().userAppUuid,
-    //     //os
-    //     "padre": "grumble",
-    //     //key 随机生成的uuid
-    //     "peat": Uuid().v8(),
-    //     //brand
-    //     "hodges": "apple",
-    //     //ip
-    //     // "hearty":"",
-    //     //log_id
-    //     "lolly": logId,
-    //     //bundle_id
-    //     "ooze": packageInfo.packageName,
-    //   },
-    //   "discrete": {
-    //     //idfa
-    //     "radial": idfa,
-    //     //device_model
-    //     "mathews": iosDeviceInfo.model,
-    //     //storage_size
-    //     // "cutover":0,
-    //     //zone_offset
-    //     "dingy": offsetHours,
-    //     //channel
-    //     "scrawl": "appStore",
-    //   },
-    //   "zillion": {
-    //     //idfv
-    //     "deem": iosDeviceInfo.identifierForVendor,
-    //   },
-    //   "pollen": {
-    //     //manufacturer
-    //     "price": "apple",
-    //     //ab_test
-    //     // "snail": "",
-    //     //network_type
-    //     "gestural": connectivityResult.last.name,
-    //     //gaid
-    //     // "college": "",
-    //     //client_ts
-    //     "brakeman": DateTime.now().millisecondsSinceEpoch,
-    //     //operator mcc和mnc
-    //     "alexis": "mcc",
-    //     //os_country
-    //     "globe": countryCode,
-    //     //android_id
-    //     // "shirley": "",
-    //   }
-    // };
+    generalMap["hammock"] = {"new_user": isNewUser ? "new" : "old", "type_so": Get.find<Application>().typeSo};
 
     if (type == TbaType.install) {
       generalMap["pow"] = eventData;
-      //拼接Map
-      // if (eventData != null) {
-      //   generalMap.addAll(eventData);
-      // }
     } else if (type == TbaType.session) {
       generalMap["cabinet"] = {};
     } else if (type == TbaType.ad) {
       generalMap["womb"] = eventData;
-      // generalMap.addAll(eventData ?? {});
     } else if (type == TbaType.event) {
       //事件id
       generalMap["add"] = eventId;
@@ -201,46 +151,56 @@ class TbaIos extends BaseApi {
     // AppLog.e(jsonEncode(generalMap));
 
     //先存本地，请求成功后删除
-    var box = await Hive.openBox("tbaErrorData");
-    //存下来下次提交
-    await box.put(logId, generalMap);
+    // var box = await Hive.openBox("tbaErrorData");
+    // //存下来下次提交
+    // await box.put(logId, generalMap);
 
-    var result = await httpRequest("",
-        method: HttpMethod.post,
-        body: generalMap,
-        contentType: "application/json");
+    var result = await httpRequest("", method: HttpMethod.post, body: generalMap, contentType: "application/json");
 
     //请求失败的下次一起提交
 
     if (result.code != HttpCode.success) {
-      AppLog.e("TBA上报请求失败, ${result.message}");
+      AppLog.e("TBA上报请求失败:$eventId, ${result.message}， logId:$logId");
+
+      if(result.code?.toInt() == 500){
+        //服务器错误
+        // AppLog.e("服务器错误:${result.code}");
+      }else{
+        var box = await Hive.openBox("tbaErrorData");
+        //存下来下次提交
+        await box.put(logId, generalMap);
+      }
       // AppLog.e(logId);
     } else {
-      // AppLog.i("TBA上报成功, $generalMap");
+      AppLog.i("TBA上报成功, ${eventId ?? type.name}");
 
       //请求成功了，先删除本次的
-      await box.delete(logId);
+      // await box.delete(logId);
 
       //再次提交上次请求失败的数据
-      if (!isPostError) {
-        var listErrorData = box.values.toList();
-        postTbaErrorData(listErrorData);
-      }
+      // if (!isPostError) {
+      //   var listErrorData = box.values.toList();
+      //   postTbaErrorData(listErrorData);
+      // }
     }
 
     return result;
   }
 
   var isPostError = false;
-  postTbaErrorData(List data) async {
-    if (data.isEmpty) {
-      return;
-    }
+
+  Future postTbaErrorData() async {
+    if(isPostError) return;
     isPostError = true;
     var box = await Hive.openBox("tbaErrorData");
     // AppLog.e("上报上次未成功的tba");
     // AppLog.e(data.length);
-
+    var data = box.values.toList();
+    AppLog.i("上报未成功的tba data:${data.length}");
+    if (data.isEmpty) {
+      isPostError = false;
+      return;
+    }
     if (data.length > 1000) {
       //太多了不上报
       await box.clear();
@@ -250,14 +210,10 @@ class TbaIos extends BaseApi {
 
     for (int i = 0; i < data.length; i++) {
       var bodyMap = Map<String, dynamic>.from(data[i]);
-      var httpData = await httpRequest("",
-          method: HttpMethod.post,
-          body: bodyMap,
-          contentType: "application/json");
-      if (httpData.code == HttpCode.success) {
+      var httpData = await httpRequest("", method: HttpMethod.post, body: bodyMap, contentType: "application/json");
+      if (httpData.code == HttpCode.success || httpData.code == 500) {
         // AppLog.e("上次失败的上报成功$i");
         // AppLog.e(bodyMap["botanist"]["auriga"] ?? "");
-
         await box.delete(bodyMap["botanist"]["auriga"] ?? "");
       }
     }

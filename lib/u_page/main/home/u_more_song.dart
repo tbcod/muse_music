@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:music_muse/api/base_dio_api.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
 import '../../../util/download/download_util.dart';
@@ -43,30 +44,32 @@ class UserMoreSong extends GetView<UserMoreSongController> {
               )),
           title: Text(barTitle),
         ),
-        body: controller.obxView(
-          (state) => Container(
-            child: Obx(() {
-              return EasyRefresh(
-                onLoad: () async {
-                  await controller.bindMoreData();
-                  return controller.nextData.isEmpty
-                      ? IndicatorResult.noMore
-                      : IndicatorResult.success;
-                },
-                child: ListView.separated(
-                    padding: EdgeInsets.only(
-                        bottom: Get.mediaQuery.padding.bottom + 60.w),
-                    itemBuilder: (_, i) {
-                      return getItem(i);
-                    },
-                    separatorBuilder: (_, i) {
-                      return SizedBox(
-                        height: 10.w,
-                      );
-                    },
-                    itemCount: controller.list.length),
-              );
-            }),
+        body: PlayerBottomBarView(
+          child: controller.obxView(
+            (state) => Container(
+              child: Obx(() {
+                return EasyRefresh(
+                  onLoad: () async {
+                    await controller.bindMoreData();
+                    return controller.nextData.isEmpty
+                        ? IndicatorResult.noMore
+                        : IndicatorResult.success;
+                  },
+                  child: ListView.separated(
+                      padding: EdgeInsets.only(
+                          bottom: Get.mediaQuery.padding.bottom + 60.w),
+                      itemBuilder: (_, i) {
+                        return getItem(i);
+                      },
+                      separatorBuilder: (_, i) {
+                        return SizedBox(
+                          height: 10.w,
+                        );
+                      },
+                      itemCount: controller.list.length),
+                );
+              }),
+            ),
           ),
         ),
       ),

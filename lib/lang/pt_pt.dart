@@ -20,6 +20,7 @@ const Map<String, String> ptPT = {
   "Create playlist": "Criar playlist",
   "Enter name": "Digite o nome",
   "Liked songs": "Músicas favoritas",
+  "like": "Favoritas",
   "Local songs": "Músicas locais",
   "Liked Artist": "Artista favorito",
   "Search for music/artist/playlist": "Pesquisar música/artista/playlist",
@@ -104,5 +105,10 @@ const Map<String, String> ptPT = {
   "pops": "Opções de privacidade",
   "popDetail": "Deseja redefinir as configurações de autorização de privacidade?",
   "success": "Sucesso!",
-  "reset": "Redefinir"
+  "reset": "Redefinir",
+  "Songs": "Músicas",
+  "Videos": "Vídeos",
+  "Albums": "Álbuns",
+  "Artists": "Artistas",
+  "playlists": "Playlists da comunidade"
 };

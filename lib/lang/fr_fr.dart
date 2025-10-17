@@ -22,6 +22,7 @@ const Map<String, String> frFR = {
   "Liked songs": "Chansons favorites",
   "Local songs": "Chansons locales",
   "Liked Artist": "Artiste préféré",
+  "like": "Favorites",
   "Search for music/artist/playlist":
       "Rechercher de la musique/un artiste/une playlist",
   "History record": "Enregistrement d'historique",
@@ -108,5 +109,10 @@ const Map<String, String> frFR = {
   "pops": "Options de confidentialité",
   "popDetail": "Voulez-vous réinitialiser vos paramètres d'autorisation de confidentialité ?",
   "success": "Succès !",
-  "reset": "Réinitialiser"
+  "reset": "Réinitialiser",
+  "Songs": "Titres",
+  "Videos": "Vidéos",
+  "Albums": "Albums",
+  "Artists": "Artistes",
+  "playlists": "Playlists de la communauté"
 };

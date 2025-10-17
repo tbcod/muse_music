@@ -6,6 +6,7 @@ import 'package:music_muse/u_page/main/libray/u_loc_playlist.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/view/player_bottom_bar.dart';
 
 import '../../../const/db_key.dart';
 import '../../../util/history_util.dart';
@@ -71,19 +72,21 @@ class UserLocAddSong extends GetView<UserLocAddSongController> {
                 ))
           ],
         ),
-        body: Container(
-          child: Obx(() {
-            return ListView.separated(
-                itemBuilder: (_, i) {
-                  return getItem(i);
-                },
-                separatorBuilder: (_, i) {
-                  return SizedBox(
-                    height: 10.w,
-                  );
-                },
-                itemCount: controller.list.length);
-          }),
+        body: PlayerBottomBarView(
+          child: Container(
+            child: Obx(() {
+              return ListView.separated(
+                  itemBuilder: (_, i) {
+                    return getItem(i);
+                  },
+                  separatorBuilder: (_, i) {
+                    return SizedBox(
+                      height: 10.w,
+                    );
+                  },
+                  itemCount: controller.list.length);
+            }),
+          ),
         ),
       ),
     );

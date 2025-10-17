@@ -33,8 +33,7 @@ class Assets {
   static const String imgIconPPlay = 'assets/img/icon_p_play.png';
   static const String imgIconPPlaylist = 'assets/img/icon_p_playlist.png';
   static const String imgIconPlaylistAdd = 'assets/img/icon_playlist_add.png';
-  static const String imgIconPlaylistAddOk =
-      'assets/img/icon_playlist_add_ok.png';
+  static const String imgIconPlaylistAddOk = 'assets/img/icon_playlist_add_ok.png';
   static const String imgIconRDelete = 'assets/img/icon_r_delete.png';
   static const String imgIconRPause = 'assets/img/icon_r_pause.png';
   static const String imgIconRPlay = 'assets/img/icon_r_play.png';
@@ -55,6 +54,11 @@ class Assets {
   static const String oimgAllPageBg = 'assets/oimg/all_page_bg.png';
   static const String oimgBgDialogOapp = 'assets/oimg/bg_dialog_oapp.png';
   static const String oimgBgDialogRate = 'assets/oimg/bg_dialog_rate.png';
+  static const String oimgIcDownload = 'assets/oimg/ic_download.png';
+  static const String oimgIcDownloadX = 'assets/oimg/ic_download_x.png';
+  static const String oimgIcLike = 'assets/oimg/ic_like.png';
+  static const String oimgIcLikeX = 'assets/oimg/ic_like_x.png';
+  static const String oimgIcMore = 'assets/oimg/ic_more.png';
   static const String oimgIconAdd = 'assets/oimg/icon_add.png';
   static const String oimgIconAddPlay = 'assets/oimg/icon_add_play.png';
   static const String oimgIconAddUser = 'assets/oimg/icon_add_user.png';
@@ -67,10 +71,8 @@ class Assets {
   static const String oimgIconDUser = 'assets/oimg/icon_d_user.png';
   static const String oimgIconDel = 'assets/oimg/icon_del.png';
   static const String oimgIconDialogClose = 'assets/oimg/icon_dialog_close.png';
-  static const String oimgIconDownloadBlack =
-      'assets/oimg/icon_download_black.png';
-  static const String oimgIconDownloadGray =
-      'assets/oimg/icon_download_gray.png';
+  static const String oimgIconDownloadBlack = 'assets/oimg/icon_download_black.png';
+  static const String oimgIconDownloadGray = 'assets/oimg/icon_download_gray.png';
   static const String oimgIconDownloadOk = 'assets/oimg/icon_download_ok.png';
   static const String oimgIconLast = 'assets/oimg/icon_last.png';
   static const String oimgIconLibArtist = 'assets/oimg/icon_lib_artist.png';
@@ -105,6 +107,6 @@ class Assets {
   static const String oimgIconShuffle1 = 'assets/oimg/icon_shuffle1.png';
   static const String oimgIconShuffleOn = 'assets/oimg/icon_shuffle_on.png';
   static const String oimgIconWifi = 'assets/oimg/icon_wifi.png';
-  static const String oimgImgDownloadGuide =
-      'assets/oimg/img_download_guide.png';
+  static const String oimgImgDownloadGuide = 'assets/oimg/img_download_guide.png';
+
 }
