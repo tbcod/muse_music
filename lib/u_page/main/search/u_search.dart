@@ -460,7 +460,7 @@ class UserSearch extends GetView<UserSearchController> {
                   itemCount: controller.videoList.length));
         },
       );
-    } else if (title == "Artist".tr) {
+    } else if (title == "Artists".tr) {
       //歌手列表
       return Obx(
         () {
@@ -486,8 +486,13 @@ class UserSearch extends GetView<UserSearchController> {
                   itemCount: controller.artistList.length));
         },
       );
-    } else if (title == "Album".tr) {
+    } else if (title == "Albums".tr) {
       //专辑
+    //   "Songs": "Canciones",
+    // "Videos": "Vídeos",
+    // "Albums": "Álbumes",
+    // "Artists": "Artistas",
+    // "playlists": "Listas de la comunidad"
       return Obx(() {
         if (controller.albumList.isEmpty) {
           return const EmotyView();
@@ -510,7 +515,7 @@ class UserSearch extends GetView<UserSearchController> {
                 },
                 itemCount: controller.albumList.length));
       });
-    } else if (title == "Playlist".tr) {
+    } else if (title == "playlists".tr) {
       //歌单
       return Obx(
         () {
