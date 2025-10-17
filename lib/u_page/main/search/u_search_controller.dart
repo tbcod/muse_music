@@ -611,32 +611,36 @@ class UserSearchController extends GetxController with StateMixin {
       songList.clear();
       songNextData = {};
 
-      //解析搜索结果
-      List oldList = [];
+      try {
+        //解析搜索结果
+        List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
-      for (Map item in contents) {
-        if (item.containsKey("musicShelfRenderer")) {
-          oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          songNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        for (Map item in contents) {
+          if (item.containsKey("musicShelfRenderer")) {
+            oldList = item["musicShelfRenderer"]?["contents"] ?? [];
+            songNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+          }
         }
+
+        var childList = [];
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          // var childSubtitle =
+          //     childSubtitleList.map((e) => e["text"]).toList().join("");
+          var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
+
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
+        }
+        songList.addAll(childList);
+      } catch (e) {
+        AppLog.e(e);
       }
-
-      var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        // var childSubtitle =
-        //     childSubtitleList.map((e) => e["text"]).toList().join("");
-        var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
-
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
-      }
-      songList.addAll(childList);
     } else {
       AppLog.e("请求失败");
     }
@@ -649,28 +653,32 @@ class UserSearchController extends GetxController with StateMixin {
     var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
 
     if (result.code == HttpCode.success) {
-      //解析搜索结果
-      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
+      try {
+        //解析搜索结果
+        List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
-      if (oldList.isEmpty) {
-        return;
+        if (oldList.isEmpty) {
+          return;
+        }
+
+        songNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+
+        var childList = [];
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
+        }
+        songList.addAll(childList);
+      } catch (e) {
+        AppLog.e(e);
       }
-
-      songNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
-
-      var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
-
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
-      }
-      songList.addAll(childList);
     } else {
       AppLog.e("请求失败");
     }
@@ -683,37 +691,41 @@ class UserSearchController extends GetxController with StateMixin {
     videoNextData = {};
 
     if (result.code == HttpCode.success) {
-      //解析搜索结果
-      List oldList = [];
+      try {
+        //解析搜索结果
+        List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
-      for (Map item in contents) {
-        if (item.containsKey("musicShelfRenderer")) {
-          oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          videoNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        for (Map item in contents) {
+          if (item.containsKey("musicShelfRenderer")) {
+            oldList = item["musicShelfRenderer"]?["contents"] ?? [];
+            videoNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+          }
         }
+
+        if (oldList.isEmpty) {
+          return;
+        }
+
+        var childList = [];
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          // var childSubtitle =
+          //     childSubtitleList.map((e) => e["text"]).toList().join("");
+          var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
+          var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
+
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "timeStr": timeStr, "videoId": videoId, "type": ""});
+        }
+        videoList.addAll(childList);
+      } catch (e) {
+        AppLog.e(e);
       }
-
-      if (oldList.isEmpty) {
-        return;
-      }
-
-      var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        // var childSubtitle =
-        //     childSubtitleList.map((e) => e["text"]).toList().join("");
-        var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
-        var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
-
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "timeStr": timeStr, "videoId": videoId, "type": ""});
-      }
-      videoList.addAll(childList);
     } else {
       AppLog.e("请求失败");
     }
@@ -727,31 +739,35 @@ class UserSearchController extends GetxController with StateMixin {
     var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
 
     if (result.code == HttpCode.success) {
-      //解析搜索结果
-      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
+      try {
+        //解析搜索结果
+        List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
-      if (oldList.isEmpty) {
-        return;
+        if (oldList.isEmpty) {
+          return;
+        }
+
+        videoNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+
+        var childList = [];
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          // var childSubtitle =
+          //     childSubtitleList.map((e) => e["text"]).toList().join("");
+          var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
+          var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
+
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": ""});
+        }
+        videoList.addAll(childList);
+      } catch (e) {
+        AppLog.e(e);
       }
-
-      videoNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
-
-      var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        // var childSubtitle =
-        //     childSubtitleList.map((e) => e["text"]).toList().join("");
-        var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
-        var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
-
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": ""});
-      }
-      videoList.addAll(childList);
     } else {
       AppLog.e("请求失败");
     }
@@ -767,33 +783,41 @@ class UserSearchController extends GetxController with StateMixin {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
-      for (Map item in contents) {
-        if (item.containsKey("musicShelfRenderer")) {
-          oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          artistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      try {
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        for (Map item in contents) {
+          if (item.containsKey("musicShelfRenderer")) {
+            oldList = item["musicShelfRenderer"]?["contents"] ?? [];
+            artistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+          }
         }
-      }
 
-      if (oldList.isEmpty) {
-        return;
+        if (oldList.isEmpty) {
+          return;
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
 
       var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      try {
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        //     ["playlistItemData"]["videoId"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
       artistList.addAll(childList);
     } else {
@@ -810,29 +834,33 @@ class UserSearchController extends GetxController with StateMixin {
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
+      try {
+        List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
 
-      if (oldList.isEmpty) {
-        return;
+        if (oldList.isEmpty) {
+          return;
+        }
+
+        artistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+
+        var childList = [];
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          // ["playlistItemData"]["videoId"];
+
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+        artistList.addAll(childList);
+      } catch (e) {
+        AppLog.e(e);
       }
-
-      artistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
-
-      var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
-
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        // ["playlistItemData"]["videoId"];
-
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
-      }
-      artistList.addAll(childList);
     } else {
       AppLog.e("请求失败");
     }
@@ -848,12 +876,16 @@ class UserSearchController extends GetxController with StateMixin {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
-      for (Map item in contents) {
-        if (item.containsKey("musicShelfRenderer")) {
-          oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          albumNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      try {
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        for (Map item in contents) {
+          if (item.containsKey("musicShelfRenderer")) {
+            oldList = item["musicShelfRenderer"]?["contents"] ?? [];
+            albumNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+          }
         }
+      } catch (e) {
+        AppLog.e(e);
       }
 
       if (oldList.isEmpty) {
@@ -867,20 +899,24 @@ class UserSearchController extends GetxController with StateMixin {
       //     {};
 
       var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      try {
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        //     ["playlistItemData"]["videoId"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
       albumList.addAll(childList);
     } else {
@@ -897,27 +933,35 @@ class UserSearchController extends GetxController with StateMixin {
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
-      List oldList = result.data["continuationContents"]["musicShelfContinuation"]["contents"] ?? [];
+      List oldList = result.data?["continuationContents"]?["musicShelfContinuation"]?["contents"] ?? [];
 
       if (oldList.isEmpty) {
         return;
       }
 
-      albumNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      try {
+        albumNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      } catch (e) {
+        AppLog.e(e);
+      }
 
       var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      try {
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        // ["playlistItemData"]["videoId"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          // ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
       albumList.addAll(childList);
     } else {
@@ -935,12 +979,16 @@ class UserSearchController extends GetxController with StateMixin {
       //解析搜索结果
       List oldList = [];
 
-      List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
-      for (Map item in contents) {
-        if (item.containsKey("musicShelfRenderer")) {
-          oldList = item["musicShelfRenderer"]?["contents"] ?? [];
-          playlistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      try {
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        for (Map item in contents) {
+          if (item.containsKey("musicShelfRenderer")) {
+            oldList = item["musicShelfRenderer"]?["contents"] ?? [];
+            playlistNextData = item["musicShelfRenderer"]["continuations"]?[0]["nextContinuationData"] ?? {};
+          }
         }
+      } catch (e) {
+        AppLog.e(e);
       }
 
       if (oldList.isEmpty) {
@@ -948,20 +996,24 @@ class UserSearchController extends GetxController with StateMixin {
       }
 
       var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      try {
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        //     ["playlistItemData"]["videoId"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          //     ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
       playlistList.addAll(childList);
     } else {
@@ -987,18 +1039,22 @@ class UserSearchController extends GetxController with StateMixin {
       playlistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
 
       var childList = [];
-      for (Map item in oldList) {
-        var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      try {
+        for (Map item in oldList) {
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-        List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
-        var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-        // var videoId = item["musicResponsiveListItemRenderer"]
-        // ["playlistItemData"]["videoId"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          // var videoId = item["musicResponsiveListItemRenderer"]
+          // ["playlistItemData"]["videoId"];
 
-        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+        }
+      } catch (e) {
+        AppLog.e(e);
       }
       playlistList.addAll(childList);
     } else {
