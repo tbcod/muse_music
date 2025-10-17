@@ -17,7 +17,6 @@ import 'package:music_muse/view/launch_loading.dart';
 
 import '../../app.dart';
 import '../log.dart';
-import '../native_util.dart';
 import '../tba/event_util.dart';
 import 'view/full_admob_native_page.dart';
 
@@ -216,7 +215,7 @@ class AdUtils {
   //load
   loadAd(String key, {LoadCallback? onLoad}) async {
     if (!bus.isBMode && key == 'open') {
-      key = "sod_local_int";
+      key = "muse_local_int";
     }
 
     if (!adJson.containsKey(key)) {
@@ -239,7 +238,7 @@ class AdUtils {
     });
 
     AppLog.i("开始加载广告位:$key");
-    oneAdLoadTimeOut = adJson["sod_time_out"] ?? 12;
+    oneAdLoadTimeOut = adJson["muse_time_out"] ?? 12;
 
     //循环加载广告
     for (var item in configList) {
@@ -257,8 +256,15 @@ class AdUtils {
 
           // admob广告先销毁再删除
           if (ad_id.startsWith("ca-app-pub")) {
-            AdWithoutView? adView = loadedAdMap[ad_id]["admob_ad"];
-            adView?.dispose();
+            // AdWithoutView? adView = loadedAdMap[ad_id]["admob_ad"];
+            // adView?.dispose();
+
+            final adView = loadedAdMap[ad_id]["admob_ad"];
+            if (adView is NativeAd) {
+              adView.dispose();
+            } else if (adView is AdWithoutView) {
+              adView.dispose();
+            }
           }
           loadedAdMap.remove(ad_id);
         } else {
@@ -597,14 +603,14 @@ class AdUtils {
       }
       return false;
     }
-
+//sod_local_int
     if (!bus.isBMode && key == 'open') {
-      key = "sod_local_int";
+      key = "muse_local_int";
     }
 
     // AppLog.i("准备展示广告, $key");
 
-    if (key != "level_h" && key != "sod_local_int") {
+    if (key != "level_h" && key != "muse_local_int") {
       bool isHighSuc = await showAd("level_h", adScene: adScene, onShow: onShow);
       // AppLog.i("先展示高价位, $key， $isHighSuc");
       if (isHighSuc) {
@@ -1209,7 +1215,7 @@ class MyNativeAdViewController extends GetxController {
 
     var adJson = AdUtils.instance.adJson;
     if (!adJson.containsKey(key)) {
-      AppLog.e("没有对应广告:$key");
+      // AppLog.e("没有对应广告:$key");
       return;
     }
 

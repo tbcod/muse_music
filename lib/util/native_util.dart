@@ -15,6 +15,10 @@ class NativeUtils {
 
   static const channel = MethodChannel('player.musicmuse.nativemethod');
 
+  test() async {
+    var result = await channel.invokeMethod("testTT");
+  }
+
   initFacebook() async {
     // return;
 

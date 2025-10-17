@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +7,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/page/launch.dart';
-import 'package:music_muse/page/main_page.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/log.dart';
@@ -18,7 +16,6 @@ import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
-import 'const/env.dart';
 import 'muse_config.dart';
 
 void main() async {

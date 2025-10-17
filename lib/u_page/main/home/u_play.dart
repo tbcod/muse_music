@@ -1099,10 +1099,10 @@ class UserPlayInfoController extends GetxController {
             String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
 
             playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
-          }else if(itemMap.containsKey("lockupViewModel")){
+          } else if (itemMap.containsKey("lockupViewModel")) {
             //歌曲
             String? videoId = itemMap["lockupViewModel"]["contentId"];
-            if(videoId == null) continue;
+            if (videoId == null) continue;
             String? cover = itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
             cover ??= itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
             String? title = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]?["title"]?["content"];
@@ -1575,8 +1575,13 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isNotif) {
-        EventUtils.instance.addEvent("play_click",
-            data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "notif"});
+        EventUtils.instance.addEvent("play_click", data: {
+          "song_id": playList[rIndex]["videoId"],
+          "song_name": playList[rIndex]["title"],
+          "artist_name": playList[rIndex]["subtitle"],
+          "playlist_id": playlistId,
+          "station": "notif",
+        });
       }
       playItemWithIndex(rIndex, clickNext: true);
       return;
@@ -1602,12 +1607,22 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isBar) {
-        EventUtils.instance.addEvent("play_click",
-            data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "tab"});
+        EventUtils.instance.addEvent("play_click", data: {
+          "song_id": playList[rIndex]["videoId"],
+          "song_name": playList[rIndex]["title"],
+          "artist_name": playList[rIndex]["subtitle"],
+          "playlist_id": playlistId,
+          "station": "tab",
+        });
       } else {
         if (isNotif) {
-          EventUtils.instance.addEvent("play_click",
-              data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "notif"});
+          EventUtils.instance.addEvent("play_click", data: {
+            "song_id": playList[rIndex]["videoId"],
+            "song_name": playList[rIndex]["title"],
+            "artist_name": playList[rIndex]["subtitle"],
+            "playlist_id": playlistId,
+            "station": "background",
+          });
         }
       }
       playItemWithIndex(rIndex, isAutoNext: isAutoNext, clickNext: true);
@@ -1630,7 +1645,7 @@ class UserPlayInfoController extends GetxController {
             "song_name": playList[nowIndex + 1]["title"],
             "artist_name": playList[nowIndex + 1]["subtitle"],
             "playlist_id": playlistId,
-            "station": "notif"
+            "station": "background"
           });
         }
       }
@@ -2301,7 +2316,7 @@ class UserPlayInfoController extends GetxController {
       "song_name": playList[nowIndex]["title"],
       "artist_name": playList[nowIndex]["subtitle"],
       "playlist_id": playlistId,
-      "station": "notif",
+      "station": "background",
     });
 
     realPlay(nowIndex);
@@ -2357,8 +2372,12 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       "artist_name": controller.nowData["subtitle"] ?? "",
     });
     EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
-    EventUtils.instance.addEvent("play_click",
-        data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? "", "station": "tab"});
+    EventUtils.instance.addEvent("play_click", data: {
+      "song_id": controller.nowData["videoId"] ?? "",
+      "song_name": controller.nowData["title"] ?? "",
+      "artist_name": controller.nowData["subtitle"] ?? "",
+      "station": "tab",
+    });
   }
 
   @override

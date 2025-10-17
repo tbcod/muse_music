@@ -249,7 +249,7 @@ class DownloadUtils {
     }
 
     var url = allDownLoadingData[videoId]["url"] ?? "";
-    var fileName = "${Uuid().v8()}.mp4";
+    var fileName = "${const Uuid().v8()}.mp4";
     AppLog.i("下载链接$url");
     allDownLoadingData[videoId]["state"] = 1;
     allDownLoadingData.refresh();

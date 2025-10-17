@@ -6,16 +6,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:music_muse/const/app_color.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/page/main/home/add_lyrics.dart';
 import 'package:music_muse/page/main/home/create_music_lyrics.dart';
-import 'package:music_muse/page/main/home/list_add.dart';
 import 'package:music_muse/page/main/home/list_info.dart';
 import 'package:music_muse/page/main/home/lyrics_info.dart';
 import 'package:music_muse/page/main/home/play.dart';
@@ -26,11 +23,8 @@ import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../util/idfa_util.dart';
-import '../../view/my_shape.dart';
 import 'home/add_list.dart';
-import 'home/add_music.dart';
 
 class HomePage extends GetView<HomePageController> {
   const HomePage({super.key});
@@ -53,7 +47,7 @@ class HomePage extends GetView<HomePageController> {
                       "Create My Songs",
                       style: TextStyle(fontSize: 18.w),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     InkWell(
                       child: Image.asset(
                         "assets/img/icon_add_home.png",
@@ -64,7 +58,7 @@ class HomePage extends GetView<HomePageController> {
                         controller.showAddDialog();
 
                         IdfaUtil.instance.showIdfaDialog();
-                        Future.delayed(Duration(seconds: 10)).then((e) {
+                        Future.delayed(const Duration(seconds: 10)).then((e) {
                           IdfaUtil.instance.showIdfaDialog();
                         });
                       },
@@ -77,7 +71,7 @@ class HomePage extends GetView<HomePageController> {
               InkWell(
                 onTap: () {
                   IdfaUtil.instance.showIdfaDialog();
-                  Get.to(SearchPage());
+                  Get.to(()=>const SearchPage());
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 12.w),
@@ -175,7 +169,7 @@ class HomePage extends GetView<HomePageController> {
                   child: Container(
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
-                    color: Color(0xfff9f9f9),
+                    color: const Color(0xfff9f9f9),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(24.w))),
                 child: PageView(controller: controller.tabC, children: [
@@ -231,7 +225,7 @@ class HomePage extends GetView<HomePageController> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24.w),
                 color: Colors.white,
-                border: Border.all(color: Color(0xff141414), width: 1.w)),
+                border: Border.all(color: const Color(0xff141414), width: 1.w)),
             child: Text(
               "Create",
               style: TextStyle(fontSize: 14.w),
@@ -303,7 +297,7 @@ class HomePage extends GetView<HomePageController> {
 
     return InkWell(
       onTap: () {
-        Get.to(LyricsInfo(), arguments: item);
+        Get.to(const LyricsInfo(), arguments: item);
       },
       child: Container(
         padding: EdgeInsets.all(16.w),
@@ -321,7 +315,7 @@ class HomePage extends GetView<HomePageController> {
               width: double.infinity,
               // color: Colors.grey,
               // constraints: BoxConstraints(minHeight: 100.w, maxHeight: 150),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   image: DecorationImage(
 
                       //686*224
@@ -349,7 +343,7 @@ class HomePage extends GetView<HomePageController> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12.w)),
                     ),
-                    Spacer()
+                    const Spacer()
                   ]),
             ),
             Positioned(
@@ -387,7 +381,7 @@ class HomePage extends GetView<HomePageController> {
       onTap: () {
         Get.find<PlayPageController>()
             .setDataAndPlay({"item": item, "list": controller.list2});
-        Get.to(PlayPage());
+        Get.to(const PlayPage());
       },
       child: Obx(() {
         var isCheck =
@@ -398,7 +392,7 @@ class HomePage extends GetView<HomePageController> {
               EdgeInsets.only(left: 16.w, right: 0.w, top: 5.w, bottom: 5.w),
           width: double.infinity,
           decoration: BoxDecoration(
-              color: isCheck ? Color(0xfff4f4f4) : Colors.transparent),
+              color: isCheck ? const Color(0xfff4f4f4) : Colors.transparent),
           child: Row(
             children: [
               //封面
@@ -422,7 +416,7 @@ class HomePage extends GetView<HomePageController> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     fontSize: 14.w,
-                    color: isCheck ? Color(0xff8569FF) : Colors.black),
+                    color: isCheck ? const Color(0xff8569FF) : Colors.black),
               )),
               SizedBox(
                 width: 35.w,
@@ -469,7 +463,7 @@ class HomePage extends GetView<HomePageController> {
 
     return InkWell(
       onTap: () {
-        Get.to(ListInfo(), arguments: item["id"]);
+        Get.to(const ListInfo(), arguments: item["id"]);
       },
       child: Container(
         height: 56.w,
@@ -491,14 +485,14 @@ class HomePage extends GetView<HomePageController> {
                               width: 50.w,
                               height: 50.w,
                               decoration: BoxDecoration(
-                                  color: Color(0xff191919),
+                                  color: const Color(0xff191919),
                                   borderRadius: BorderRadius.circular(25.w)))
                           : Container(
                               width: 46.w,
                               height: 46.w,
                               margin: EdgeInsets.only(right: 6.w),
                               decoration: BoxDecoration(
-                                  color: Color(0xff141414).withOpacity(0.2),
+                                  color: const Color(0xff141414).withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(4.w)),
                             )),
 
@@ -540,7 +534,7 @@ class HomePage extends GetView<HomePageController> {
                   "${childList.length} songs",
                   style: TextStyle(
                       fontSize: 12.w,
-                      color: Color(0xff141414).withOpacity(0.75)),
+                      color: const Color(0xff141414).withOpacity(0.75)),
                 )
               ],
             )),
@@ -579,7 +573,7 @@ class HomePage extends GetView<HomePageController> {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -587,7 +581,7 @@ class HomePage extends GetView<HomePageController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (_, i) {
                   var titleList = ["Create Lyric", "Edit", "Delete"];
@@ -615,10 +609,10 @@ class HomePage extends GetView<HomePageController> {
                       Get.back();
                       if (i == 0) {
                         //歌曲创建歌词
-                        Get.to(CreateMusicLyrics(), arguments: item["id"]);
+                        Get.to(const CreateMusicLyrics(), arguments: item["id"]);
                       } else if (i == 1) {
                         //编辑
-                        await Future.delayed(Duration(milliseconds: 400));
+                        await Future.delayed(const Duration(milliseconds: 400));
                         showRenameView(item);
                       } else if (i == 2) {
                         //删除
@@ -642,7 +636,7 @@ class HomePage extends GetView<HomePageController> {
             Container(
               height: 1.w,
               width: double.infinity,
-              color: Color(0xff121212).withOpacity(0.05),
+              color: const Color(0xff121212).withOpacity(0.05),
             ),
             InkWell(
               onTap: () {
@@ -655,7 +649,7 @@ class HomePage extends GetView<HomePageController> {
                 // color: Colors.red,
                 child: Text(
                   "Cancel",
-                  style: TextStyle(color: Color(0xff121212).withOpacity(0.75)),
+                  style: TextStyle(color: const Color(0xff121212).withOpacity(0.75)),
                 ),
               ),
             ),
@@ -666,7 +660,7 @@ class HomePage extends GetView<HomePageController> {
         ),
       ),
       barrierColor: Colors.black.withOpacity(0.43),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
     );
 //关闭后显示
     Get.find<PlayPageController>().showFloatingWidget();
@@ -681,7 +675,7 @@ class HomePage extends GetView<HomePageController> {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -689,7 +683,7 @@ class HomePage extends GetView<HomePageController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (_, i) {
                   var titleList = ["Edit", "Delete"];
@@ -717,7 +711,7 @@ class HomePage extends GetView<HomePageController> {
                       Get.back();
                       if (i == 0) {
                         //编辑
-                        Get.to(AddList(), arguments: item["id"]);
+                        Get.to(const AddList(), arguments: item["id"]);
                       } else if (i == 1) {
                         //删除
                         var box = await Hive.openBox(DBKey.listData);
@@ -740,7 +734,7 @@ class HomePage extends GetView<HomePageController> {
             Container(
               height: 1.w,
               width: double.infinity,
-              color: Color(0xff121212).withOpacity(0.05),
+              color: const Color(0xff121212).withOpacity(0.05),
             ),
             InkWell(
               onTap: () {
@@ -753,7 +747,7 @@ class HomePage extends GetView<HomePageController> {
                 // color: Colors.red,
                 child: Text(
                   "Cancel",
-                  style: TextStyle(color: Color(0xff121212).withOpacity(0.75)),
+                  style: TextStyle(color: const Color(0xff121212).withOpacity(0.75)),
                 ),
               ),
             ),
@@ -764,7 +758,7 @@ class HomePage extends GetView<HomePageController> {
         ),
       ),
       barrierColor: Colors.black.withOpacity(0.43),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
     );
 //关闭后显示
     Get.find<PlayPageController>().showFloatingWidget();
@@ -782,7 +776,7 @@ class HomePage extends GetView<HomePageController> {
           padding: EdgeInsets.only(top: 24.w),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -833,13 +827,13 @@ class HomePage extends GetView<HomePageController> {
                                   borderRadius: BorderRadius.circular(24.w),
                                   border: Border.all(
                                       color:
-                                          Color(0xff824EFF).withOpacity(0.75),
+                                          const Color(0xff824EFF).withOpacity(0.75),
                                       width: 2.w)),
                               child: Text(
                                 "Cancel",
                                 style: TextStyle(
                                     fontSize: 14.w,
-                                    color: Color(0xff824EFF).withOpacity(0.75)),
+                                    color: const Color(0xff824EFF).withOpacity(0.75)),
                               ),
                             ))),
                     SizedBox(
@@ -870,7 +864,7 @@ class HomePage extends GetView<HomePageController> {
                               height: 48.w,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: Color(0xff824EFF).withOpacity(0.5),
+                                color: const Color(0xff824EFF).withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(24.w),
                               ),
                               child: Text(
@@ -892,7 +886,7 @@ class HomePage extends GetView<HomePageController> {
           ),
         ),
         barrierColor: Colors.black.withOpacity(0.43),
-        backgroundColor: Color(0xfffafafa),
+        backgroundColor: const Color(0xfffafafa),
         isScrollControlled: true);
 //关闭后显示
     Get.find<PlayPageController>().showFloatingWidget();
@@ -945,7 +939,7 @@ class HomePageController extends GetxController
         padding: EdgeInsets.only(left: 24.w, top: 30.w, right: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.center,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -958,7 +952,7 @@ class HomePageController extends GetxController
                   "Please Selected",
                   style: TextStyle(fontSize: 20.w),
                 ),
-                Spacer(),
+                const Spacer(),
                 InkWell(
                   child: Icon(
                     Icons.close,
@@ -981,7 +975,7 @@ class HomePageController extends GetxController
             ),
             ListView.separated(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (_, i) {
                   return InkWell(
                     child: Container(
@@ -991,7 +985,7 @@ class HomePageController extends GetxController
                             color: Colors.white,
                             border: Border.all(
                                 width: 1.w,
-                                color: Color(0xff1f1f1f).withOpacity(0.08)),
+                                color: const Color(0xff1f1f1f).withOpacity(0.08)),
                             borderRadius: BorderRadius.circular(12.w)),
                         child: Stack(
                           children: [
@@ -1008,7 +1002,7 @@ class HomePageController extends GetxController
                                 //   tabListTitle[i],
                                 //   style: TextStyle(fontSize: 16.w),
                                 // ),
-                                Spacer(),
+                                const Spacer(),
                                 Image.asset(
                                   "assets/img/icon_s_right.png",
                                   width: 24.w,
@@ -1027,13 +1021,13 @@ class HomePageController extends GetxController
                     onTap: () async {
                       Get.back();
                       if (i == 0) {
-                        Get.to(AddLyrics());
+                        Get.to(const AddLyrics());
                       } else if (i == 1) {
                         // Get.to(AddMusic());
-                        await Future.delayed(Duration(milliseconds: 400));
+                        await Future.delayed(const Duration(milliseconds: 400));
                         showAddTrackDialog();
                       } else if (i == 2) {
-                        Get.to(AddList());
+                        Get.to(const AddList());
                       }
                     },
                   );
@@ -1050,7 +1044,7 @@ class HomePageController extends GetxController
           ],
         ),
       ),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
       barrierColor: Colors.black.withOpacity(0.43),
     );
 //关闭后显示
@@ -1065,7 +1059,7 @@ class HomePageController extends GetxController
         padding: EdgeInsets.only(left: 24.w, top: 24.w, right: 12.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
@@ -1078,12 +1072,12 @@ class HomePageController extends GetxController
                   "Please Selected",
                   style: TextStyle(fontSize: 20.w),
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                     onPressed: () {
                       Get.back();
                     },
-                    icon: Icon(Icons.close))
+                    icon: const Icon(Icons.close))
               ],
             ),
             SizedBox(
@@ -1095,7 +1089,7 @@ class HomePageController extends GetxController
               crossAxisCount: 2,
               shrinkWrap: true,
               crossAxisSpacing: 11.w,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               children: [0, 1].map((e) {
                 var iconList = ["record", "upload"];
                 var titleList = ["Record", "Upload"];
@@ -1106,7 +1100,7 @@ class HomePageController extends GetxController
 
                     if (e == 0) {
                       //添加歌词和录音
-                      Get.to(AddLyrics());
+                      Get.to(const AddLyrics());
                     } else if (e == 1) {
                       //添加mp3歌曲
                       pickMp3();
@@ -1117,7 +1111,7 @@ class HomePageController extends GetxController
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.w),
                         border: Border.all(
-                            color: Color(0xff1f1f1f).withOpacity(0.08))),
+                            color: const Color(0xff1f1f1f).withOpacity(0.08))),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1153,7 +1147,7 @@ class HomePageController extends GetxController
         ),
       ),
       barrierColor: Colors.black.withOpacity(0.43),
-      backgroundColor: Color(0xfffafafa),
+      backgroundColor: const Color(0xfffafafa),
     );
 //关闭后显示
     Get.find<PlayPageController>().showFloatingWidget();
@@ -1251,7 +1245,7 @@ class HomePageController extends GetxController
 
       //添加歌曲
       var box = await Hive.openBox(DBKey.tracksData);
-      var id = Uuid().v8();
+      var id = const Uuid().v8();
 
       //名字
       var musicName = "";

@@ -172,7 +172,7 @@ class ApiMain extends BaseApi {
   Future<BaseModel> getSearchList(String input) {
     var url = "https://music.youtube.com/youtubei/v1/music/get_search_suggestions";
     var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {"context": _webRemixContext, "input": input};
     return httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);

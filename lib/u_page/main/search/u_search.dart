@@ -189,12 +189,12 @@ class UserSearch extends GetView<UserSearchController> {
                                         indicatorSize: TabBarIndicatorSize.label,
                                         tabAlignment: TabAlignment.start,
                                         unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                        unselectedLabelColor: Colors.black.withValues(alpha: 0.5),
+                                        unselectedLabelColor: Colors.black.withOpacity(0.5),
                                         labelColor: const Color(0xff8468FF),
                                         indicatorColor: const Color(0xff8468FF),
                                         labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                                         dividerHeight: 1,
-                                        dividerColor: const Color(0xff141414).withValues(alpha: 0.08),
+                                        dividerColor: const Color(0xff141414).withOpacity( 0.08),
                                       ),
                                     ),
                                     Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
@@ -565,7 +565,7 @@ class UserSearch extends GetView<UserSearchController> {
       List content = item["content"];
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0xffe1e1f1).withValues(alpha: 0.35),
+          color: const Color(0xffe1e1f1).withOpacity( 0.35),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.only(bottom: 12),
@@ -639,7 +639,7 @@ class UserSearch extends GetView<UserSearchController> {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withValues(alpha: 0.75),
+                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity( 0.75),
                                   ),
                                 ))
                               ],
@@ -805,7 +805,7 @@ class UserSearch extends GetView<UserSearchController> {
                         Text(
                           item["subtitle"] ?? "",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withValues(alpha: 0.75)),
+                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withOpacity( 0.75)),
                         ),
                       ],
                     ),
@@ -997,7 +997,7 @@ class UserSearch extends GetView<UserSearchController> {
                                 child: CircularProgressIndicator(
                                   value: progress,
                                   strokeWidth: 2.5,
-                                  backgroundColor: const Color(0xff7453ff).withValues(alpha: 0.35),
+                                  backgroundColor: const Color(0xff7453ff).withOpacity( 0.35),
                                   color: const Color(0xff7453ff),
                                 ),
                               );

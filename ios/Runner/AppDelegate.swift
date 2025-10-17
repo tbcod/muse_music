@@ -14,7 +14,7 @@ import google_mobile_ads
     ) -> Bool {
         
         application.applicationIconBadgeNumber = 0
-    
+        
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let channel = FlutterMethodChannel(name: "player.musicmuse.nativemethod", binaryMessenger: controller.binaryMessenger)
         channel.setMethodCallHandler({
@@ -49,7 +49,11 @@ import google_mobile_ads
                 } else {
                     result(FlutterMethodNotImplemented)
                 }
-            } else {
+            }else if call.method == "testTT" {
+               let a = [1,2]
+               print(a[2])
+            }
+            else {
                 result(FlutterMethodNotImplemented)
             }
         })

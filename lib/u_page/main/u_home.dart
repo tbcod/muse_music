@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/more_sheet_util.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/toast.dart';
 import 'package:music_muse/view/net_img.dart';
@@ -815,7 +818,7 @@ class UserHome extends GetView<UserHomeController> {
                     var childType = childItem["type"];
 
                     return InkWell(
-                      onTap: () {
+                      onTap: ()  {
                         if (childType == -1) {
                           //我喜欢的
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "collection"});
@@ -825,6 +828,12 @@ class UserHome extends GetView<UserHomeController> {
                           ));
                         } else if (childType == -2) {
                           //我下载的
+                          // throw Exception("这是我手动测试的异常2");
+                          // const invalidJson = '{"name": "Tom", "age": }'; // 错误 JSON
+                          // final data = json.decode(invalidJson);
+                          // final dio = Dio();
+                          // await dio.get('https://this-domain-does-not-exist.example.com');
+                          // FirebaseCrashlytics.instance.crash();
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "offline"});
                           Get.to(const UserDownloadSong(
                             isFormHome: true,
@@ -872,6 +881,12 @@ class UserHome extends GetView<UserHomeController> {
                             SizedBox(
                               height: 5.w,
                             ),
+                            // CachedNetworkImage(
+                            //   imageUrl: "123",
+                            //   fit: BoxFit.cover,
+                            //   width: 10,
+                            //   height: 1000,
+                            // ),
                             Container(
                               width: 88.w,
                               child: Text(
@@ -1339,7 +1354,8 @@ class UserHomeController extends GetxController with StateMixin {
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
             if (flexColumns.isEmpty) continue;
             var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
-                ?["watchEndpointMusicConfig"]?["musicVideoType"] ?? "";
+                    ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
+                "";
 
             type = musicType;
 

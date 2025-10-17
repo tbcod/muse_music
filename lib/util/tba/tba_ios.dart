@@ -190,6 +190,7 @@ class TbaIos extends BaseApi {
   var isPostError = false;
 
   Future postTbaErrorData() async {
+    if(isPostError) return;
     isPostError = true;
     var box = await Hive.openBox("tbaErrorData");
     // AppLog.e("上报上次未成功的tba");
