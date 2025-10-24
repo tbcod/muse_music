@@ -98,17 +98,27 @@ class LaunchPage extends GetView<LaunchPageController> {
 class LaunchPageController extends GetxController {
   var progress = 0.0.obs;
 
+  var isB = false;
+
+  bool get isA => !isB;
+
   @override
   void onInit() {
     super.onInit();
-
     // IdfaUtil.instance.showIdfaDialog();
     bindData();
   }
 
-  var isB = false;
+  @override
+  void onReady() async {
+    super.onReady();
 
-  bool get isA => !isB;
+    AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
+
+    loadAd();
+    countdown();
+  }
+
 
   bindData() async {
     EventUtils.instance.addEvent("open_click");
@@ -118,6 +128,7 @@ class LaunchPageController extends GetxController {
     var isOpenUser = sp.getBool("isOpenUser") ?? false;
     if (isOpenUser) {
       //已经是用户模式，不用再请求
+      bus.isBMode = true;
       isB = true;
       return;
     }
@@ -135,23 +146,14 @@ class LaunchPageController extends GetxController {
 
     if (result.data == okStr) {
       //缓存
-      await sp.setBool("isOpenUser", true);
+      bus.isBMode = true;
       isB = true;
+      await sp.setBool("isOpenUser", true);
     } else {
       isB = false;
     }
   }
 
-  @override
-  void onReady() async {
-    super.onReady();
-
-    AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
-
-    loadAd();
-    // await countdown();
-    countdown();
-  }
 
   loadAd() async {
     isAdShow = false;

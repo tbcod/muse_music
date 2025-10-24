@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -164,7 +165,7 @@ class Application extends GetxService {
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (error is DioException) {
+      if (error is DioException || error is HttpException || error is SocketException) {
         AppLog.e("异常不上报：PlatformDispatcher 网络异常，不上报 onError:$error,$stack");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
