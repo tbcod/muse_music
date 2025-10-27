@@ -621,7 +621,7 @@ class AdUtils {
     if (!adJson.containsKey(key)) {
       // AppLog.e("没有对应广告:$key, 不展示");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "show key error"));
+        onShow.onShowFail!("", AdError(-1, "", "show key error:$key"));
       }
       return false;
     }

@@ -870,19 +870,19 @@ class UserSearch extends GetView<UserSearchController> {
                 if (isArtist || isPlaylist) {
                   if (content.isNotEmpty) {
                     final item = content.first;
-                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
                     Get.find<UserPlayInfoController>().setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
                   } else {
                     List list = controller.resultList;
                     if (list.isNotEmpty) {
                       list.removeAt(0);
                       final item = list.first;
-                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
                       Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
                     }
                   }
                 } else {
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
                   Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                 }
               });

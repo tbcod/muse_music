@@ -65,7 +65,9 @@ class HistoryUtil {
     // await box1.clear();
     // await box1.addAll(playlistHistoryList);
 
-    Get.find<UserHomeController>().reloadHistory();
+    if (Get.isRegistered<UserHomeController>()) {
+      Get.find<UserHomeController>().reloadHistory();
+    }
   }
 
   Future initData() async {
@@ -103,18 +105,15 @@ class HistoryUtil {
       //             ["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]
       //         ["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-      var title = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]
-              ["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
-          ["title"]["runs"][0]["text"];
+      var title = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+          ["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"];
       //歌手
-      var subtitle = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"]
-              [0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
-          ["longBylineText"]["runs"][0]["text"];
+      var subtitle = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+          ["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
 
       //封面
-      var cover = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]
-              ["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]
-          ["thumbnail"]["thumbnails"][0]["url"];
+      var cover = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+          ["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"];
 
       list.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "MUSIC_VIDEO_TYPE_ATV", "videoId": videoId});
     }

@@ -158,10 +158,6 @@ class LaunchPageController extends GetxController {
   loadAd() async {
     isAdShow = false;
 
-    //判断第一次是否加载
-    // var sp = await SharedPreferences.getInstance();
-    // var isFirstLoadAd = sp.getBool("isFirstLoadAd") ?? true;
-
     var openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
     if (openAdStr.isEmpty) {
       //默认为close,
@@ -170,9 +166,9 @@ class LaunchPageController extends GetxController {
     AppLog.i("启动页加载广告 isB：$isB, openAdStr:$openAdStr，isFirstAppLaunch:${bus.isFirstAppLaunch}");
 
     if (bus.isFirstAppLaunch) {
-      // sp.setBool("isFirstLoadAd", false);
       if (isA) {
         AdUtils.instance.loadAd("muse_local_int");
+        AdUtils.instance.loadAd("open");
         toMainPage();
       } else {
         AdUtils.instance.loadAd("level_h");
@@ -186,15 +182,8 @@ class LaunchPageController extends GetxController {
       return;
     }
 
-    // if (isFirstLoadAd && openAdStr == "close") {
-    //   AppLog.e("第一次不加载广告");
-    //   sp.setBool("isFirstLoadAd", false);
-    //   return;
-    // }
-    // AppLog.e("不是第一次启动或者开关打开了，即将加载广告");
-    // sp.setBool("isFirstLoadAd", false);
-
     if (isA) {
+      AdUtils.instance.loadAd("open");
       loadAndShowAAd();
     } else {
       loadAndShowBAd();

@@ -1528,15 +1528,18 @@ class UserPlayInfoController extends GetxController {
     }
 
     //更新通知栏进度
-    var item = MediaItem(
-      id: nowData["videoId"],
-      title: nowData["title"],
-      duration: maxD,
-      artUri: Uri.parse(nowData["cover"] ?? ""),
-    );
-    myHandler?.showItem(item);
+    if(nowData["videoId"] != null){
+      var item = MediaItem(
+        id: nowData["videoId"],
+        title: nowData["title"] ?? "",
+        duration: maxD,
+        artUri: Uri.parse(nowData["cover"] ?? ""),
+      );
+      myHandler?.showItem(item);
 
-    myHandler?._updateState();
+      myHandler?._updateState();
+    }
+
 
     //播放完成自动播放下一个
     if (player?.value.isCompleted ?? false) {

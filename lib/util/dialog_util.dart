@@ -78,10 +78,16 @@ class MyDialogUtils {
 
     try {
       await FirebaseRemoteConfig.instance.fetchAndActivate();
+    } catch (e) {
+      AppLog.e("message:$e");
+    }
+
+    try {
       importCode = FirebaseRemoteConfig.instance.getInt("musicmuse_import");
     } catch (e) {
       AppLog.e("message:$e");
     }
+
 
     // AppLog.e("导量:$importCode");
     if (importCode == 0) {

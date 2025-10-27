@@ -124,7 +124,7 @@ class AppController extends SuperController {
     var sp = await SharedPreferences.getInstance();
     var isPostInstall = sp.getBool("isPostInstall") ?? false;
 
-    AppLog.e("是否已经安装上报:$isPostInstall");
+    AppLog.i("是否已经安装上报:$isPostInstall");
 
     if (!isPostInstall) {
       // var isNewUser = false;
@@ -157,9 +157,14 @@ class AppController extends SuperController {
       //判断是否新用户
       var isNewUser = false;
       var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-      var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
-      isNewUser = tempD.inHours < 24;
-      TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
+      // var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
+      if (installTimeMs > 0) {
+        var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
+        isNewUser = tempD.inHours < 24;
+        TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
+      } else {
+        TbaUtils.instance.postUserData({"mm_new_user": "new"});
+      }
     }
 
     AppStateEventNotifier.startListening();
@@ -174,7 +179,7 @@ class AppController extends SuperController {
           //判断新老用户
           var isNewUser = false;
           var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-          var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
+          var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
           isNewUser = tempD.inHours < 24;
           TbaUtils.instance.postUserData({"mm_new_user": isNewUser ? "new" : "old"});
 
