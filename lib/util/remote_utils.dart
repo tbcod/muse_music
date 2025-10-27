@@ -14,6 +14,7 @@ import 'native_util.dart';
 
 const String mmAdJsonKey = "mmAdJson";
 const String mmFullClickbait = "mmFullClickbait";
+const String mmOpenAd = "mmOpenAd";
 
 const String museSongRecommonedKey = "museSongRecommonedKeys";
 
@@ -30,6 +31,12 @@ class RemoteUtil {
 
   String _listenNowRecom = "";
 
+  String _openAdStr = "";
+
+  bool isInitSuc = false;
+
+
+
   init() async {
     isp = await SharedPreferences.getInstance();
 
@@ -44,6 +51,8 @@ class RemoteUtil {
     _bannerClickbait = isp.getString(mmFullClickbait) ?? "";
 
     _listenNowRecom = isp.getString(museSongRecommonedKey) ?? "";
+
+    _openAdStr = isp.getString(mmOpenAd) ?? "";
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -74,6 +83,8 @@ class RemoteUtil {
         _adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
       });
 
+      isInitSuc = true;
+
       //初始化facebook
       NativeUtils.instance.initFacebook();
 
@@ -101,10 +112,18 @@ class RemoteUtil {
       String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
       isp.setString(museSongRecommonedKey, listenNowSongs);
       _listenNowRecom = listenNowSongs;
+
+      String openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
+      isp.setString(mmOpenAd, openAdStr);
+      _openAdStr = openAdStr;
+
+
     } catch (e) {
       AppLog.e(e);
     }
   }
+
+
 
   Map<String, dynamic> get adJson {
     if (kDebugMode) return MuseConfig.adJsonIos;
@@ -137,5 +156,10 @@ class RemoteUtil {
       }
     }
     return DataConfig.listenMusic;
+  }
+
+  bool get isShowOpenAd{
+    if(_openAdStr == "close") return false;
+    return true;
   }
 }

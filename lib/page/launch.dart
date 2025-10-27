@@ -11,6 +11,7 @@ import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/idfa_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/c_util.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,7 +120,6 @@ class LaunchPageController extends GetxController {
     countdown();
   }
 
-
   bindData() async {
     EventUtils.instance.addEvent("open_click");
 
@@ -154,16 +154,17 @@ class LaunchPageController extends GetxController {
     }
   }
 
-
   loadAd() async {
     isAdShow = false;
 
-    var openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
-    if (openAdStr.isEmpty) {
-      //默认为close,
-      openAdStr = "close";
-    }
-    AppLog.i("启动页加载广告 isB：$isB, openAdStr:$openAdStr，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+    // var openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
+    // if (openAdStr.isEmpty) {
+    //   //默认为open,
+    //   openAdStr = "open";
+    // }
+
+    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
+    AppLog.i("启动页加载广告 isB：$isB, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
 
     if (bus.isFirstAppLaunch) {
       if (isA) {
@@ -172,7 +173,7 @@ class LaunchPageController extends GetxController {
         toMainPage();
       } else {
         AdUtils.instance.loadAd("level_h");
-        if (openAdStr == "open") {
+        if (isBShowOpenAd) {
           loadAndShowBAd();
         } else {
           AdUtils.instance.loadAd("open");
@@ -205,6 +206,7 @@ class LaunchPageController extends GetxController {
         }
 
         //显示广告
+        isAdShow = true;
         AdUtils.instance.showAd("muse_local_int",
             adScene: AdScene.openCool,
             onShow: ShowCallback(onShowFail: (adId, e) {
@@ -221,7 +223,7 @@ class LaunchPageController extends GetxController {
     });
   }
 
-  loadAndShowBAd() {
+  loadAndShowBAd() async {
     AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
       AppLog.i("启动页加载广告B结果:$isOk, $adId, $e");
@@ -235,20 +237,28 @@ class LaunchPageController extends GetxController {
           AppLog.e("已经跳转到首页");
           return;
         }
-
         //显示广告
-        AdUtils.instance.showAd("open",
-            adScene: AdScene.openCool,
-            onShow: ShowCallback(onShowFail: (adId, e) {
-              toMainPage();
-            }, onClose: (adId) {
-              toMainPage();
-            }, onShow: (adId) {
-              isAdShow = true;
-            }));
-      } else {
         isAdShow = true;
-        toMainPage();
+        AdUtils.instance.showAd(
+          "open",
+          adScene: AdScene.openCool,
+          onShow: ShowCallback(
+            onShowFail: (adId, e) {
+              AppLog.e("open onShowFail:$adId,$e");
+              // toMainPage();
+            },
+            onClose: (adId) {
+              toMainPage();
+            },
+            onShow: (adId) {
+              isAdShow = true;
+            },
+          ),
+        );
+        return;
+      } else {
+        // isAdShow = true;
+        // toMainPage();
       }
     });
   }
@@ -256,7 +266,7 @@ class LaunchPageController extends GetxController {
   Future countdown() async {
     //倒计时7秒加载进度条
 
-    int timeout = AdUtils.instance.adJson["timeout"] ?? 10;
+    int timeout = AdUtils.instance.adJson["open_timeout"] ?? 10;
     int diff = DateTime.now().difference(bus.startTime ?? DateTime.now()).inSeconds;
     int seconds = timeout;
     if (timeout > diff) {
@@ -271,12 +281,13 @@ class LaunchPageController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 10));
       progress.value += 1 / seconds / 100;
       if (isAdShow) {
+        progress.value = 1;
         break;
       }
       if (isToMain) return;
     }
 
-    if (!isAdShow) {
+    if (!isAdShow && !AdUtils.instance.adIsShowing) {
       //没有显示广告时才跳转
       toMainPage();
     }
@@ -316,13 +327,13 @@ class LaunchPageController extends GetxController {
         bus.isBMode = true;
         EventUtils.instance.addEvent("enter_home");
         EventUtils.instance.addEvent("home_source");
-        Get.offAll(const UserMain());
+        Get.offAll(() => const UserMain(), duration: Duration.zero);
         return;
       }
       EventUtils.instance.addEvent("enter_home");
       EventUtils.instance.addEvent("home_no");
 
-      Get.offAll(isOpenUser ? const UserMain() : const MainPage());
+      Get.offAll(() => isOpenUser ? const UserMain() : const MainPage(), duration: Duration.zero);
     }
   }
 }
