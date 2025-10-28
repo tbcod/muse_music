@@ -7,6 +7,7 @@ import 'package:music_muse/const/env.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main/setting/feedback.dart';
 import 'package:music_muse/page/main/setting/only_web.dart';
+import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/log.dart';
@@ -46,6 +47,21 @@ class SettingPage extends GetView<SettingPageController> {
                   centerTitle: false,
                   titleSpacing: 12.w,
                   title: Text("Setting"),
+                  actions: [
+                    GestureDetector(
+                        onDoubleTap: () {
+                          controller._clickCount++;
+                          if (controller._clickCount > 5) {
+                            controller._clickCount = 0;
+                            Get.to(() => UDebugPage());
+                          }
+                        },
+                        child: Container(
+                          color: MuseConfig.isUser ? Colors.transparent : Colors.white30,
+                          width: 100,
+                          height: 44,
+                        )),
+                  ],
                 ),
                 Expanded(
                     child: MediaQuery.removePadding(
@@ -141,6 +157,7 @@ class SettingPage extends GetView<SettingPageController> {
 
 class SettingPageController extends GetxController {
   var listTitle = ["Privacy Policy".tr, "Terms of Service".tr, "Feedback".tr, "pops".tr];
+  int _clickCount = 0;
 
   @override
   void onInit() {

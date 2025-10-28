@@ -33,11 +33,11 @@ class UDebugPage extends StatelessWidget {
           //       NativeUtils.instance.test();
           //     },
           //     child: const Text('A')),
-          CupertinoButton(
-              onPressed: () {
-                controller.exceptionTest();
-              },
-              child: const Text('AB')),
+          // CupertinoButton(
+          //     onPressed: () {
+          //       controller.exceptionTest();
+          //     },
+          //     child: const Text('AB')),
         ],
       ),
       body: Container(
