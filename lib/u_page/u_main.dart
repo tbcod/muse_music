@@ -45,10 +45,7 @@ class UserMain extends GetView<UserMainController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(
-            action: 'android.intent.action.MAIN',
-            category: "android.intent.category.HOME",
-            flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
+        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -62,11 +59,13 @@ class UserMain extends GetView<UserMainController> {
             backgroundColor: Colors.white,
             onTap: (index) {
               IdfaUtil.instance.showIdfaDialog();
-              if(controller.nowIndex.value == index){
+              if (controller.nowIndex.value == index) {
                 return;
               }
               if (controller.nowIndex.value == 1 && index == 0) {
-                Get.find<UserHomeController>().bindYoutubeMusicData(source: "click_bottomtab");
+                if (Get.isRegistered<UserHomeController>()) {
+                  Get.find<UserHomeController>().bindYoutubeMusicData(source: "click_bottomtab");
+                }
               }
               controller.nowIndex.value = index;
               controller.pageC.jumpToPage(index);
@@ -76,12 +75,10 @@ class UserMain extends GetView<UserMainController> {
                 EventUtils.instance.addEvent("library_home");
               }
             },
-            unselectedItemColor: Color(0xffC4C5D5),
-            selectedItemColor: Color(0xff141414),
-            selectedLabelStyle:
-                TextStyle(color: Color(0xff141414), fontSize: 12.w),
-            unselectedLabelStyle:
-                TextStyle(color: Color(0xffC4C5D5), fontSize: 12.w),
+            unselectedItemColor: const Color(0xffC4C5D5),
+            selectedItemColor: const Color(0xff141414),
+            selectedLabelStyle: TextStyle(color: const Color(0xff141414), fontSize: 12.w),
+            unselectedLabelStyle: TextStyle(color: const Color(0xffC4C5D5), fontSize: 12.w),
             items: controller.bottomList.map((e) {
               return BottomNavigationBarItem(
                   icon: Image.asset(
@@ -100,7 +97,7 @@ class UserMain extends GetView<UserMainController> {
           child: Container(
             child: Obx(() => PageView(
                 controller: controller.pageC,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: controller.bottomList.map((e) {
                   if (e["name"] == "Home".tr) {
                     return const KeepStateView(child: UserHome());
@@ -121,27 +118,16 @@ class UserMain extends GetView<UserMainController> {
 
 class UserMainController extends GetxController {
   var bottomList = [
-    {
-      "name": "Home".tr,
-      "icon": "assets/img/icon_b_1_off.png",
-      "c_icon": "assets/img/icon_b_1.png"
-    },
-    {
-      "name": "Library".tr,
-      "icon": "assets/oimg/icon_lib_off.png",
-      "c_icon": "assets/oimg/icon_lib_on.png"
-    },
-    {
-      "name": "Setting".tr,
-      "icon": "assets/img/icon_b_2_off.png",
-      "c_icon": "assets/img/icon_b_2.png"
-    },
+    {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
+    {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
+    {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
   ].obs;
 
   var pageC = PageController();
   var nowIndex = 0.obs;
 
   ConnectivityResult? lastResult;
+
   @override
   void onInit() {
     super.onInit();
@@ -158,12 +144,10 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
-    AdUtils.instance.loadAd("level_h");
-    AdUtils.instance.loadAd("behavior");
+    // AdUtils.instance.loadAd("level_h");
+    // AdUtils.instance.loadAd("behavior");
 
-    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) async {
+    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       // AppLog.e("网络变化${result}");
 
       //网络变化
@@ -196,11 +180,9 @@ class UserMainController extends GetxController {
         }
 
         lastResult = ConnectivityResult.mobile;
-      } else if (!result.contains(ConnectivityResult.wifi) &&
-          !result.contains(ConnectivityResult.mobile)) {
+      } else if (!result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "Network interruption, check the network");
-        if (lastResult == ConnectivityResult.mobile ||
-            lastResult == ConnectivityResult.wifi) {
+        if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
           //获取是否有正在下载的数据
           var oldList = DownloadUtils.instance.allDownLoadingData.values;
           var downloadingList = oldList.where((e) {
@@ -273,14 +255,10 @@ class UserMainController extends GetxController {
     // return;
 
     var now = DateTime.now();
-    var tzDate = tz.TZDateTime.from(
-        DateTime(now.year, now.month, now.day, 10, 0, 0), tz.local);
-    var tzDate2 = tz.TZDateTime.from(
-        DateTime(now.year, now.month, now.day, 15, 0, 0), tz.local);
-    var tzDate3 = tz.TZDateTime.from(
-        DateTime(now.year, now.month, now.day, 18, 0, 0), tz.local);
-    var tzDate4 = tz.TZDateTime.from(
-        DateTime(now.year, now.month, now.day, 20, 0, 0), tz.local);
+    var tzDate = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 10, 0, 0), tz.local);
+    var tzDate2 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 15, 0, 0), tz.local);
+    var tzDate3 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 18, 0, 0), tz.local);
+    var tzDate4 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 20, 0, 0), tz.local);
     await FlutterLocalNotificationsPlugin().cancelAll();
 
     //获取云控push次数
@@ -302,21 +280,9 @@ class UserMainController extends GetxController {
 
   reloadData() {
     bottomList.value = [
-      {
-        "name": "Home".tr,
-        "icon": "assets/img/icon_b_1_off.png",
-        "c_icon": "assets/img/icon_b_1.png"
-      },
-      {
-        "name": "Library".tr,
-        "icon": "assets/oimg/icon_lib_off.png",
-        "c_icon": "assets/oimg/icon_lib_on.png"
-      },
-      {
-        "name": "Setting".tr,
-        "icon": "assets/img/icon_b_2_off.png",
-        "c_icon": "assets/img/icon_b_2.png"
-      },
+      {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
+      {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
+      {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
     ];
 
     if (Get.isRegistered<UserSettingController>()) {

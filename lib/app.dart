@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -159,13 +160,17 @@ class Application extends GetxService {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
     FlutterError.onError = (errorDetails) {
-      AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      if(errorDetails.exception.toString().startsWith("HttpException") == true){
+        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+      }else{
+        AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      }
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (error is DioException) {
-        AppLog.e("异常不上报：PlatformDispatcher 网络异常，不上报 onError:$error,$stack");
+      if (error is DioException || error is HttpException || error is SocketException) {
+        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
         // ToastUtil.showToast(msg: "err", type: IconType.error);

@@ -238,7 +238,7 @@ class AdUtils {
     });
 
     AppLog.i("开始加载广告位:$key");
-    oneAdLoadTimeOut = adJson["muse_time_out"] ?? 12;
+    oneAdLoadTimeOut = adJson["timeout"] ?? 12;  //没层广告超时时间
 
     //循环加载广告
     for (var item in configList) {
@@ -562,7 +562,7 @@ class AdUtils {
 
     if (adIsShowing) {
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "ad is showing"));
+        onShow.onShowFail!("", AdError(-1, "", "$key ad is showing"));
       }
       return false;
     }
@@ -570,7 +570,7 @@ class AdUtils {
     if (Get.find<Application>().isAppBack == true) {
       AppLog.e("app在后台");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "app is background"));
+        onShow.onShowFail!("", AdError(-1, "", "$key app is background"));
       }
       return false;
     }
@@ -582,7 +582,7 @@ class AdUtils {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "no network"));
+        onShow.onShowFail!("", AdError(-1, "", "$key no network"));
       }
       return false;
     }
@@ -599,7 +599,7 @@ class AdUtils {
     if (!await canShow()) {
       // AppLog.i("广告间隔未到, $key");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "ad interval has not expired"));
+        onShow.onShowFail!("", AdError(-1, "", "$key ad interval has not expired"));
       }
       return false;
     }
@@ -621,7 +621,7 @@ class AdUtils {
     if (!adJson.containsKey(key)) {
       // AppLog.e("没有对应广告:$key, 不展示");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "show key error"));
+        onShow.onShowFail("", AdError(-1, "", "$key show key error"));
       }
       return false;
     }
@@ -631,7 +631,7 @@ class AdUtils {
     if (configList.isEmpty) {
       AppLog.e("对应广告位没配置:$key, 不展示");
       if (onShow != null) {
-        onShow.onShowFail!("", AdError(-1, "", "not config"));
+        onShow.onShowFail!("", AdError(-1, "", "$key not config"));
       }
       return false;
     }
@@ -650,19 +650,19 @@ class AdUtils {
 
     EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key});
 
-    if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
-      Get.bottomSheet(
-        const LaunchLoadingPage(),
-        isScrollControlled: true,
-        enableDrag: false,
-        isDismissible: false,
-        backgroundColor: Colors.black,
-        useRootNavigator: true,
-        enterBottomSheetDuration: Duration.zero,
-        exitBottomSheetDuration: Duration.zero,
-        settings: const RouteSettings(name: "LaunchLoad"),
-      );
-    }
+    // if (adScene == AdScene.openHot && !bus.isLaunchLoadingAdShowing) {
+    //   Get.bottomSheet(
+    //     const LaunchLoadingPage(),
+    //     isScrollControlled: true,
+    //     enableDrag: false,
+    //     isDismissible: false,
+    //     backgroundColor: Colors.black,
+    //     useRootNavigator: true,
+    //     enterBottomSheetDuration: Duration.zero,
+    //     exitBottomSheetDuration: Duration.zero,
+    //     settings: const RouteSettings(name: "LaunchLoad"),
+    //   );
+    // }
 
     var isShowAd = false;
     for (var item in configList) {
@@ -1321,7 +1321,7 @@ class ShowCallback {
   final OnShow? onShow;
   final OnClose? onClose;
   final OnClick? onClick;
-  final OnShowFail? onShowFail;
+  final OnShowFail onShowFail;
 
-  const ShowCallback({this.onShow, this.onClose, this.onClick, this.onShowFail});
+  const ShowCallback({this.onShow, this.onClose, this.onClick,  required this.onShowFail});
 }

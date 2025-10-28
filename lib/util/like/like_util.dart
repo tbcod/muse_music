@@ -28,12 +28,12 @@ class LikeUtil {
 
   var hasNewLikeVideo = false.obs;
   var hasNewLikeArtist = false.obs;
+
   likeVideo(String videoId, Map infoData) {
     //好评引导
     MyDialogUtils.instance.showRateDialog();
 
-    var blackVideoIds =
-        FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
+    var blackVideoIds = FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
 
     if (blackVideoIds.split(";").contains(videoId)) {
       //在黑名单内，不允许收藏
@@ -47,8 +47,7 @@ class LikeUtil {
     HistoryUtil.instance.addHistorySong(item);
     saveData();
 
-    EventUtils.instance
-        .addEvent("liked_click", data: {"type": "track", "song_id": videoId});
+    EventUtils.instance.addEvent("liked_click", data: {"type": "track", "song_id": videoId});
     hasNewLikeVideo.value = true;
 
     ToastUtil.showToast(msg: "Followed this song".tr);
@@ -56,7 +55,6 @@ class LikeUtil {
     saveLikeState();
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   saveLikeState() async {
@@ -90,15 +88,13 @@ class LikeUtil {
     saveLikeState();
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   likeList(String browseId, Map infoData, String subtitle) async {
     //好评引导
     MyDialogUtils.instance.showRateDialog();
 
-    EventUtils.instance.addEvent("liked_click",
-        data: {"type": "playlist", "playlist_id": browseId});
+    EventUtils.instance.addEvent("liked_click", data: {"type": "playlist", "playlist_id": browseId});
 
     allPlaylistMap[browseId] = infoData;
     HistoryUtil.instance.addHistoryPlaylist(infoData);
@@ -126,7 +122,6 @@ class LikeUtil {
     }
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   unlikeList(String browseId) async {
@@ -147,15 +142,13 @@ class LikeUtil {
     saveLikeState();
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   likeArtist(String browseId, Map infoData) {
     //好评引导
     MyDialogUtils.instance.showRateDialog();
 
-    EventUtils.instance.addEvent("liked_click",
-        data: {"type": "artist", "artist_id": browseId});
+    EventUtils.instance.addEvent("liked_click", data: {"type": "artist", "artist_id": browseId});
     allArtistMap[browseId] = infoData;
     saveData();
 
@@ -165,7 +158,6 @@ class LikeUtil {
     saveLikeState();
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   unlikeArtist(String browseId) {
@@ -175,7 +167,6 @@ class LikeUtil {
     saveLikeState();
 
     AdUtils.instance.showAd("behavior", adScene: AdScene.collection);
-
   }
 
   //保存到本地数据
@@ -192,7 +183,9 @@ class LikeUtil {
     box3.clear();
     await box3.putAll(allArtistMap);
 
-    Get.find<UserHomeController>().reloadHistory();
+    if (Get.isRegistered<UserHomeController>()) {
+      Get.find<UserHomeController>().reloadHistory();
+    }
   }
 
   initData() async {

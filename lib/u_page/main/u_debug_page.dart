@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 import 'package:applovin_max/applovin_max.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:music_muse/api/base_api.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
-import 'package:music_muse/util/ad/admob_util.dart';
-import 'package:music_muse/util/log.dart';
-import 'package:music_muse/util/native_util.dart';
+
 
 class UDebugPage extends StatelessWidget {
   UDebugPage({super.key});
@@ -27,16 +28,16 @@ class UDebugPage extends StatelessWidget {
         ),
         titleSpacing: 12.w,
         actions: [
-          CupertinoButton(
-              onPressed: () {
-                NativeUtils.instance.test();
-              },
-              child: const Text('Kill')),
-          CupertinoButton(
-              onPressed: () {
-                controller.throwAException();
-              },
-              child: const Text('App')),
+          // CupertinoButton(
+          //     onPressed: () {
+          //       NativeUtils.instance.test();
+          //     },
+          //     child: const Text('A')),
+          // CupertinoButton(
+          //     onPressed: () {
+          //       controller.exceptionTest();
+          //     },
+          //     child: const Text('AB')),
         ],
       ),
       body: Container(
@@ -62,6 +63,7 @@ class UDebugPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text('${controller.getAd(AdUtils.instance.adJson)}'),
+            // CachedNetworkImage(imageUrl: "https://lh3.googleusercontent.com/testtesttest"),
           ],
         ),
       ),
@@ -78,8 +80,11 @@ class UDebugController extends GetxController {
     // return formatted;
   }
 
-  throwAException() {
-    const invalidJson = '{"name": "Tom", "age": }'; // 错误 JSON
-    json.decode(invalidJson);
+  exceptionTest() async {
+    // const invalidJson = '{"name": "Tom", "age": }'; // 错误 JSON
+    // json.decode(invalidJson);
+    // var result = await GetConnect().get("https://lh3.googleusercontent.com/110fyr-gVhGEM4NwkBAV8kh31uqRvxS7w_3KlAYLNq2pMbD2VhWN8hi3HHHHYLYN6F4LUkaDtmfGI0NT-k=w60-h60-l90-rj");
+
+    // await Dio().get("https://lh3.googleusercontent.com/10fyr-gVhGEM4NwkBAV8kh31uqRvxS7w_3KlAYLNq2pMbD2VhWN8hi3HHHHYLYN6F4LUkaDtmfGI0NT-k=w60-h60-l90-rj");
   }
 }

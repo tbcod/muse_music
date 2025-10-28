@@ -31,9 +31,7 @@ class MyDialogUtils {
     var installTimeMs = sp.getInt("installTimeMs") ?? 0;
     var nowD = DateTime.now();
     var lastInstallDate = DateTime.fromMillisecondsSinceEpoch(installTimeMs);
-    if (lastInstallDate.year == nowD.year &&
-        lastInstallDate.month == nowD.month &&
-        lastInstallDate.day == nowD.day) {
+    if (lastInstallDate.year == nowD.year && lastInstallDate.month == nowD.month && lastInstallDate.day == nowD.day) {
       AppLog.e("安装当天不显示");
       //安装当天不显示
       return;
@@ -54,9 +52,7 @@ class MyDialogUtils {
       return;
     }
     //判断上次弹窗时间，一天一次
-    var lastHours = DateTime.now()
-        .difference(DateTime.fromMillisecondsSinceEpoch(ms))
-        .inHours;
+    var lastHours = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(ms)).inHours;
     if (lastHours < 24) {
       // AppLog.e(lastHours);
       // AppLog.e("${DateTime.fromMillisecondsSinceEpoch(ms)}\n${DateTime.now()}");
@@ -66,8 +62,7 @@ class MyDialogUtils {
 
     //不显示播放控件
     Get.find<UserPlayInfoController>().hideFloatingWidget();
-    await sp.setInt(
-        "LastRateDialogDateMs", DateTime.now().millisecondsSinceEpoch);
+    await sp.setInt("LastRateDialogDateMs", DateTime.now().millisecondsSinceEpoch);
     await sp.setInt("RateDialogShowNum", showNum + 1);
     await Get.dialog(RateDialog());
     //不显示播放控件
@@ -79,9 +74,20 @@ class MyDialogUtils {
     // 1-非强制
     // 2-强制
 
-    await FirebaseRemoteConfig.instance.fetchAndActivate();
+    var importCode = 0;
 
-    var importCode = FirebaseRemoteConfig.instance.getInt("musicmuse_import");
+    try {
+      await FirebaseRemoteConfig.instance.fetchAndActivate();
+    } catch (e) {
+      AppLog.e("message:$e");
+    }
+
+    try {
+      importCode = FirebaseRemoteConfig.instance.getInt("musicmuse_import");
+    } catch (e) {
+      AppLog.e("message:$e");
+    }
+
 
     // AppLog.e("导量:$importCode");
     if (importCode == 0) {
@@ -100,8 +106,7 @@ class MyDialogUtils {
 
     //不显示播放控件
     Get.find<UserPlayInfoController>().hideFloatingWidget();
-    await Get.dialog(OtherAppDialog(canClose: importCode == 1),
-        barrierDismissible: importCode == 1);
+    await Get.dialog(OtherAppDialog(canClose: importCode == 1), barrierDismissible: importCode == 1);
     //不显示播放控件
     Get.find<UserPlayInfoController>().showFloatingWidget();
   }
@@ -161,10 +166,7 @@ class OtherAppDialog extends GetView {
                                     margin: EdgeInsets.only(right: 30.w),
                                     child: Text(
                                       "New App".tr,
-                                      style: TextStyle(
-                                          fontSize: 26.w,
-                                          height: 1.4,
-                                          fontWeight: FontWeight.w600),
+                                      style: TextStyle(fontSize: 26.w, height: 1.4, fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   SizedBox(
@@ -175,14 +177,8 @@ class OtherAppDialog extends GetView {
                                     width: double.infinity,
                                     alignment: Alignment.center,
                                     child: Text(
-                                      !canClose
-                                          ? "otherAppDialogText1".tr
-                                          : "otherAppDialogText2".tr,
-                                      style: TextStyle(
-                                          fontSize: 16.w,
-                                          height: 1.5,
-                                          color: Color(0xff141414)
-                                              .withOpacity(0.75)),
+                                      !canClose ? "otherAppDialogText1".tr : "otherAppDialogText2".tr,
+                                      style: TextStyle(fontSize: 16.w, height: 1.5, color: Color(0xff141414).withOpacity(0.75)),
                                     ),
                                   )),
                                   SizedBox(
@@ -196,23 +192,17 @@ class OtherAppDialog extends GetView {
                                       // var link =
                                       //     "https://apps.apple.com/app/id6667107568";
 
-                                      var link = FirebaseRemoteConfig.instance
-                                          .getString("musicmuse_update_link");
+                                      var link = FirebaseRemoteConfig.instance.getString("musicmuse_update_link");
 
                                       await launchUrl(Uri.parse(link));
                                     },
                                     child: Container(
                                       height: 48.w,
                                       alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(24.w),
-                                          color: Color(0xff985CFF)),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), color: Color(0xff985CFF)),
                                       child: Text(
                                         "Confirm".tr,
-                                        style: TextStyle(
-                                            fontSize: 16.w,
-                                            color: Colors.white),
+                                        style: TextStyle(fontSize: 16.w, color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -308,11 +298,7 @@ class RateDialog extends GetView {
                                   Text(
                                     "ratingStr".tr,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 14.w,
-                                        height: 1.4,
-                                        color: Color(0xff141414)
-                                            .withOpacity(0.75)),
+                                    style: TextStyle(fontSize: 14.w, height: 1.4, color: Color(0xff141414).withOpacity(0.75)),
                                   ),
                                   Spacer(),
                                   RatingBar(
@@ -320,27 +306,19 @@ class RateDialog extends GetView {
                                       initialRating: 1,
                                       itemCount: 5,
                                       itemSize: 34.w,
-                                      itemPadding:
-                                          EdgeInsets.symmetric(horizontal: 4.w),
-                                      ratingWidget: RatingWidget(
-                                          full: Image.asset(
-                                              Assets.oimgIconRateOn),
-                                          half: Container(),
-                                          empty: Image.asset(
-                                              Assets.oimgIconRateOff)),
+                                      itemPadding: EdgeInsets.symmetric(horizontal: 4.w),
+                                      ratingWidget: RatingWidget(full: Image.asset(Assets.oimgIconRateOn), half: Container(), empty: Image.asset(Assets.oimgIconRateOff)),
                                       onRatingUpdate: (value) async {
                                         Get.back();
 
                                         //点击了评分，下次不再弹出
-                                        var sp = await SharedPreferences
-                                            .getInstance();
+                                        var sp = await SharedPreferences.getInstance();
                                         sp.setBool("IsShowedRateDialog", true);
                                         int starNum = value.toInt();
                                         if (starNum < 4) {
                                           Get.to(FeedbackPage());
                                         } else {
-                                          var url =
-                                              "https://apps.apple.com/app/id6667107568?action=write-review";
+                                          var url = "https://apps.apple.com/app/id6667107568?action=write-review";
                                           launchUrl(Uri.parse(url));
                                         }
                                       }),

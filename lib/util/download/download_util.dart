@@ -112,7 +112,9 @@ class DownloadUtils {
     await box.clear();
     await box.putAll(Map.of(allDownLoadingData));
 
-    Get.find<UserHomeController>().reloadHistory();
+    if (Get.isRegistered<UserHomeController>()) {
+      Get.find<UserHomeController>().reloadHistory();
+    }
   }
 
   var allCancelToken = {};
@@ -181,15 +183,7 @@ class DownloadUtils {
           await cFile.copy("${ddic.path}/$fileName");
 
           //已有缓存
-          allDownLoadingData[videoId] = {
-            "url": url,
-            "videoId": videoId,
-            "infoData": infoData,
-            "progress": 1.0,
-            "state": 2,
-            "time": DateTime.now(),
-            "path": fileName
-          };
+          allDownLoadingData[videoId] = {"url": url, "videoId": videoId, "infoData": infoData, "progress": 1.0, "state": 2, "time": DateTime.now(), "path": fileName};
           await saveVideoInfo();
 
           hasNewDownload.value = true;
@@ -205,18 +199,8 @@ class DownloadUtils {
       }
       //获取url
 
-
-
       var fileName = "${const Uuid().v8()}.mp4";
-      allDownLoadingData[videoId] = {
-        "url": "",
-        "videoId": videoId,
-        "infoData": infoData,
-        "progress": 0.0,
-        "state": 1,
-        "time": DateTime.now(),
-        "path": fileName
-      };
+      allDownLoadingData[videoId] = {"url": "", "videoId": videoId, "infoData": infoData, "progress": 0.0, "state": 1, "time": DateTime.now(), "path": fileName};
       // LoadingUtil.showLoading();
       allDownLoadingData.refresh();
 

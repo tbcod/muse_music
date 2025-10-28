@@ -83,11 +83,11 @@ class FormatMyData {
 
         var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
         if (videoId != null) {
-          var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+           var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
           var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
           var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
           var type = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-                  ?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]["musicVideoType"] ??
+          ?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]["musicVideoType"] ??
               "";
 
           var timeStr = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"].last["text"];

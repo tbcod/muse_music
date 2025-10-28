@@ -385,10 +385,13 @@ class ApiMain extends BaseApi {
       }
       if (isFirstRequest) {
         isFirstRequest = false;
-        Future.delayed(const Duration(seconds: 2)).then((v) {
-          UserHomeController controller = Get.find<UserHomeController>();
-          controller.bindYoutubeMusicData(source: "visitor_play");
-        });
+        if(Get.isRegistered<UserHomeController>()){
+          Future.delayed(const Duration(seconds: 2)).then((v) {
+            UserHomeController controller = Get.find<UserHomeController>();
+            controller.bindYoutubeMusicData(source: "visitor_play");
+          });
+        }
+
       }
     }
   }
