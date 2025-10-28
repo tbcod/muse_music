@@ -103,6 +103,8 @@ class LaunchPageController extends GetxController {
 
   bool get isA => !isB;
 
+  bool _isCloakComplete = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -116,7 +118,11 @@ class LaunchPageController extends GetxController {
 
     AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
 
-    loadAd();
+    loadOpenAd();
+
+    AdUtils.instance.loadAd("level_h");
+    AdUtils.instance.loadAd("behavior");
+
     countdown();
   }
 
@@ -127,6 +133,7 @@ class LaunchPageController extends GetxController {
 
     var isOpenUser = sp.getBool("isOpenUser") ?? false;
     if (isOpenUser) {
+      _isCloakComplete = true;
       //已经是用户模式，不用再请求
       bus.isBMode = true;
       isB = true;
@@ -135,7 +142,7 @@ class LaunchPageController extends GetxController {
 
     var tempTime = DateTime.now();
     var result = await CUtil.instance.checkCloak();
-
+    _isCloakComplete = true;
     AppLog.i("启动时间Launch cloak ：${DateTime.now().difference(bus.startTime!).inSeconds}s, result:${result.message}");
 
     var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
@@ -154,7 +161,7 @@ class LaunchPageController extends GetxController {
     }
   }
 
-  loadAd() async {
+  loadOpenAd() async {
     isAdShow = false;
 
     // var openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
@@ -162,6 +169,15 @@ class LaunchPageController extends GetxController {
     //   //默认为open,
     //   openAdStr = "open";
     // }
+
+
+    // if (isToMain) return;
+
+    if (!_isCloakComplete) {
+      await Future.delayed(const Duration(seconds: 1));
+      loadOpenAd();
+      return;
+    }
 
     bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
     AppLog.i("启动页加载广告 isB：$isB, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
@@ -172,7 +188,6 @@ class LaunchPageController extends GetxController {
         AdUtils.instance.loadAd("open");
         toMainPage();
       } else {
-        AdUtils.instance.loadAd("level_h");
         if (isBShowOpenAd) {
           loadAndShowBAd();
         } else {
@@ -224,10 +239,8 @@ class LaunchPageController extends GetxController {
   }
 
   loadAndShowBAd() async {
-    AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
-      AppLog.i("启动页加载广告B结果:$isOk, $adId, $e");
-
+      AppLog.i("启动页加载B广告结果:$isOk, $adId, $e");
       if (isOk) {
         if (isAdShow) {
           AppLog.e("已经显示过广告");

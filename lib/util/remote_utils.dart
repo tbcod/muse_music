@@ -53,6 +53,7 @@ class RemoteUtil {
     _listenNowRecom = isp.getString(museSongRecommonedKey) ?? "";
 
     _openAdStr = isp.getString(mmOpenAd) ?? "";
+
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -159,7 +160,9 @@ class RemoteUtil {
   }
 
   bool get isShowOpenAd{
-    if(_openAdStr == "close") return false;
+    if(_openAdStr == "close"){
+      return false;
+    }
     return true;
   }
 }

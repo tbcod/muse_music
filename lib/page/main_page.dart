@@ -112,8 +112,8 @@ class MainPageController extends GetxController {
     Get.put(PlayPageController());
 
     //预加载广告
-    AdUtils.instance.loadAd('level_h');
-    AdUtils.instance.loadAd("behavior");
+    // AdUtils.instance.loadAd('level_h');
+    // AdUtils.instance.loadAd("behavior");
 
     // Future.delayed(Duration(seconds: 5)).then((_) => Get.off(const UserMain()));
     _requestCloak();

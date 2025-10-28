@@ -1112,10 +1112,10 @@ class UserHomeController extends GetxController with StateMixin {
   void onReady() async {
     super.onReady();
 
-    IdfaUtil.instance.showIdfaDialog();
-    Future.delayed(const Duration(seconds: 10)).then((e) {
-      IdfaUtil.instance.showIdfaDialog();
-    });
+    // IdfaUtil.instance.showIdfaDialog();
+    // Future.delayed(const Duration(seconds: 10)).then((e) {
+    //   IdfaUtil.instance.showIdfaDialog();
+    // });
 
     //检查导量弹窗
     await Future.delayed(const Duration(seconds: 1));
