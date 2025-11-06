@@ -98,7 +98,7 @@ class MyApp extends GetView {
 
             routingCallback: (Routing? routing) async {
               //路由跳转
-              AppLog.i("routingCallback current:${routing?.current}, isBottomSheet:${routing?.isBottomSheet}");
+              // AppLog.i("routingCallback current:${routing?.current}, isBottomSheet:${routing?.isBottomSheet}");
               if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
                 Get.find<Application>().isMainPage.value = true;
               } else {
@@ -193,9 +193,7 @@ class AppController extends SuperController {
             "open",
             adScene: AdScene.openHot,
             onShow: ShowCallback(
-              onShowFail: (adId, e) {
-                AppLog.e("前台加载广告失败：$adId, $e");
-              },
+              onShowFail: (adId, e) {},
               onClose: (adId) {
                 if (bus.isLaunchLoadingAdShowing) {
                   Get.back();

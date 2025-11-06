@@ -172,7 +172,7 @@ class TbaIos extends BaseApi {
       }
       // AppLog.e(logId);
     } else {
-      AppLog.i("TBA上报成功, ${eventId ?? type.name}");
+      // AppLog.i("TBA上报成功, ${eventId ?? type.name}");
 
       //请求成功了，先删除本次的
       // await box.delete(logId);
