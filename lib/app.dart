@@ -157,23 +157,41 @@ class Application extends GetxService {
   }
 
   initFireBaseOther() async {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    bool isIgnoreError(Object error) {
+      if (error is DioException || error is HttpException || error is SocketException) {
+        return true;
+      }
+
+      final errorStr = error.toString();
+      if (errorStr.contains('SocketException') ||
+          errorStr.contains('HttpException') ||
+          errorStr.contains('Error loading artUri') ||
+          errorStr.contains('Failed host lookup') ||
+          errorStr.contains('OS Error: nodename nor servname') ||
+          errorStr.contains('HandshakeException') ||
+          errorStr.contains('Invalid statusCode: 404')) {
+        return true;
+      }
+      if (errorStr.contains('RenderFlex overflowed')) {
+        return true;
+      }
+      return false;
+    }
 
     FlutterError.onError = (errorDetails) {
-      if(errorDetails.exception.toString().startsWith("HttpException") == true){
+      if (isIgnoreError(errorDetails.exception)) {
         AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
-      }else{
+      } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
-        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+        FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
       }
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (error is DioException || error is HttpException || error is SocketException) {
+      if (isIgnoreError(error)) {
         AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
-        // ToastUtil.showToast(msg: "err", type: IconType.error);
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
       return true;

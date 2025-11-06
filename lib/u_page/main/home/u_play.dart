@@ -1248,6 +1248,8 @@ class UserPlayInfoController extends GetxController {
     realPlay(index, isAutoNext: isAutoNext, isOpenShowBar: isOpenShowBar, clickNext: clickNext);
   }
 
+  int _playNextCount = 0;
+
   realPlay(int index, {bool isAutoNext = false, bool isOpenShowBar = false, bool clickNext = false}) async {
     //上报上个视频的时长
     if (player != null && player?.value.duration != null && isOpenShowBar == false) {
@@ -1274,10 +1276,11 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (!isAutoNext && !isOpenShowBar) {
-      AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-      Future.delayed(const Duration(milliseconds: 500)).then((_) {
-        //延迟后显示好评引导
-        MyDialogUtils.instance.showRateDialog();
+      AdUtils.instance.showAd("behavior", adScene: AdScene.play).then((v) {
+        Future.delayed(const Duration(milliseconds: 500)).then((_) {
+          //延迟后显示好评引导
+          MyDialogUtils.instance.showRateDialog();
+        });
       });
     }
 
@@ -1356,23 +1359,26 @@ class UserPlayInfoController extends GetxController {
 
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-
             AppLog.e("播放网络：$connectivityResult");
-            if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
-              //没有网络
-              AppLog.e("没有网络，不切换下一曲");
+            bool hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
+
+            //没有网络
+            AppLog.e("没有网络，不切换下一曲");
+            if (!hasNetwork) {
               EventUtils.instance.addEvent("play_num", data: {
                 "song_id": nowData["videoId"],
                 "song_name": nowData["title"],
                 "artist_name": nowData["subtitle"],
               });
               EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
-              return;
             }
 
             //如果是首页初始化，不播放下一首
-            if (!isOpenShowBar) {
-              playNext(isAutoNext: true);
+            if (!isOpenShowBar && hasNetwork) {
+              if (_playNextCount < 5) {
+                _playNextCount++;
+                playNext(isAutoNext: true);
+              }
             }
           }
 
@@ -1398,7 +1404,7 @@ class UserPlayInfoController extends GetxController {
             "song_name": nowData["title"],
             "artist_name": nowData["subtitle"],
           });
-          EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "Get url error"});
+          EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "Get url error"});
           if (!isAutoNext) {
             ToastUtil.showToast(msg: "Get url error".tr);
           } else {
@@ -1406,7 +1412,10 @@ class UserPlayInfoController extends GetxController {
           }
           //播放下一个
           if (!isOpenShowBar) {
-            playNext(isAutoNext: true);
+            if (_playNextCount < 5) {
+              _playNextCount++;
+              playNext(isAutoNext: true);
+            }
           }
           // playNext(isAutoNext: true);
 
@@ -1414,7 +1423,6 @@ class UserPlayInfoController extends GetxController {
         }
 
         //获取是否下载过了
-
         player = VideoPlayerController.networkUrl(Uri.parse(nowPlayUrl), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       }
     } else {
@@ -1433,16 +1441,17 @@ class UserPlayInfoController extends GetxController {
       player = VideoPlayerController.file(File(downloadPath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
     }
 
+    _playNextCount = 0;
     await player?.initialize().catchError((e) {
       final errorCode = player?.value.errorDescription ?? 'initialize error';
-
       if (!isOpenShowBar) {
         EventUtils.instance.addEvent("play_num", data: {
           "song_id": nowData["videoId"],
           "song_name": nowData["title"],
           "artist_name": nowData["subtitle"],
         });
-        EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "initialize error", "detail": errorCode});
+        EventUtils.instance
+            .addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "initialize error", "detail": errorCode});
       }
       AppLog.e("initialize error:${e.toString()}");
     });
@@ -1485,7 +1494,11 @@ class UserPlayInfoController extends GetxController {
       "song_name": nowData["title"],
       "artist_name": nowData["subtitle"],
     });
-    EventUtils.instance.addEvent("play_succ", data: {"song_id": nowData["videoId"]});
+    EventUtils.instance.addEvent("play_succ", data: {
+      "song_id": nowData["videoId"],
+      "song_name": nowData["title"],
+      "artist_name": nowData["subtitle"],
+    });
 
     //保存历史记录
     if (!isAutoNext && !clickNext) {
@@ -1528,7 +1541,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     //更新通知栏进度
-    if(nowData["videoId"] != null){
+    if (nowData["videoId"] != null) {
       var item = MediaItem(
         id: nowData["videoId"],
         title: nowData["title"] ?? "",
@@ -1539,7 +1552,6 @@ class UserPlayInfoController extends GetxController {
 
       myHandler?._updateState();
     }
-
 
     //播放完成自动播放下一个
     if (player?.value.isCompleted ?? false) {
@@ -2325,25 +2337,22 @@ class UserPlayInfoController extends GetxController {
     realPlay(nowIndex);
   }
 
-  recoverPlay({bool isForce = true}) async {
+  Future recoverPlay({bool isForce = true, bool retry = false}) async {
     int count = (isForce ? 5 : 1);
     for (int i = 0; i < count; i++) {
       if (isPlaying.isFalse) return;
-      AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
+      // AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
       await Future.delayed(const Duration(milliseconds: 500));
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
       await session.setActive(true);
       player?.pause();
       player?.play().ignore();
-      if (i == count - 1 && player?.value.isPlaying == false) {
-        await Future.delayed(const Duration(milliseconds: 1000));
-        AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
-        await session.configure(const AudioSessionConfiguration.music());
-        await session.setActive(true);
-        player?.pause();
-        player?.play().ignore();
-      }
+    }
+
+    if (player?.value.isPlaying == false && !retry) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      await recoverPlay(isForce: true, retry: true);
     }
   }
 }

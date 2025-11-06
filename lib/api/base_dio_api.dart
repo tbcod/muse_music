@@ -49,8 +49,8 @@ class BaseApi {
   }) async {
     CancelFunc? cancelFunc;
 
-    AppLog.i(
-        "请求前url: ${(dio?.options.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body");
+    // AppLog.i(
+    //     "请求前url: ${(dio?.options.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body");
 
     // var connectivityResult = await Connectivity().checkConnectivity();
     // if (connectivityResult != ConnectivityResult.wifi &&
