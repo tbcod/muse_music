@@ -312,7 +312,7 @@ class AdUtils {
               isLoadSuc = true;
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             }, onAdFailedToLoad: (e) {
-              AppLog.e("广告加载失败（open）：$key， $source, $type, $ad_id");
+              AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:${item['adweight']}，${e.toString()}");
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
@@ -338,7 +338,7 @@ class AdUtils {
               isLoadSuc = true;
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             }, onAdFailedToLoad: (e) {
-              AppLog.e("广告加载失败（插屏）：$key， $source, $type, $ad_id, adweight:${item['adweight']}");
+              AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:${item['adweight']}，${e.toString()}");
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
@@ -366,7 +366,7 @@ class AdUtils {
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
               onAdFailedToLoad: (e) {
-                AppLog.e("广告加载失败：$key， $source, $type, $ad_id");
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$adweight，${e.toString()}");
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
@@ -380,6 +380,7 @@ class AdUtils {
             factoryId: 'full_native',
             request: const AdRequest(),
             listener: admob.NativeAdListener(onAdLoaded: (ad) async {
+              AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:${item['adweight']}");
               AdUtils.instance.loadedAdMap[ad_id] = {
                 "data": item,
                 "admob_ad": ad,
@@ -389,7 +390,7 @@ class AdUtils {
               isLoadSuc = true;
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             }, onAdFailedToLoad: (ad, e) {
-              AppLog.e("原生广告加载是失败:${e.toString()}");
+              AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$adweight，${e.toString()}");
               ad.dispose();
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
@@ -443,7 +444,7 @@ class AdUtils {
         if (type == "open") {
           AppLovinMAX.setAppOpenAdListener(AppOpenAdListener(
               onAdLoadedCallback: (ad) {
-                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:$adweight");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -457,6 +458,7 @@ class AdUtils {
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
               onAdLoadFailedCallback: (adId, e) {
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$adweight，${e.toString()}");
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
@@ -470,7 +472,7 @@ class AdUtils {
         } else if (type == "interstitial") {
           AppLovinMAX.setInterstitialListener(InterstitialListener(
               onAdLoadedCallback: (ad) {
-                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:$adweight");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -484,6 +486,7 @@ class AdUtils {
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
               onAdLoadFailedCallback: (adId, e) {
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$adweight，${e.toString()}");
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
@@ -497,7 +500,7 @@ class AdUtils {
         } else if (type == "rewarded") {
           AppLovinMAX.setRewardedAdListener(RewardedAdListener(
               onAdLoadedCallback: (ad) {
-                AppLog.i("广告加载成功：$key， $source, $type, $ad_id");
+                AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:$adweight");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -511,7 +514,7 @@ class AdUtils {
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
               onAdLoadFailedCallback: (adId, e) {
-                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, ${e.toString()}");
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$adweight，${e.toString()}");
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
