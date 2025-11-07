@@ -325,7 +325,6 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                   : InkWell(
                       onTap: () async {
                         //点击更多
-
                         String browseId = bigItem["moreBrowseId"] ?? "";
                         String params = bigItem["moreParams"] ?? "";
                         AppLog.e(
@@ -357,6 +356,11 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                 "browseId": browseId,
                                 "params": params
                               });
+                        } else if (type == "MUSIC_PAGE_TYPE_PLAYLIST") {
+                          Get.to(UserMoreAlbum(barTitle: title), arguments: {
+                            "browseId": browseId,
+                            "params": params
+                          });
                         }
 
                         // BaseModel result = await ApiMain.instance.getMoreData({
