@@ -1,3 +1,4 @@
+
 import 'package:music_muse/util/log.dart';
 
 class FormatMyData {
@@ -13,17 +14,23 @@ class FormatMyData {
     var list = [];
 
     for (var item in oldList) {
-      var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-      var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+      try{
+        var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
+        if (videoId == null) continue;
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-      list.add({
-        "title": title,
-        "subtitle": subtitle,
-        "cover": cover,
-        "videoId": videoId,
-      });
+        list.add({
+          "title": title,
+          "subtitle": subtitle,
+          "cover": cover,
+          "videoId": videoId,
+        });
+      }catch(e){
+        AppLog.e(e.toString());
+      }
+
     }
 
     return list;
@@ -83,11 +90,11 @@ class FormatMyData {
 
         var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
         if (videoId != null) {
-           var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
           var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
           var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
           var type = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]
-          ?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]["musicVideoType"] ??
+                  ?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]["musicVideoType"] ??
               "";
 
           var timeStr = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"].last["text"];
