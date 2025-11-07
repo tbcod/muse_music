@@ -194,7 +194,7 @@ class UserSearch extends GetView<UserSearchController> {
                                         indicatorColor: const Color(0xff8468FF),
                                         labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                                         dividerHeight: 1,
-                                        dividerColor: const Color(0xff141414).withOpacity( 0.08),
+                                        dividerColor: const Color(0xff141414).withOpacity(0.08),
                                       ),
                                     ),
                                     Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
@@ -488,11 +488,11 @@ class UserSearch extends GetView<UserSearchController> {
       );
     } else if (title == "Albums".tr) {
       //专辑
-    //   "Songs": "Canciones",
-    // "Videos": "Vídeos",
-    // "Albums": "Álbumes",
-    // "Artists": "Artistas",
-    // "playlists": "Listas de la comunidad"
+      //   "Songs": "Canciones",
+      // "Videos": "Vídeos",
+      // "Albums": "Álbumes",
+      // "Artists": "Artistas",
+      // "playlists": "Listas de la comunidad"
       return Obx(() {
         if (controller.albumList.isEmpty) {
           return const EmotyView();
@@ -570,7 +570,7 @@ class UserSearch extends GetView<UserSearchController> {
       List content = item["content"];
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0xffe1e1f1).withOpacity( 0.35),
+          color: const Color(0xffe1e1f1).withOpacity(0.35),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.only(bottom: 12),
@@ -644,7 +644,7 @@ class UserSearch extends GetView<UserSearchController> {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity( 0.75),
+                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                                   ),
                                 ))
                               ],
@@ -810,7 +810,7 @@ class UserSearch extends GetView<UserSearchController> {
                         Text(
                           item["subtitle"] ?? "",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withOpacity( 0.75)),
+                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withOpacity(0.75)),
                         ),
                       ],
                     ),
@@ -1002,7 +1002,7 @@ class UserSearch extends GetView<UserSearchController> {
                                 child: CircularProgressIndicator(
                                   value: progress,
                                   strokeWidth: 2.5,
-                                  backgroundColor: const Color(0xff7453ff).withOpacity( 0.35),
+                                  backgroundColor: const Color(0xff7453ff).withOpacity(0.35),
                                   color: const Color(0xff7453ff),
                                 ),
                               );
@@ -1462,7 +1462,7 @@ class UserSearch extends GetView<UserSearchController> {
       onTap: () {
         EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
         EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
-        Get.to(UserArtistInfo(), arguments: item);
+        Get.to(() => UserArtistInfo(), arguments: item);
       },
       child: Container(
         height: 70.w,
