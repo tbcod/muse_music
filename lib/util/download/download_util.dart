@@ -213,7 +213,7 @@ class DownloadUtils {
         if (clickType.isNotEmpty) {
           ToastUtil.showToast(msg: "Get url error".tr);
         }
-        EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
+        EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "Get url fail"});
         return;
       }
       allDownLoadingData[videoId]["url"] = url;

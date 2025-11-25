@@ -283,10 +283,14 @@ class AdUtils {
 
       AppLog.i("广告开始加载：$key， $source, $type, $ad_id, adweight:$adweight");
 
+      EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+
+      String reason = "";
       Completer<bool> isCompleter = Completer();
       loadTimer?.cancel();
       loadTimer = Timer(Duration(seconds: oneAdLoadTimeOut), () {
         if (!isCompleter.isCompleted) {
+          reason = "time out";
           AppLog.e("广告加载超时：$key， $source, $type, $ad_id, adweight:$adweight");
           isCompleter.complete(false);
         }
@@ -316,6 +320,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }),
           );
@@ -342,6 +347,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }),
           );
@@ -370,6 +376,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
             ),
@@ -395,6 +402,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }, onAdClicked: (ad) {
               bannerNativeAdClicked.refresh();
@@ -490,6 +498,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -518,6 +527,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -527,7 +537,8 @@ class AdUtils {
               onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {}));
           AppLovinMAX.loadRewardedAd(ad_id);
         }
-      }else{
+      } else {
+        reason = "no type";
         AppLog.e("广告加载失败：$key， $source, $type, $ad_id, 不支持类型");
         if (!isCompleter.isCompleted) isCompleter.complete(false);
       }
@@ -598,8 +609,11 @@ class AdUtils {
 
       await isCompleter.future;
       if (isLoadSuc) {
+        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
         AppLog.i("广告瀑布流请求完成：$key，index:$curIndex/${configList.length}, adweight: $adweight, $source, $type, $ad_id");
         break;
+      } else {
+        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "ad_weight": adweight, "reason": reason});
       }
       curIndex++;
     }

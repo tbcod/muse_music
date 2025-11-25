@@ -257,7 +257,7 @@ class LaunchPageController extends GetxController {
           adScene: AdScene.openCool,
           onShow: ShowCallback(
             onShowFail: (adId, e) {
-              AppLog.e("open onShowFail:$adId,$e");
+              // AppLog.e("open onShowFail:$adId,$e");
               // toMainPage();
             },
             onClose: (adId) {

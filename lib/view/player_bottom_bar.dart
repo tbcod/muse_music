@@ -36,7 +36,7 @@ class PlayerBottomBarView extends StatelessWidget {
                         await Get.bottomSheet(const UserPlayInfo(), isScrollControlled: true);
                       },
                       child: Obx(() {
-                        if(controller.nowData.isEmpty) return const SizedBox.shrink();
+                        if (controller.nowData.isEmpty) return const SizedBox.shrink();
                         return Container(
                           width: double.infinity,
                           height: 54.w,
@@ -54,8 +54,7 @@ class PlayerBottomBarView extends StatelessWidget {
                                   width: 36.w,
                                   clipBehavior: Clip.hardEdge,
                                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
-                                  child: Obx(() =>
-                                      NetImageView(
+                                  child: Obx(() => NetImageView(
                                         imgUrl: controller.nowData["cover"] ?? "",
                                         fit: BoxFit.cover,
                                       ))),
@@ -65,8 +64,7 @@ class PlayerBottomBarView extends StatelessWidget {
                               ),
                               //标题
                               Expanded(
-                                  child: Obx(() =>
-                                      Text(
+                                  child: Obx(() => Text(
                                         controller.nowData["title"] ?? "",
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -74,60 +72,61 @@ class PlayerBottomBarView extends StatelessWidget {
                                       ))),
 
                               //按钮
-                              Obx(() =>
-                              controller.isLoaded.value
-                                  ? Obx(() =>
-                                  InkWell(
-                                    child: SizedBox(
-                                      width: 32.w,
-                                      height: 32.w,
-                                      child: Image.asset(
-                                          controller.isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
-                                    ),
-                                    onTap: () async {
-                                      //判断视频是否加载
-                                      if (!(controller.player?.value.isInitialized ?? false) && (!controller.isPlaying.value)) {
-                                        //先加载
-                                        controller.realPlay(controller.nowIndex);
-                                        return;
-                                      }
+                              Obx(() => controller.isLoaded.value
+                                  ? Obx(() => InkWell(
+                                        child: SizedBox(
+                                          width: 32.w,
+                                          height: 32.w,
+                                          child: Image.asset(controller.isPlaying.value ? "assets/oimg/icon_bar_pause.png" : "assets/oimg/icon_bar_play.png"),
+                                        ),
+                                        onTap: () async {
+                                          //判断视频是否加载
+                                          if (!(controller.player?.value.isInitialized ?? false) && (!controller.isPlaying.value)) {
+                                            //先加载
+                                            controller.realPlay(controller.nowIndex);
+                                            return;
+                                          }
 
-                                      //判断是否首次
-                                      var isInitBar = controller.player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
+                                          //判断是否首次
+                                          var isInitBar = controller.player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
 
-                                      if (isInitBar) {
-                                        EventUtils.instance.addEvent("play_click", data: {
-                                          "song_id": controller.playList[controller.nowIndex]["videoId"],
-                                          "song_name": controller.playList[controller.nowIndex]["title"],
-                                          "artist_name": controller.playList[controller.nowIndex]["subtitle"],
-                                          "playlist_id": controller.playlistId,
-                                          "station": "tab"
-                                        });
-                                      }
+                                          if (isInitBar) {
+                                            EventUtils.instance.addEvent("play_click", data: {
+                                              "song_id": controller.playList[controller.nowIndex]["videoId"],
+                                              "song_name": controller.playList[controller.nowIndex]["title"],
+                                              "artist_name": controller.playList[controller.nowIndex]["subtitle"],
+                                              "playlist_id": controller.playlistId,
+                                              "station": "tab"
+                                            });
+                                          }
 
-                                      if (controller.isPlaying.value) {
-                                        await controller.player?.pause();
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-                                      } else {
-                                        await controller.player?.play();
-                                        //暂停其他页面的播放
-                                        EventUtils.instance.addEvent("play_num", data: {
-                                          "song_id": controller.nowData["videoId"] ?? "",
-                                          "song_name": controller.nowData["title"] ?? "",
-                                          "artist_name": controller.nowData["subtitle"] ?? "",
-                                        });
-                                        EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
-                                        EventUtils.instance.addEvent("play_click", data: {
-                                          "song_id": controller.nowData["videoId"] ?? "",
-                                          "song_name": controller.nowData["title"] ?? "",
-                                          "artist_name": controller.nowData["subtitle"] ?? "",
-                                          "station":"tab"
-                                        });
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
-                                      }
-                                      controller.isPlaying.toggle();
-                                    },
-                                  ))
+                                          if (controller.isPlaying.value) {
+                                            await controller.player?.pause();
+                                            AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                          } else {
+                                            await controller.player?.play();
+                                            //暂停其他页面的播放
+                                            EventUtils.instance.addEvent("play_num", data: {
+                                              "song_id": controller.nowData["videoId"] ?? "",
+                                              "song_name": controller.nowData["title"] ?? "",
+                                              "artist_name": controller.nowData["subtitle"] ?? "",
+                                            });
+                                            EventUtils.instance.addEvent("play_succ", data: {
+                                              "song_id": controller.nowData["videoId"] ?? "",
+                                              "song_name": controller.nowData["title"] ?? "",
+                                              "artist_name": controller.nowData["subtitle"] ?? ""
+                                            });
+                                            EventUtils.instance.addEvent("play_click", data: {
+                                              "song_id": controller.nowData["videoId"] ?? "",
+                                              "song_name": controller.nowData["title"] ?? "",
+                                              "artist_name": controller.nowData["subtitle"] ?? "",
+                                              "station": "tab"
+                                            });
+                                            AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                          }
+                                          controller.isPlaying.toggle();
+                                        },
+                                      ))
                                   : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
 
                               SizedBox(
@@ -170,8 +169,7 @@ class PlayerBottomBarView extends StatelessWidget {
                         left: 32.w,
                         bottom: 3.w,
                         right: 32.w,
-                        child: Obx(() =>
-                            LinearProgressIndicator(
+                        child: Obx(() => LinearProgressIndicator(
                               minHeight: 2.w,
                               borderRadius: BorderRadius.circular(1.w),
                               backgroundColor: const Color(0xff141414).withOpacity(0.2),

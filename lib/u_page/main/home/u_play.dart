@@ -254,7 +254,11 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                       "station": "play_center"
                                     });
 
-                                    EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
+                                    EventUtils.instance.addEvent("play_succ", data: {
+                                      "song_id": controller.nowData["videoId"],
+                                      "song_name": controller.nowData["title"] ?? "",
+                                      "artist_name": controller.nowData["subtitle"] ?? "",
+                                    });
                                     controller.player?.play();
                                     AdUtils.instance.showAd("behavior", adScene: AdScene.play);
                                   }
@@ -1404,7 +1408,12 @@ class UserPlayInfoController extends GetxController {
             "song_name": nowData["title"],
             "artist_name": nowData["subtitle"],
           });
-          EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "Get url error"});
+          EventUtils.instance.addEvent("play_fail", data: {
+            "song_id": nowData["videoId"],
+            "song_name": nowData["title"],
+            "artist_name": nowData["subtitle"],
+            "reason": "Get url error",
+          });
           if (!isAutoNext) {
             ToastUtil.showToast(msg: "Get url error".tr);
           } else {
@@ -2383,7 +2392,11 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       "song_name": controller.nowData["title"] ?? "",
       "artist_name": controller.nowData["subtitle"] ?? "",
     });
-    EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
+    EventUtils.instance.addEvent("play_succ", data: {
+      "song_id": controller.nowData["videoId"] ?? "",
+      "song_name": controller.nowData["title"] ?? "",
+      "artist_name": controller.nowData["subtitle"] ?? "",
+    });
     EventUtils.instance.addEvent("play_click", data: {
       "song_id": controller.nowData["videoId"] ?? "",
       "song_name": controller.nowData["title"] ?? "",

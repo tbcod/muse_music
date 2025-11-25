@@ -1,4 +1,5 @@
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -21,6 +22,10 @@ class IdfaUtil {
     var sta = await ConsentInformation.instance.getConsentStatus();
     if (sta == ConsentStatus.obtained) {
       AppLog.i("idfa 已展示gdprStatus: ${sta.name}");
+      if(kDebugMode){
+        var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+        AppLog.e("idfa:$idfa");
+      }
       return true;
     }
 
