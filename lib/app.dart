@@ -157,12 +157,18 @@ class Application extends GetxService {
   }
 
   initFireBaseOther() async {
-    bool isIgnoreError(Object error) {
+    bool isIgnoreError(dynamic error) {
       if (error is DioException || error is HttpException || error is SocketException) {
         return true;
       }
 
-      final errorStr = error.toString();
+      var errorStr = "";
+      if (error is String) {
+        errorStr = error;
+      } else {
+        errorStr = error.toString();
+      }
+
       if (errorStr.contains('SocketException') ||
           errorStr.contains('HttpException') ||
           errorStr.contains('Error loading artUri') ||
@@ -175,11 +181,16 @@ class Application extends GetxService {
       if (errorStr.contains('RenderFlex overflowed')) {
         return true;
       }
+      if (errorStr.contains('Memory')) {
+        return true;
+      }
       return false;
     }
 
     FlutterError.onError = (errorDetails) {
-      if (isIgnoreError(errorDetails.exception)) {
+      if (isIgnoreError(errorDetails.exceptionAsString())) {
+        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exceptionAsString()}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+      } else if (isIgnoreError(errorDetails.exception)) {
         AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
@@ -191,7 +202,8 @@ class Application extends GetxService {
       if (isIgnoreError(error)) {
         AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
       } else {
-        AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
+        //PlatformDispatcher onError:type 'Null' is not a subtype of type 'Object'
+        AppLog.e("异常上报 PlatformDispatcher onError: $error, $stack");
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
       return true;

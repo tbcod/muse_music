@@ -739,7 +739,12 @@ class UserPlayInfoController extends GetxController {
 
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
-    await session.setActive(true);
+     // 3. 设置激活（处理异常）
+    try {
+      await session.setActive(true);
+    } catch (e) {
+      AppLog.e('Audio session activation failed: $e');
+    }
 
     session.interruptionEventStream.listen((event) async {
       if (event.begin) {
@@ -1029,27 +1034,35 @@ class UserPlayInfoController extends GetxController {
       player = null;
     }
 
+
     isLoaded.value = false;
     //设置歌单id
     playlistId = pid;
 
     if (list.isNotEmpty) {
       playList.value = list;
-      nowIndex = list.map((e) => e["videoId"]).toList().indexOf(item["videoId"]);
-      nowData.value = playList[nowIndex];
+      try {
+        nowIndex = list.map((e) => e["videoId"]).toList().indexOf(item["videoId"]);
+        nowData.value = playList[nowIndex];
+      } catch (_) {}
     }
+
     if (playList.isEmpty) {
       return;
     }
 
+
     if (clickType == "appOpen") {
-      playItemWithIndex(nowIndex, isOpenShowBar: true);
+      try {
+        playItemWithIndex(nowIndex, isOpenShowBar: true);
+      } catch (_) {}
       return;
     }
 
-    EventUtils.instance.addEvent("play_page", data: {"song_id": item["videoId"]});
+    EventUtils.instance.addEvent("play_page", data: {"song_id": item["videoId"] ?? ""});
 
-    EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": playlistId, "station": clickType});
+    EventUtils.instance
+        .addEvent("play_click", data: {"song_id": item["videoId"] ?? "", "song_name": item["title"] ?? "", "artist_name": item["subtitle"] ?? "", "playlist_id": playlistId, "station": clickType});
 
     playItemWithIndex(nowIndex);
 
@@ -1244,7 +1257,11 @@ class UserPlayInfoController extends GetxController {
   }
 
   playItemWithIndex(int index, {bool isAutoNext = false, bool isOpenShowBar = false, bool clickNext = false}) async {
-    ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
+    try {
+      ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
+    } catch (e) {
+      AppLog.e(e.toString());
+    }
 
     if (isPlaying.value) {
       await player?.pause();
@@ -2205,7 +2222,7 @@ class UserPlayInfoController extends GetxController {
   }
 
   removeDownload(int state) async {
-    DownloadUtils.instance.remove(nowData["videoId"], state: state);
+    DownloadUtils.instance.remove(nowData["videoId"], state: state, clickType: "play");
   }
 
   //添加到下一个播放
@@ -2352,9 +2369,13 @@ class UserPlayInfoController extends GetxController {
       if (isPlaying.isFalse) return;
       // AppLog.i("强行恢复播放$i, isPlaying:$isPlaying, isPlaying:${player?.value.isPlaying}");
       await Future.delayed(const Duration(milliseconds: 500));
-      final session = await AudioSession.instance;
-      await session.configure(const AudioSessionConfiguration.music());
-      await session.setActive(true);
+      try {
+        final session = await AudioSession.instance;
+        await session.configure(const AudioSessionConfiguration.music());
+        await session.setActive(true);
+      } catch (e) {
+        AppLog.e('Audio session activation failed: $e');
+      }
       player?.pause();
       player?.play().ignore();
     }

@@ -88,7 +88,6 @@ class MyDialogUtils {
       AppLog.e("message:$e");
     }
 
-
     // AppLog.e("导量:$importCode");
     if (importCode == 0) {
       return;
@@ -316,10 +315,28 @@ class RateDialog extends GetView {
                                         sp.setBool("IsShowedRateDialog", true);
                                         int starNum = value.toInt();
                                         if (starNum < 4) {
-                                          Get.to(FeedbackPage());
+                                          Get.to(() => const FeedbackPage());
                                         } else {
-                                          var url = "https://apps.apple.com/app/id6667107568?action=write-review";
-                                          launchUrl(Uri.parse(url));
+                                          try {
+                                            // 确保URL是有效的URI
+                                            var url = "https://apps.apple.com/app/id6667107568?action=write-review";
+                                            final uri = Uri.parse(url);
+                                            // 检查是否可以启动该URL
+                                            if (await canLaunchUrl(uri)) {
+                                              await launchUrl(
+                                                uri,
+                                                mode: LaunchMode.externalApplication, // 或 .externalNonBrowserApplication, .inAppBrowserView
+                                              );
+                                            } else {
+                                              print('无法打开URL: $url');
+                                              // 可以在这里处理备选方案
+                                            }
+                                          } on FormatException catch (e) {
+                                            print('URL格式错误: $e');
+                                          } catch (e) {
+                                            print('打开URL时出错: $e');
+                                          }
+                                          // launchUrl(Uri.parse(url));
                                         }
                                       }),
                                   SizedBox(

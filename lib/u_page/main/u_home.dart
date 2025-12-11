@@ -454,7 +454,7 @@ class UserHome extends GetView<UserHomeController> {
                                                 //下载中\下载暂停
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId, state: state);
+                                                    DownloadUtils.instance.remove(videoId, state: state, clickType: "home");
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -476,7 +476,7 @@ class UserHome extends GetView<UserHomeController> {
                                               } else if (state == 2) {
                                                 return InkWell(
                                                   onTap: () {
-                                                    DownloadUtils.instance.remove(videoId, state: state);
+                                                    DownloadUtils.instance.remove(videoId, state: state, clickType: "home");
                                                   },
                                                   child: Container(
                                                     height: 50.w,
@@ -1141,7 +1141,7 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
-      EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
+      EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "val": "fail", "reason": result.message ?? "No data"});
       if (netList.length < 5) {
         change("", status: RxStatus.error());
         // TbaUtils.instance.postUserData({"mm_type_so": "no"});
@@ -1150,7 +1150,7 @@ class UserHomeController extends GetxController with StateMixin {
       return;
     }
 
-    EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "suc"});
+    EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "val": "suc"});
 
     //下一页数据
     //{
