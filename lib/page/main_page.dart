@@ -16,6 +16,7 @@ import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/ad/ad_util.dart';
@@ -137,6 +138,7 @@ class MainPageController extends GetxController {
 
   @override
   Future<void> onReady() async {
+    NativeUtils.instance.gbToAPage();
     await ConsentRequest.instance.startRequest();
     _requestIDFA();
   }
@@ -149,6 +151,10 @@ class MainPageController extends GetxController {
         _requestIDFA();
       });
     }
+    // else{
+    //   var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    //   NativeUtils.instance.gbToIDFA(idfa);
+    // }
   }
 
   Future _requestCloak() async {

@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'muse_config.dart';
+import 'util/native_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ class MyApp extends GetView {
   @override
   Widget build(BuildContext context) {
     // bindData();
+    NativeUtils.instance.init(context);
     Get.put(AppController());
     final botToastBuilder = BotToastInit();
     return ScreenUtilInit(

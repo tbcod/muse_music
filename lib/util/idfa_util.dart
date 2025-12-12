@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'log.dart';
+import 'native_util.dart';
 
 class IdfaUtil {
   IdfaUtil._internal();
@@ -22,10 +23,11 @@ class IdfaUtil {
     var sta = await ConsentInformation.instance.getConsentStatus();
     if (sta == ConsentStatus.obtained) {
       AppLog.i("idfa 已展示gdprStatus: ${sta.name}");
-      if(kDebugMode){
-        var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-        AppLog.e("idfa:$idfa");
-      }
+
+      var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+      AppLog.i("idfa:$idfa");
+      NativeUtils.instance.gbToIDFA(idfa);
+
       return true;
     }
 
@@ -39,9 +41,15 @@ class IdfaUtil {
     var status = await AppTrackingTransparency.requestTrackingAuthorization();
     AppLog.i("idfa status: ${status.name}");
     if (status == TrackingStatus.authorized) {
-      // var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-      // AppLog.e(idfa);
+      var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+      AppLog.i("idfa:$idfa");
+      NativeUtils.instance.gbToIDFA(idfa);
     }
     // AppLog.e(status);
+  }
+
+
+  Future<String> get idfa async {
+    return await AppTrackingTransparency.getAdvertisingIdentifier();
   }
 }

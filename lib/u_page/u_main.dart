@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +228,14 @@ class UserMainController extends GetxController {
 
   @override
   Future<void> onReady() async {
+    NativeUtils.instance.gbToBPage();
+    NativeUtils.instance.gbToBPage2();
     await ConsentRequest.instance.startRequest();
+
+    // final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    // if (status == TrackingStatus.authorized) {
+    //   var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    // }
   }
 
   initData() async {

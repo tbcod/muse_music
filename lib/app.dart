@@ -189,9 +189,9 @@ class Application extends GetxService {
 
     FlutterError.onError = (errorDetails) {
       if (isIgnoreError(errorDetails.exceptionAsString())) {
-        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exceptionAsString()}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        AppLog.e("异常【不上报】：FlutterError errorDetails1:${errorDetails.exceptionAsString()}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else if (isIgnoreError(errorDetails.exception)) {
-        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        AppLog.e("异常【不上报】：FlutterError errorDetails2:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
         FirebaseCrashlytics.instance.recordFlutterError(errorDetails);

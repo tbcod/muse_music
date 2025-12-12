@@ -101,5 +101,11 @@ const Map<String, String> enUS = {
   "Videos": "Videos",
   "Albums": "Albums",
   "Artists": "Artists",
-  "playlists": "playlists"
+  "playlists": "playlists",
+  "year": "Year",
+  "week": "Week",
+  "lifeTime": "Life Time",
+  "restore": "Restore",
+  "autoRenewal" : "Auto-renewal: @price per year. Cancel anytime.",
+  "continue": "Continue"
 };

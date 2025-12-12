@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/u_page/main/libray/u_download_song.dart';
 import 'package:music_muse/u_page/main/libray/u_like_artist.dart';
 import 'package:music_muse/u_page/main/libray/u_like_song.dart';
@@ -46,6 +47,17 @@ class UserLibrary extends GetView<UserLibraryController> {
             style: TextStyle(fontSize: 20.w),
           ),
           titleSpacing: 12.w,
+          actions: [
+            GestureDetector(
+              onTap: (){
+                Get.to(()=> UPurchasePage());
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+              ),
+            ),
+          ],
         ),
         body: Container(
           child: ListView(

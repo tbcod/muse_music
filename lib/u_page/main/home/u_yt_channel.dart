@@ -21,7 +21,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserYoutubeChannelController());
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
               image: AssetImage("assets/oimg/all_page_bg.png"),

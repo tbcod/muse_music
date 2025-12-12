@@ -22,6 +22,7 @@ import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/home/u_more_artist.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/u_page/main/home/u_yt_channel.dart';
 import 'package:music_muse/u_page/main/search/u_search.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
@@ -94,6 +95,17 @@ class UserHome extends GetView<UserHomeController> {
               ),
             ),
           ),
+          actions: [
+            GestureDetector(
+              onTap: (){
+                Get.to(()=> UPurchasePage());
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+              ),
+            ),
+          ],
         ),
         body: controller.obxView(
             (state) => EasyRefresh.builder(

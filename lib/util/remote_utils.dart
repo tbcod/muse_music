@@ -61,7 +61,7 @@ class RemoteUtil {
     //获取云控字段
     try {
       await FirebaseRemoteConfig.instance.setConfigSettings(
-        RemoteConfigSettings(fetchTimeout: const Duration(seconds: 15), minimumFetchInterval: const Duration(seconds: 30)),
+        RemoteConfigSettings(fetchTimeout: const Duration(seconds: 20), minimumFetchInterval: const Duration(seconds: 0)),
       );
       await FirebaseRemoteConfig.instance.fetchAndActivate();
       FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
@@ -119,8 +119,8 @@ class RemoteUtil {
       _openAdStr = openAdStr;
 
 
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e,s) {
+      AppLog.e("初始化firebase失败：${e.toString()}, \n$s");
     }
   }
 
