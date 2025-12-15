@@ -1,18 +1,20 @@
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:music_muse/const/bus.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main/setting/only_web.dart';
-import 'package:music_muse/util/dialog_util.dart';
-import 'package:music_muse/util/idfa_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/toast.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:uuid/uuid.dart';
+import 'package:music_muse/util/vip_utils.dart';
+
+enum PurchasePageFrom {
+  enter,
+  home,
+  setting,
+  library,
+}
 
 class UPurchasePageController extends GetxController {
   List<Map<String, dynamic>> get products => _products;
@@ -25,8 +27,13 @@ class UPurchasePageController extends GetxController {
 
   final _inAppPurchase = InAppPurchase.instance;
 
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
+
+  late String station;
+
   @override
   void onInit() {
+    station = Get.arguments ?? PurchasePageFrom.home.name;
     _products.value = MuseConfig.isUser
         ? [
             {"id": "com.musicmuse.subscription.weekly", "name": "1 ${"week".tr}", "price": 2.99},
@@ -38,18 +45,65 @@ class UPurchasePageController extends GetxController {
             {"id": "year_b1", "name": "1 ${"year".tr}", "price": 24.99, "detail": ""},
             {"id": "life_time_b", "name": "lifeTime".tr, "price": 39.99}
           ];
+    final Stream<List<PurchaseDetails>> purchaseUpdated = InAppPurchase.instance.purchaseStream;
+    _subscription = purchaseUpdated.listen((purchaseDetailsList) async {
+      for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+        String? transactionDate = purchaseDetails.transactionDate;
+        // DateTime? dateTime;
+        // if (transactionDate != null) {
+        //   dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(transactionDate));
+        // }
+        AppLog.i("purchaseUpdated listen productID：${purchaseDetails.productID}, status:${purchaseDetails.status.name} ,$transactionDate, ${purchaseDetails.verificationData.serverVerificationData}");
+        if (purchaseDetails.status == PurchaseStatus.pending) {
+          LoadingUtil.showLoading();
+        } else {
+          LoadingUtil.hideAllLoading();
+          if (purchaseDetails.status == PurchaseStatus.error) {
+            AppLog.e("purchaseUpdated error:${purchaseDetails.error?.toString()}");
+            ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
+            EventUtils.instance.addEvent("premium_fail", data: {"error": purchaseDetails.error?.toString() ?? "Purchase error"});
+          } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
+            bool valid = await _verifyPurchase(purchaseDetails);
+            if (valid) {
+              if (purchaseDetails.pendingCompletePurchase) {
+                await InAppPurchase.instance.completePurchase(purchaseDetails);
+              }
+              VipUtil.instance.vip = true;
+              museSp.setBool(keyIsVip, true);
+              ToastUtil.showToast(msg: 'subscribedSuc'.tr, type: IconType.success);
+              EventUtils.instance.addEvent("premium_succ", data: {"pay_id": purchaseDetails.productID});
+              Get.back();
+              return;
+            } else {
+              ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
+              EventUtils.instance.addEvent("premium_fail", data: {"error": purchaseDetails.status.name});
+            }
+          } else if (purchaseDetails.status == PurchaseStatus.canceled) {
+            ToastUtil.showToast(msg: 'canceled'.tr, type: IconType.error);
+            EventUtils.instance.addEvent("premium_fail", data: {"error": "user cancel"});
+          }
+          if (purchaseDetails.pendingCompletePurchase) {
+            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          }
+        }
+      }
+    }, onDone: () {
+      _subscription.cancel();
+    }, onError: (error) {
+      AppLog.e("purchaseUpdated error:${error.toString()}");
+    });
     super.onInit();
   }
 
   @override
   void onReady() {
-    // TODO: implement onReady
+    EventUtils.instance.addEvent("premium_page", data: {"station": station, "load": "true", "load_page": MuseConfig.isUser ? "b" : "a"});
     super.onReady();
   }
 
   @override
   void onClose() {
-    // TODO: implement onClose
+    _subscription.cancel();
     super.onClose();
   }
 
@@ -59,15 +113,10 @@ class UPurchasePageController extends GetxController {
     /// _inAppPurchase是否有效
     final bool isAvailable = await _inAppPurchase.isAvailable();
     if (!isAvailable) {
+      AppLog.e("inAppPurchase isAvailable:$isAvailable");
       LoadingUtil.hideAllLoading();
       return;
     }
-
-    /// 如果是iOS设备进行设置代理，接口苹果服务器的回调。
-    // if (Platform.isIOS) {
-    //   final InAppPurchaseStoreKitPlatformAddition iosPlatformAddition = _inAppPurchase.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
-    //   await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
-    // }
 
     List<String> kProductIds = [id];
 
@@ -75,17 +124,18 @@ class UPurchasePageController extends GetxController {
     final ProductDetailsResponse productDetailResponse = await _inAppPurchase.queryProductDetails(kProductIds.toSet());
 
     if (productDetailResponse.error != null) {
-      AppLog.e("获取产品信息失败,${productDetailResponse.error.toString()}");
+      AppLog.e("获取内购产品信息失败： ${productDetailResponse.error.toString()}");
       LoadingUtil.hideAllLoading();
-      ToastUtil.showToast(msg: "Failed to get product information!");
+      ToastUtil.showToast(msg: "failedGetProduct".tr);
       return;
     }
     if (productDetailResponse.productDetails.isEmpty) {
-      AppLog.e("查询不到商品详情说明没注册 暂无产品");
+      AppLog.e("查询不到内购商品，没注册？暂无产品");
       LoadingUtil.hideAllLoading();
-      ToastUtil.showToast(msg: "No products yet!");
+      ToastUtil.showToast(msg: "noProducts".tr);
       return;
     }
+    LoadingUtil.hideAllLoading();
 
     List<ProductDetails> products = productDetailResponse.productDetails;
 
@@ -96,10 +146,16 @@ class UPurchasePageController extends GetxController {
     /// 添加自己服务器上生成的订单
     PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
 
-    AppLog.i("获取产品成功, 发起支付: ${productDetails.title}, ${productDetails.description}, ${productDetails.price}");
+    AppLog.i("获取内购产品成功, 发起支付: ${productDetails.title}, ${productDetails.description}, ${productDetails.price}");
 
-    /// 向苹果服务器发起支付请求
-    await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    // 向苹果服务器发起支付请求
+    try {
+      LoadingUtil.showLoading();
+      await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    } catch (e) {
+      AppLog.e('购买出错：${e.toString()}');
+    }
+    LoadingUtil.hideAllLoading();
   }
 
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) async {
@@ -107,18 +163,16 @@ class UPurchasePageController extends GetxController {
     if (data.isEmpty) return false;
     LoadingUtil.showLoading();
 
-    // var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
-    // bool? val = result;
-
-    // bool? val = await HttpApiIap.instance.requestIapReceiptVerifier(data, productId: purchaseDetails.productID);
+    bool? val = await VipUtil.instance.requestIapReceiptVerifier(data, productId: purchaseDetails.productID);
     LoadingUtil.hideAllLoading();
-    // if (val == true) return true;
+    if (val == true) return true;
     return false;
   }
 
   void onClickPrice(int index) {
     curPlanIndex.value = index;
-    // EventUtils.instance.addEvent("sub_page_click", data: {"location": formSource});
+    String curProduct = products[index]["id"];
+    EventUtils.instance.addEvent("premium_page_click", data: {"pay_id": curProduct});
   }
 
   void onClickPay() {
@@ -126,9 +180,12 @@ class UPurchasePageController extends GetxController {
     int curIndex = curPlanIndex.value;
     String curProduct = products[curIndex]["id"];
     payWithProductId(curProduct);
+    EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "other"});
   }
 
   Future<void> onClickRestore() async {
+    EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "restore"});
+
     LoadingUtil.showLoading(msg: "Restoring...");
     Future.delayed(const Duration(seconds: 10)).then((value) => LoadingUtil.hideAllLoading());
     try {
@@ -139,72 +196,13 @@ class UPurchasePageController extends GetxController {
     LoadingUtil.hideAllLoading();
   }
 
-
   void onClickPrivacyPolicy() {
+    EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "other"});
     Get.to(() => const OnlyWeb(), arguments: 2);
   }
 
   void onClickTermsService() {
-    Get.to(() => const OnlyWeb(), arguments: 2);
+    EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "other"});
+    Get.to(() => const OnlyWeb(), arguments: 1);
   }
-}
-
-class PurchaseDio {
-  PurchaseDio._internal();
-
-  static final PurchaseDio _instance = PurchaseDio._internal();
-
-  static PurchaseDio get instance {
-    return _instance;
-  }
-
-  Future<dynamic> getIapReceiptVerifier(String receiptData, {String? productId}) async {
-    Options option = Options(
-      validateStatus: (_) => true,
-      contentType: Headers.jsonContentType,
-      responseType: ResponseType.json,
-    );
-    String deviceId = await this.deviceId;
-    String packageName = (await packageInfo).packageName;
-    String idfa = await IdfaUtil.instance.idfa;
-    try {
-      Map<String, dynamic> params = {
-        "device_id": deviceId,
-        "package_name": packageName,
-        "biz_params": {"idfa": idfa},
-        "receipt_base64_data": receiptData
-      };
-      if (productId != null) {
-        params["product_id"] = productId;
-      }
-      String api = MuseConfig.isUser ? "https://prodapi.apporder.net" : "https://apporder.powerfulclean.net";
-      String path = "$api/v1/ios/receipt-verifier";
-      AppLog.i("request(post):$path, data:$params");
-      final response = await Dio().post(path, data: params, options: option);
-      AppLog.i("response:${response.data}");
-      return response;
-    } catch (e) {
-      AppLog.e('Post 异常$e');
-    }
-    return null;
-  }
-
-  Future<PackageInfo> get packageInfo async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo;
-  }
-
-  Future<String> get deviceId async {
-    String? deviceId = museSp.getString('keyDeviceId');
-    if (deviceId == null) {
-      final deviceInfoPlugin = DeviceInfoPlugin();
-      IosDeviceInfo deviceInfo = await deviceInfoPlugin.iosInfo;
-      deviceId = deviceInfo.identifierForVendor ?? const Uuid().v4();
-      museSp.setString('keyDeviceId', deviceId);
-    }
-    // logPrint.i("deviceId:$deviceId");
-    return deviceId;
-  }
-
-
 }

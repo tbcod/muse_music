@@ -22,6 +22,7 @@ import 'package:music_muse/u_page/main/home/u_artist.dart';
 import 'package:music_muse/u_page/main/home/u_more_artist.dart';
 import 'package:music_muse/u_page/main/home/u_play.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
 import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/u_page/main/home/u_yt_channel.dart';
 import 'package:music_muse/u_page/main/search/u_search.dart';
@@ -34,6 +35,7 @@ import 'package:music_muse/util/more_sheet_util.dart';
 import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/net_img.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -96,15 +98,20 @@ class UserHome extends GetView<UserHomeController> {
             ),
           ),
           actions: [
-            GestureDetector(
-              onTap: (){
-                Get.to(()=> UPurchasePage());
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-              ),
-            ),
+            Obx(() {
+              if (!VipUtil.instance.isVip) {
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                  ),
+                );
+              }
+              return Container();
+            }),
           ],
         ),
         body: controller.obxView(

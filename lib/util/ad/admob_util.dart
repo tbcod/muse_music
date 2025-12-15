@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/util/idfa_util.dart';
+import 'package:music_muse/util/vip_utils.dart';
 
 import '../log.dart';
 import '../tba/tba_util.dart';
@@ -53,6 +54,9 @@ class AdmobUtils {
   Future<Ad?> loadNativeAd(
       String adId, String key, String positionKey, Rx<Widget> adView) async {
     Widget view = Container();
+
+    if(VipUtil.instance.isVip) return null;
+
     Completer<Ad?> completer = Completer();
 
     view = Container(

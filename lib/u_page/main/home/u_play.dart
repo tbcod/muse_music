@@ -805,7 +805,11 @@ class UserPlayInfoController extends GetxController {
       }
     });
 
-    myHandler = await AudioService.init(builder: () => MyVideoHandler());
+    try{
+      myHandler = await AudioService.init(builder: () => MyVideoHandler());
+    }catch(e,s){
+      AppLog.e(e.toString());
+    }
 
     checkShowDownloadGuide();
 

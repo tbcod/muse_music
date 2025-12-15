@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:music_muse/const/db_key.dart';
 import 'package:music_muse/ext/state_ext.dart';
 import 'package:music_muse/u_page/main/home/u_play_list.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
 import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/u_page/main/libray/u_download_song.dart';
 import 'package:music_muse/u_page/main/libray/u_like_artist.dart';
@@ -18,6 +19,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/more_sheet_util.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/net_img.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,10 +36,7 @@ class UserLibrary extends GetView<UserLibraryController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserLibraryController());
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -48,15 +47,20 @@ class UserLibrary extends GetView<UserLibraryController> {
           ),
           titleSpacing: 12.w,
           actions: [
-            GestureDetector(
-              onTap: (){
-                Get.to(()=> UPurchasePage());
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-              ),
-            ),
+            Obx(() {
+              if (!VipUtil.instance.isVip) {
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.library.name);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                  ),
+                );
+              }
+              return Container();
+            }),
           ],
         ),
         body: Container(
@@ -83,8 +87,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                               child: Column(
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 27.w, horizontal: 16.w),
+                                    padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.w),
                                       color: Color(0xffF5F3FF).withOpacity(0.5),
@@ -94,21 +97,15 @@ class UserLibrary extends GetView<UserLibraryController> {
                                     child: controller.likeCover.isNotEmpty
                                         ? Container(
                                             clipBehavior: Clip.hardEdge,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.w)),
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
                                             child: NetImageView(
-                                              imgUrl:
-                                                  controller.likeCover.value,
+                                              imgUrl: controller.likeCover.value,
                                               fit: BoxFit.cover,
                                             ),
                                           )
                                         : Container(
                                             clipBehavior: Clip.hardEdge,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(4.w)),
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                                             child: Image.asset(
                                               Assets.oimgIconLibLike,
                                               fit: BoxFit.cover,
@@ -120,9 +117,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                   ),
                                   Text(
                                     "Liked songs".tr,
-                                    style: TextStyle(
-                                        fontSize: 14.w,
-                                        fontWeight: FontWeight.w500),
+                                    style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                                   )
                                 ],
                               ),
@@ -134,10 +129,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                     ? Container(
                                         width: 8.w,
                                         height: 8.w,
-                                        decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius:
-                                                BorderRadius.circular(4.w)),
+                                        decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
                                       )
                                     : Container())
                           ],
@@ -159,34 +151,23 @@ class UserLibrary extends GetView<UserLibraryController> {
                                       Container(
                                         width: 108.w,
                                         height: 130.w,
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 27.w, horizontal: 16.w),
+                                        padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.w),
-                                          color: Color(0xffB4F6FF)
-                                              .withOpacity(0.09),
+                                          borderRadius: BorderRadius.circular(10.w),
+                                          color: Color(0xffB4F6FF).withOpacity(0.09),
                                         ),
-                                        child: controller
-                                                .downloadCover.isNotEmpty
+                                        child: controller.downloadCover.isNotEmpty
                                             ? Container(
                                                 clipBehavior: Clip.hardEdge,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.w)),
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
                                                 child: NetImageView(
-                                                  imgUrl: controller
-                                                      .downloadCover.value,
+                                                  imgUrl: controller.downloadCover.value,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
                                             : Container(
                                                 clipBehavior: Clip.hardEdge,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4.w)),
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                                                 child: Image.asset(
                                                   "assets/oimg/icon_lib_download.png",
                                                   fit: BoxFit.cover,
@@ -198,9 +179,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                       ),
                                       Text(
                                         "Local songs".tr,
-                                        style: TextStyle(
-                                            fontSize: 14.w,
-                                            fontWeight: FontWeight.w500),
+                                        style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                                       )
                                     ],
                                   ),
@@ -212,10 +191,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                         ? Container(
                                             width: 8.w,
                                             height: 8.w,
-                                            decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(4.w)),
+                                            decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
                                           )
                                         : Container())
                               ],
@@ -235,35 +211,25 @@ class UserLibrary extends GetView<UserLibraryController> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 27.w, horizontal: 16.w),
+                                      padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                       decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.w),
-                                        color:
-                                            Color(0xffFFEAEC).withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(10.w),
+                                        color: Color(0xffFFEAEC).withOpacity(0.15),
                                       ),
                                       width: 108.w,
                                       height: 130.w,
                                       child: controller.artistCover.isNotEmpty
                                           ? Container(
                                               clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.w)),
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
                                               child: NetImageView(
-                                                imgUrl: controller
-                                                    .artistCover.value,
+                                                imgUrl: controller.artistCover.value,
                                                 fit: BoxFit.cover,
                                               ),
                                             )
                                           : Container(
                                               clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          4.w)),
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                                               child: Image.asset(
                                                 "assets/oimg/icon_lib_artist.png",
                                                 fit: BoxFit.cover,
@@ -275,9 +241,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                     ),
                                     Text(
                                       "Artist".tr,
-                                      style: TextStyle(
-                                          fontSize: 14.w,
-                                          fontWeight: FontWeight.w500),
+                                      style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
                                     )
                                   ],
                                 ),
@@ -289,10 +253,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                       ? Container(
                                           width: 8.w,
                                           height: 8.w,
-                                          decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(4.w)),
+                                          decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
                                         )
                                       : Container())
                             ],
@@ -312,8 +273,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                   children: [
                     Text(
                       "Playlist".tr,
-                      style: TextStyle(
-                          fontSize: 18.w, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.w500),
                     ),
                     Spacer(),
                     GestureDetector(
@@ -322,9 +282,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                       },
                       child: Container(
                         height: 28.w,
-                        decoration: BoxDecoration(
-                            color: Color(0xff876CFF),
-                            borderRadius: BorderRadius.circular(14.w)),
+                        decoration: BoxDecoration(color: Color(0xff876CFF), borderRadius: BorderRadius.circular(14.w)),
                         padding: EdgeInsets.symmetric(horizontal: 9.w),
                         child: Row(
                           children: [
@@ -335,8 +293,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                             ),
                             Text(
                               "New playlist".tr,
-                              style: TextStyle(
-                                  fontSize: 10.w, color: Colors.white),
+                              style: TextStyle(fontSize: 10.w, color: Colors.white),
                             )
                           ],
                         ),
@@ -351,11 +308,7 @@ class UserLibrary extends GetView<UserLibraryController> {
               controller.obxView(
                   (s) => Obx(
                         () => ListView.separated(
-                            padding: EdgeInsets.only(
-                                top: 12.w,
-                                bottom: 100.w,
-                                left: 8.w,
-                                right: 8.w),
+                            padding: EdgeInsets.only(top: 12.w, bottom: 100.w, left: 8.w, right: 8.w),
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (_, i) {
@@ -414,15 +367,13 @@ class UserLibrary extends GetView<UserLibraryController> {
       onTap: () {
         if (isNetPlaylist) {
           //网络歌单
-          EventUtils.instance
-              .addEvent("det_playlist_show", data: {"from": "library"});
+          EventUtils.instance.addEvent("det_playlist_show", data: {"from": "library"});
           // Get.to(UserPlayListInfo(), arguments: {"browseId": item["id"]});
           Get.to(UserPlayListInfo(), arguments: item);
           return;
         }
 
-        EventUtils.instance
-            .addEvent("det_playlist_show", data: {"from": "library"});
+        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "library"});
 
         // EventUtils.instance.addEvent("library_artist");
         Get.to(UserLocPlayListInfo(), arguments: item);
@@ -442,9 +393,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                     child: Container(
                       width: 48.w,
                       height: 48.w,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2.w),
-                          color: Color(0xffE0E0EF)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)),
                     ),
                   ),
 
@@ -455,8 +404,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                       width: 54.w,
                       height: 54.w,
                       clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2.w)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
                       child: item["cover"] == null
                           ?
                           //默认封面
@@ -489,11 +437,8 @@ class UserLibrary extends GetView<UserLibraryController> {
                   height: 12.w,
                 ),
                 Text(
-                  isNetPlaylist
-                      ? "${item["subtitle"] ?? ""}"
-                      : "${childList.length} songs",
-                  style: TextStyle(
-                      fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
+                  isNetPlaylist ? "${item["subtitle"] ?? ""}" : "${childList.length} songs",
+                  style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
                 ),
               ],
             )),
@@ -532,10 +477,7 @@ class UserLibraryController extends GetxController with StateMixin {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -563,9 +505,7 @@ class UserLibraryController extends GetxController with StateMixin {
                 onChanged: (s) {
                   canClick.value = s.trim().isNotEmpty;
                 },
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.w),
-                    color: Colors.white),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Colors.white),
               ),
             ),
             SizedBox(
@@ -583,16 +523,10 @@ class UserLibraryController extends GetxController with StateMixin {
                           child: Container(
                             height: 48.w,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(
-                                    color: Color(0xff824EFF).withOpacity(0.75),
-                                    width: 2.w)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
-                              style: TextStyle(
-                                  fontSize: 14.w,
-                                  color: Color(0xff824EFF).withOpacity(0.75)),
+                              style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75)),
                             ),
                           ))),
                   SizedBox(
@@ -614,15 +548,12 @@ class UserLibraryController extends GetxController with StateMixin {
                                 height: 48.w,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: canClick.value
-                                      ? Color(0xff824EFF)
-                                      : Color(0xff824EFF).withOpacity(0.5),
+                                  color: canClick.value ? Color(0xff824EFF) : Color(0xff824EFF).withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(24.w),
                                 ),
                                 child: Text(
                                   "Confirm".tr,
-                                  style: TextStyle(
-                                      fontSize: 14.w, color: Colors.white),
+                                  style: TextStyle(fontSize: 14.w, color: Colors.white),
                                 ),
                               )))),
                 ],
@@ -661,10 +592,8 @@ class UserLibraryController extends GetxController with StateMixin {
   var artistCover = "".obs;
 
   bindNewData() async {
-    likeCover.value =
-        LikeUtil.instance.allVideoMap.values.lastOrNull?["cover"] ?? "";
-    artistCover.value =
-        LikeUtil.instance.allArtistMap.values.lastOrNull?["cover"] ?? "";
+    likeCover.value = LikeUtil.instance.allVideoMap.values.lastOrNull?["cover"] ?? "";
+    artistCover.value = LikeUtil.instance.allArtistMap.values.lastOrNull?["cover"] ?? "";
     List allDData = DownloadUtils.instance.allDownLoadingData.values.toList();
     var dList = List.of(allDData).reversed.toList();
     var newItem = dList.firstWhereOrNull((e) => e["state"] == 2);

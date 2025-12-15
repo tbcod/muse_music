@@ -421,7 +421,7 @@ class ApiMain extends BaseApi {
     header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
     BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
 
-    // AppLog.i("postPlaybackUrl:$url, result:${result.code}");
+    // AppLog.i("postPlaybackUrl:$url, header:$header， result:${result.code}");
   }
 
   _postWatchTime(String? url,
@@ -455,7 +455,7 @@ class ApiMain extends BaseApi {
     header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
     BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
 
-    // AppLog.i("postWatchTime:$url, result:${result.code}");
+    // AppLog.i("postWatchTime:$url, header:$header, result:${result.code}");
   }
 
   Map<String, dynamic> get _header {

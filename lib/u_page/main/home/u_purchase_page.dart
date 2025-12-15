@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/generated/assets.dart';
+import 'package:music_muse/util/tba/event_util.dart';
 
 import 'u_purchase_controller.dart';
 
@@ -48,6 +49,7 @@ class UPurchasePage extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
+                            EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "close"});
                             Get.back();
                           },
                           behavior: HitTestBehavior.opaque,
@@ -57,7 +59,9 @@ class UPurchasePage extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            controller.onClickRestore();
+                          },
                           behavior: HitTestBehavior.opaque,
                           child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

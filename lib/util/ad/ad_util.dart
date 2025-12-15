@@ -13,6 +13,7 @@ import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as admob;
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/launch_loading.dart';
 
 import '../../app.dart';
@@ -215,6 +216,9 @@ class AdUtils {
 
   //load
   Future<bool> loadAd(String key, {LoadCallback? onLoad}) async {
+
+    if(VipUtil.instance.isVip) return false;
+
     if (!bus.isBMode && key == 'open') {
       key = "muse_local_int";
     }
@@ -628,6 +632,8 @@ class AdUtils {
     //   onShow.onShowFail!("", AdError(-1, "", "show key error"));
     // }
     // return false;
+
+    if(VipUtil.instance.isVip) return false;
 
     if (adIsShowing) {
       if (onShow != null) {
@@ -1280,7 +1286,11 @@ class MyNativeAdViewController extends GetxController {
   Ad? admobAd;
 
   loadAd(String key, String positionKey) async {
+
+    if(VipUtil.instance.isVip) return;
+
     adView.value = Container();
+
 
     var adJson = AdUtils.instance.adJson;
     if (!adJson.containsKey(key)) {

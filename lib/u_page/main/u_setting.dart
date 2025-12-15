@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/generated/assets.dart';
 import 'package:music_muse/muse_config.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
 import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -62,24 +64,29 @@ class UserSetting extends GetView<UserSettingController> {
                     height: 44,
                   )),
               const SizedBox(width: 6),
-              GestureDetector(
-                onTap: (){
-                  Get.to(()=> UPurchasePage());
-                 },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                ),
-              ),
+              Obx(() {
+                return Visibility(
+                  visible: !VipUtil.instance.isVip,
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.setting.name);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
           body: Column(
             children: [
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   NativeUtils.instance.gbToH5Page();
                 },
-                child: Image.asset(Assets.oimgSetH5,width: ScreenUtil().screenWidth - 16,fit: BoxFit.fitWidth),
+                child: Image.asset(Assets.oimgSetH5, width: ScreenUtil().screenWidth - 16, fit: BoxFit.fitWidth),
               ),
               Expanded(
                 child: Obx(() => ListView.separated(

@@ -22,6 +22,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -59,7 +60,6 @@ class UserMain extends GetView<UserMainController> {
             currentIndex: controller.nowIndex.value,
             backgroundColor: Colors.white,
             onTap: (index) {
-              IdfaUtil.instance.showIdfaDialog();
               if (controller.nowIndex.value == index) {
                 return;
               }
@@ -164,6 +164,7 @@ class UserMainController extends GetxController {
           // Get.find<UserPlayInfoController>().reLoadAndPlay();
         }
         lastResult = ConnectivityResult.wifi;
+        VipUtil.instance.requestVipStatus();
       } else if (result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "The current network is mobile");
         if (lastResult == ConnectivityResult.none) {
@@ -181,6 +182,7 @@ class UserMainController extends GetxController {
         }
 
         lastResult = ConnectivityResult.mobile;
+        VipUtil.instance.requestVipStatus();
       } else if (!result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "Network interruption, check the network");
         if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
@@ -231,6 +233,7 @@ class UserMainController extends GetxController {
     NativeUtils.instance.gbToBPage();
     NativeUtils.instance.gbToBPage2();
     await ConsentRequest.instance.startRequest();
+    VipUtil.instance.requestVipStatus();
 
     // final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     // if (status == TrackingStatus.authorized) {

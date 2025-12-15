@@ -39,7 +39,7 @@ class IdfaUtil {
     // return false;
 
     var status = await AppTrackingTransparency.requestTrackingAuthorization();
-    AppLog.i("idfa status: ${status.name}");
+    // AppLog.i("idfa status: ${status.name}");
     if (status == TrackingStatus.authorized) {
       var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
       AppLog.i("idfa:$idfa");

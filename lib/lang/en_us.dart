@@ -107,5 +107,10 @@ const Map<String, String> enUS = {
   "lifeTime": "Life Time",
   "restore": "Restore",
   "autoRenewal" : "Auto-renewal: @price per year. Cancel anytime.",
-  "continue": "Continue"
+  "continue": "Continue",
+  "subscriptionFail": "Subscription failed! Please attempt the process again!",
+  "subscribedSuc":"Subscribed successfully! Enjoy your membership perks!",
+  "canceled": "Canceled",
+  "failedGetProduct": "Failed to get product information!",
+  "noProducts": "No products yet!"
 };
