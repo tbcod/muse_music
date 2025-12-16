@@ -66,9 +66,9 @@ class UPurchasePage extends StatelessWidget {
                           child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), border: Border.all(color: Colors.white.withOpacity(0.5))),
-                              child: const Text(
-                                "Restore",
-                                style: TextStyle(color: Colors.white, fontSize: 10),
+                              child: Text(
+                                'restore'.tr,
+                                style: const TextStyle(color: Colors.white, fontSize: 10),
                               )),
                         )
                       ],
@@ -88,7 +88,7 @@ class UPurchasePage extends StatelessWidget {
   }
 
   Widget _textSection(BuildContext context) {
-    List texts = ["Unlimited Downloads", "Ad-Free", "Watch Youtube video offline", "Play music background"];
+    List texts = controller.contentTips;
     return Container(
       margin: const EdgeInsets.only(left: 18),
       child: Column(
@@ -200,10 +200,13 @@ class UPurchasePage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'autoRenewal'.trParams({"price": "1"}),
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff1a1a1a)),
-          ),
+          Obx(() {
+            controller.products;
+            return Text(
+              'autoRenewal'.trParams({"price": controller.yearPriceStr}),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff1a1a1a)),
+            );
+          }),
           SizedBox(height: 12.h),
           GestureDetector(
             onTap: () => controller.onClickPay(),

@@ -23,8 +23,7 @@ const Map<String, String> esES = {
   "Local songs": "Canciones locales",
   "Liked Artist": "Artista favorito",
   "like": "Favorito",
-  "Search for music/artist/playlist":
-      "Buscar música / artista / lista de reproducción",
+  "Search for music/artist/playlist": "Buscar música / artista / lista de reproducción",
   "History record": "Registro de historial",
   "Delete": "Eliminar",
   "More": "Más",
@@ -51,8 +50,7 @@ const Map<String, String> esES = {
   "httpError": "Sin conexión de red",
   "Delete successfully": "Eliminado correctamente",
   "Upload successfully": "Subido correctamente",
-  "Please enter your feedback or email":
-      "Por favor, introduzca su retroalimentación o correo electrónico",
+  "Please enter your feedback or email": "Por favor, introduzca su retroalimentación o correo electrónico",
   "Email is Error": "El correo electrónico es incorrecto",
   "Feedback successful": "Retroalimentación realizada correctamente",
   "Feedback content": "Contenido de la retroalimentación",
@@ -63,8 +61,7 @@ const Map<String, String> esES = {
   "Delete ok": "Eliminado correctamente",
   "Add songs to playlist": "Añadir canciones a la lista de reproducción",
   "Choose playlist": "Elegir lista de reproducción",
-  "No content now, Add songs you like":
-      "No hay contenido en este momento, añade las canciones que te gustan",
+  "No content now, Add songs you like": "No hay contenido en este momento, añade las canciones que te gustan",
   "Failed to get artist": "No se ha podido obtener al artista",
   "videoId error": "Error en el identificador de vídeo",
   "Already in the list": "Ya está en la lista",
@@ -72,32 +69,23 @@ const Map<String, String> esES = {
   "Followed this singer": "Siguiendo a este cantante",
   "Followed this playlist": "Siguiendo a esta lista de reproducción",
   "Followed this song": "Siguiendo a esta canción",
-  "You have canceled following this singer":
-      "Has cancelado seguir a este cantante",
-  "You have canceled following this playlist":
-      "Has cancelado seguir a esta lista de reproducción",
-  "You have canceled following this song":
-      "Has cancelado seguir a esta canción",
+  "You have canceled following this singer": "Has cancelado seguir a este cantante",
+  "You have canceled following this playlist": "Has cancelado seguir a esta lista de reproducción",
+  "You have canceled following this song": "Has cancelado seguir a esta canción",
   "Please enter content": "Por favor, introduzca contenido",
   "Please enter email": "Por favor, introduzca su correo electrónico",
-  "Please enter a playlist name":
-      "Por favor, introduzca el nombre de la lista de reproducción",
+  "Please enter a playlist name": "Por favor, introduzca el nombre de la lista de reproducción",
   "deleteStr": "¿Deseas eliminar el registro de historial?",
   "addToPlaylistOk": "Añadido a la lista de reproducción",
   "alreadyAdd": "Esta canción ya está en la lista",
-  "noWifiStr":
-      "El entorno actual no es Wi-Fi, ten en cuenta el consumo de datos",
+  "noWifiStr": "El entorno actual no es Wi-Fi, ten en cuenta el consumo de datos",
   "noNetworkStr1": "Interrupción de red, la descarga se ha pausado",
   "noNetworkStr2": "No hay conexión a Internet",
-  "otherAppDialogText1":
-      "Tenga en cuenta que la aplicación actual ya no está soportada. Por favor, descargue nuestra nueva aplicación para seguir disfrutando de toda la música.",
-  "otherAppDialogText2":
-      "La aplicación actual ya no recibe actualizaciones. Para una experiencia mejorada, le recomendamos descargar nuestra nueva aplicación.",
-  "playCopyrightStr":
-      "Por motivos de derechos de autor, la canción actual no se puede reproducir",
+  "otherAppDialogText1": "Tenga en cuenta que la aplicación actual ya no está soportada. Por favor, descargue nuestra nueva aplicación para seguir disfrutando de toda la música.",
+  "otherAppDialogText2": "La aplicación actual ya no recibe actualizaciones. Para una experiencia mejorada, le recomendamos descargar nuestra nueva aplicación.",
+  "playCopyrightStr": "Por motivos de derechos de autor, la canción actual no se puede reproducir",
   "ratingStr": "Su apoyo es nuestra mayor motivación para progresar",
-  "downloadGuideStr":
-      "Acceda a sus canciones favoritas de inmediato con un clic aquí.",
+  "downloadGuideStr": "Acceda a sus canciones favoritas de inmediato con un clic aquí.",
   "loadMoreFailStr": "Sin conexión de red, inténtelo de nuevo.",
   "noMoreStr": "No hay más contenido.",
   "noNetPlayStr": "Sin conexión de red, compruebe el estado de su red",
@@ -112,5 +100,21 @@ const Map<String, String> esES = {
   "Videos": "Vídeos",
   "Albums": "Álbumes",
   "Artists": "Artistas",
-  "playlists": "Listas de la comunidad"
+  "playlists": "Listas de la comunidad",
+  "year": "Año",
+  "week": "Semana",
+  "lifeTime": "De por vida",
+  "restore": "Restaurar",
+  "autoRenewal": "Renovación automática: @price por año. Cancela en cualquier momento.",
+  "continue": "Continuar",
+  "subscriptionFail": "¡La suscripción falló! ¡Por favor, inténtalo de nuevo!",
+  "subscribedSuc": "¡Suscripción realizada con éxito! ¡Disfruta de tus beneficios de membresía!",
+  "canceled": "Cancelado",
+  "failedGetProduct": "¡No se pudo obtener la información del producto!",
+  "noProducts": "¡Aún no hay productos!",
+  "unlimitedDownload": "Descargas ilimitadas",
+  "adFree": "Sin anuncios",
+  "watchVideoOffline": "Ver videos de YouTube sin conexión",
+  "playMusicBackground": "Reproducir música en segundo plano",
+  "unlockedAllFunctions": "Todas las funciones VIP desbloqueadas"
 };

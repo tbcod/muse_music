@@ -233,7 +233,8 @@ class UserMainController extends GetxController {
     NativeUtils.instance.gbToBPage();
     NativeUtils.instance.gbToBPage2();
     await ConsentRequest.instance.startRequest();
-    VipUtil.instance.requestVipStatus();
+    await VipUtil.instance.requestVipStatus();
+    VipUtil.instance.autoEnterPurchasePage();
 
     // final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     // if (status == TrackingStatus.authorized) {

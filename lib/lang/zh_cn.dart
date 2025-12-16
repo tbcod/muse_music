@@ -99,5 +99,21 @@ const Map<String, String> zhCN = {
   "Videos": "视频",
   "Albums": "专辑",
   "Artists": "音乐人",
-  "playlists": "播放列表"
+  "playlists": "播放列表",
+  "year": "年",
+  "week": "周",
+  "lifeTime": "终身",
+  "restore": "恢复",
+  "autoRenewal": "自动续订：@price每年,可随时取消。",
+  "continue": "继续",
+  "subscriptionFail": "订阅失败！请重新尝试！",
+  "subscribedSuc": "订阅成功！尽享会员特权！",
+  "canceled": "已取消",
+  "failedGetProduct": "获取产品信息失败！",
+  "noProducts": "暂无产品！",
+  "unlimitedDownload": "无限下载",
+  "adFree": "无广告",
+  "watchVideoOffline": "离线观看 YouTube 视频",
+  "playMusicBackground": "后台播放音乐",
+  "unlockedAllFunctions": "解锁所有 VIP 功能"
 };

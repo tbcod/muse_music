@@ -4,14 +4,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/const/env.dart';
+import 'package:music_muse/generated/assets.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main/setting/feedback.dart';
 import 'package:music_muse/page/main/setting/only_web.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 
 import '../../view/base_dialog.dart';
 
@@ -33,7 +38,7 @@ class SettingPage extends GetView<SettingPageController> {
             Container(
               height: 146.w,
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   // color: Colors.red,
                   image: DecorationImage(
                 image: AssetImage("assets/img/all_appbar_bg.png"),
@@ -46,7 +51,7 @@ class SettingPage extends GetView<SettingPageController> {
                 AppBar(
                   centerTitle: false,
                   titleSpacing: 12.w,
-                  title: Text("Setting"),
+                  title: const Text("Setting"),
                   actions: [
                     GestureDetector(
                         onDoubleTap: () {
@@ -61,18 +66,39 @@ class SettingPage extends GetView<SettingPageController> {
                           width: 100,
                           height: 44,
                         )),
+                    Obx(() {
+                      if (!VipUtil.instance.isVip) {
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                          ),
+                        );
+                      }
+                      return Container();
+                    }),
                   ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    NativeUtils.instance.gbToH5Page();
+                  },
+                  child: Image.asset(Assets.oimgSetH5, width: ScreenUtil().screenWidth - 16, fit: BoxFit.fitWidth),
                 ),
                 Expanded(
                     child: MediaQuery.removePadding(
                   removeTop: true,
                   context: context,
                   child: ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (_, i) {
                         return getItem(i);
                       },
                       separatorBuilder: (_, i) {
-                        return SizedBox(
+                        return const SizedBox(
                           height: 1,
                         );
                       },
@@ -98,7 +124,7 @@ class SettingPage extends GetView<SettingPageController> {
               controller.listTitle[i],
               style: TextStyle(fontSize: 14.w),
             ),
-            Spacer(),
+            const Spacer(),
             Image.asset(
               "assets/img/icon_right.png",
               width: 24.w,
@@ -110,11 +136,11 @@ class SettingPage extends GetView<SettingPageController> {
       onTap: () {
         if (itemTitle == "Feedback".tr) {
           //反馈
-          Get.to(FeedbackPage());
+          Get.to(const FeedbackPage());
         } else if (itemTitle == "Privacy Policy".tr) {
-          Get.to(OnlyWeb(), arguments: 2);
+          Get.to(const OnlyWeb(), arguments: 2);
         } else if (itemTitle == "Terms of Service".tr) {
-          Get.to(OnlyWeb(), arguments: 1);
+          Get.to(const OnlyWeb(), arguments: 1);
         }else if (itemTitle == "pops".tr) {
           Get.dialog(BaseDialog(
             title: "pops".tr,
@@ -127,29 +153,30 @@ class SettingPage extends GetView<SettingPageController> {
               ToastUtil.showToast(msg: "success".tr);
             },
           ));
-        } else if (itemTitle == "Ad Tools") {
-          AppLog.e(AdUtils.instance.loadedAdMap);
-          AppLog.e(AdUtils.instance.adJson);
-
-          Get.dialog(
-              BaseDialog(
-                title: "Tip",
-                content: "choose",
-                lBtnText: "Max",
-                rBtnText: "Admob",
-                lBtnOnTap: () {
-                  Get.back();
-                  AppLovinMAX.showMediationDebugger();
-                },
-                rBtnOnTap: () {
-                  Get.back();
-                  MobileAds.instance.openAdInspector((p0) {
-                    // ToastUtil.showToast(msg: p0?.message ?? "error");
-                  });
-                },
-              ),
-              barrierDismissible: true);
         }
+        // else if (itemTitle == "Ad Tools") {
+        //   AppLog.e(AdUtils.instance.loadedAdMap);
+        //   AppLog.e(AdUtils.instance.adJson);
+        //
+        //   Get.dialog(
+        //       BaseDialog(
+        //         title: "Tip",
+        //         content: "choose",
+        //         lBtnText: "Max",
+        //         rBtnText: "Admob",
+        //         lBtnOnTap: () {
+        //           Get.back();
+        //           AppLovinMAX.showMediationDebugger();
+        //         },
+        //         rBtnOnTap: () {
+        //           Get.back();
+        //           MobileAds.instance.openAdInspector((p0) {
+        //             // ToastUtil.showToast(msg: p0?.message ?? "error");
+        //           });
+        //         },
+        //       ),
+        //       barrierDismissible: true);
+        // }
       },
     );
   }
@@ -159,11 +186,11 @@ class SettingPageController extends GetxController {
   var listTitle = ["Privacy Policy".tr, "Terms of Service".tr, "Feedback".tr, "pops".tr];
   int _clickCount = 0;
 
-  @override
-  void onInit() {
-    super.onInit();
-    if (!MuseConfig.isUser) {
-      listTitle.add("Ad Tools");
-    }
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   if (!MuseConfig.isUser) {
+  //     listTitle.add("Ad Tools");
+  //   }
+  // }
 }

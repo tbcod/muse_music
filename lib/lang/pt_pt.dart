@@ -50,8 +50,7 @@ const Map<String, String> ptPT = {
   "httpError": "Sem rede",
   "Delete successfully": "Excluído com sucesso",
   "Upload successfully": "Enviado com sucesso",
-  "Please enter your feedback or email":
-      "Por favor, digite seu feedback ou e-mail",
+  "Please enter your feedback or email": "Por favor, digite seu feedback ou e-mail",
   "Email is Error": "E-mail inválido",
   "Feedback successful": "Feedback enviado com sucesso",
   "Feedback content": "Conteúdo do feedback",
@@ -62,8 +61,7 @@ const Map<String, String> ptPT = {
   "Delete ok": "Excluído com sucesso",
   "Add songs to playlist": "Adicionar músicas à playlist",
   "Choose playlist": "Escolher playlist",
-  "No content now, Add songs you like":
-      "Não há conteúdo no momento, adicione as músicas que você gosta",
+  "No content now, Add songs you like": "Não há conteúdo no momento, adicione as músicas que você gosta",
   "Failed to get artist": "Falha ao obter o artista",
   "videoId error": "Erro no ID do vídeo",
   "Already in the list": "Já está na lista",
@@ -71,31 +69,23 @@ const Map<String, String> ptPT = {
   "Followed this singer": "Seguindo esse cantor",
   "Followed this playlist": "Seguindo essa playlist",
   "Followed this song": "Seguindo essa música",
-  "You have canceled following this singer":
-      "Você cancelou o seguimento desse cantor",
-  "You have canceled following this playlist":
-      "Você cancelou o seguimento dessa playlist",
-  "You have canceled following this song":
-      "Você cancelou o seguimento dessa música",
+  "You have canceled following this singer": "Você cancelou o seguimento desse cantor",
+  "You have canceled following this playlist": "Você cancelou o seguimento dessa playlist",
+  "You have canceled following this song": "Você cancelou o seguimento dessa música",
   "Please enter content": "Por favor, digite o conteúdo",
   "Please enter email": "Por favor, digite o e-mail",
   "Please enter a playlist name": "Por favor, digite o nome da playlist",
   "deleteStr": "Você deseja excluir o registro de histórico?",
   "addToPlaylistOk": "Adicionado à playlist",
   "alreadyAdd": "Essa música já está na lista",
-  "noWifiStr":
-      "O ambiente atual não é Wi-Fi, preste atenção ao consumo de dados",
+  "noWifiStr": "O ambiente atual não é Wi-Fi, preste atenção ao consumo de dados",
   "noNetworkStr1": "Interrupção de rede, download pausado",
   "noNetworkStr2": "Sem conexão com a internet",
-  "otherAppDialogText1":
-      "Observe que o aplicativo atual não é mais suportado. Baixe nosso novo aplicativo para continuar aproveitando toda a música.",
-  "otherAppDialogText2":
-      "O aplicativo atual não está mais recebendo atualizações. Para uma experiência melhor, recomendamos o download de nosso novo aplicativo.",
-  "playCopyrightStr":
-      "Por motivos de direitos autorais, a música atual não suporta a reprodução",
+  "otherAppDialogText1": "Observe que o aplicativo atual não é mais suportado. Baixe nosso novo aplicativo para continuar aproveitando toda a música.",
+  "otherAppDialogText2": "O aplicativo atual não está mais recebendo atualizações. Para uma experiência melhor, recomendamos o download de nosso novo aplicativo.",
+  "playCopyrightStr": "Por motivos de direitos autorais, a música atual não suporta a reprodução",
   "ratingStr": "Seu apoio é nossa maior motivação para o progresso!",
-  "downloadGuideStr":
-      "Acesse suas músicas favoritas imediatamente com um clique aqui.",
+  "downloadGuideStr": "Acesse suas músicas favoritas imediatamente com um clique aqui.",
   "loadMoreFailStr": "Sem rede, tente novamente.",
   "noMoreStr": "Não há mais conteúdo.",
   "noNetPlayStr": "Sem rede, verifique o status da sua rede",
@@ -110,5 +100,21 @@ const Map<String, String> ptPT = {
   "Videos": "Vídeos",
   "Albums": "Álbuns",
   "Artists": "Artistas",
-  "playlists": "Playlists da comunidade"
+  "playlists": "Playlists da comunidade",
+  "year": "Ano",
+  "week": "Semana",
+  "lifeTime": "Vitalício",
+  "restore": "Restaurar",
+  "autoRenewal": "Renovação automática: @price por ano. Cancele a qualquer momento.",
+  "continue": "Continuar",
+  "subscriptionFail": "Falha na assinatura! Por favor, tente novamente!",
+  "subscribedSuc": "Assinatura realizada com sucesso! Aproveite os benefícios da sua assinatura!",
+  "canceled": "Cancelado",
+  "failedGetProduct": "Falha ao obter informações do produto!",
+  "noProducts": "Ainda não há produtos!",
+  "unlimitedDownload": "Downloads ilimitados",
+  "adFree": "Sem anúncios",
+  "watchVideoOffline": "Assistir a vídeos do YouTube offline",
+  "playMusicBackground": "Reproduzir música em segundo plano",
+  "unlockedAllFunctions": "Todas as funções VIP desbloqueadas"
 };

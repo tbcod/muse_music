@@ -112,5 +112,10 @@ const Map<String, String> enUS = {
   "subscribedSuc":"Subscribed successfully! Enjoy your membership perks!",
   "canceled": "Canceled",
   "failedGetProduct": "Failed to get product information!",
-  "noProducts": "No products yet!"
+  "noProducts": "No products yet!",
+  "unlimitedDownload":"Unlimited Downloads",
+  "adFree":"Ad-Free",
+  "watchVideoOffline" : "Watch Youtube video offline",
+  "playMusicBackground":"Play music background",
+  "unlockedAllFunctions":"Unlocked all vip functions"
 };

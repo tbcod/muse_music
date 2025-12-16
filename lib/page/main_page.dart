@@ -145,7 +145,8 @@ class MainPageController extends GetxController {
     NativeUtils.instance.gbToAPage();
     await ConsentRequest.instance.startRequest();
     _requestIDFA();
-    VipUtil.instance.requestVipStatus();
+    await VipUtil.instance.requestVipStatus();
+    VipUtil.instance.autoEnterPurchasePage();
   }
 
   _requestIDFA() async {

@@ -23,8 +23,7 @@ const Map<String, String> frFR = {
   "Local songs": "Chansons locales",
   "Liked Artist": "Artiste préféré",
   "like": "Favorites",
-  "Search for music/artist/playlist":
-      "Rechercher de la musique/un artiste/une playlist",
+  "Search for music/artist/playlist": "Rechercher de la musique/un artiste/une playlist",
   "History record": "Enregistrement d'historique",
   "Delete": "Supprimer",
   "More": "Plus",
@@ -51,8 +50,7 @@ const Map<String, String> frFR = {
   "httpError": "Aucune connexion réseau",
   "Delete successfully": "Supprimé avec succès",
   "Upload successfully": "Téléversé avec succès",
-  "Please enter your feedback or email":
-      "Veuillez saisir votre retour d'information ou votre adresse e-mail",
+  "Please enter your feedback or email": "Veuillez saisir votre retour d'information ou votre adresse e-mail",
   "Email is Error": "Adresse e-mail invalide",
   "Feedback successful": "Retour d'information reçu avec succès",
   "Feedback content": "Contenu du retour d'information",
@@ -63,43 +61,31 @@ const Map<String, String> frFR = {
   "Delete ok": "Supprimé avec succès",
   "Add songs to playlist": "Ajouter des chansons à la playlist",
   "Choose playlist": "Choisir une playlist",
-  "No content now, Add songs you like":
-      "Aucun contenu pour le moment, ajoutez les chansons que vous aimez",
+  "No content now, Add songs you like": "Aucun contenu pour le moment, ajoutez les chansons que vous aimez",
   "Failed to get artist": "Échec de la récupération de l'artiste",
   "videoId error": "Erreur sur l'identifiant de la vidéo",
   "Already in the list": "Déjà dans la liste",
-  "Get url error":
-      "Erreur lors de la récupération de l'URL, veuillez réessayer",
+  "Get url error": "Erreur lors de la récupération de l'URL, veuillez réessayer",
   "Followed this singer": "Suivi de ce chanteur",
   "Followed this playlist": "Suivi de cette playlist",
   "Followed this song": "Suivi de cette chanson",
-  "You have canceled following this singer":
-      "Vous avez annulé le suivi de ce chanteur",
-  "You have canceled following this playlist":
-      "Vous avez annulé le suivi de cette playlist",
-  "You have canceled following this song":
-      "Vous avez annulé le suivi de cette chanson",
+  "You have canceled following this singer": "Vous avez annulé le suivi de ce chanteur",
+  "You have canceled following this playlist": "Vous avez annulé le suivi de cette playlist",
+  "You have canceled following this song": "Vous avez annulé le suivi de cette chanson",
   "Please enter content": "Veuillez saisir le contenu",
   "Please enter email": "Veuillez saisir l'adresse e-mail",
   "Please enter a playlist name": "Veuillez saisir le nom de la playlist",
   "deleteStr": "Voulez-vous supprimer l'enregistrement d'historique?",
   "addToPlaylistOk": "Ajouté à la playlist",
   "alreadyAdd": "Cette chanson est déjà dans la liste",
-  "noWifiStr":
-      "L'environnement actuel n'est pas Wi-Fi, veillez au consommation de données",
-  "noNetworkStr1":
-      "Interruption de la connexion réseau, téléchargement en pause",
+  "noWifiStr": "L'environnement actuel n'est pas Wi-Fi, veillez au consommation de données",
+  "noNetworkStr1": "Interruption de la connexion réseau, téléchargement en pause",
   "noNetworkStr2": "Aucune connexion Internet",
-  "otherAppDialogText1":
-      "Veuillez noter que l'application actuelle n'est plus prise en charge. Téléchargez notre nouvelle application pour continuer à apprécier toute la musique.",
-  "otherAppDialogText2":
-      "L'application actuelle ne reçoit plus de mises à jour. Pour une expérience améliorée, nous vous recommandons de télécharger notre nouvelle application.",
-  "playCopyrightStr":
-      "Pour des raisons de droits d'auteur, la chanson actuelle ne peut pas être jouée",
-  "ratingStr":
-      "Votre soutien est notre plus grande motivation pour progresser!",
-  "downloadGuideStr":
-      "Accédez immédiatement à vos chansons favorites en cliquant ici.",
+  "otherAppDialogText1": "Veuillez noter que l'application actuelle n'est plus prise en charge. Téléchargez notre nouvelle application pour continuer à apprécier toute la musique.",
+  "otherAppDialogText2": "L'application actuelle ne reçoit plus de mises à jour. Pour une expérience améliorée, nous vous recommandons de télécharger notre nouvelle application.",
+  "playCopyrightStr": "Pour des raisons de droits d'auteur, la chanson actuelle ne peut pas être jouée",
+  "ratingStr": "Votre soutien est notre plus grande motivation pour progresser!",
+  "downloadGuideStr": "Accédez immédiatement à vos chansons favorites en cliquant ici.",
   "loadMoreFailStr": "Aucune connexion réseau, veuillez réessayer.",
   "noMoreStr": "Plus de contenu.",
   "noNetPlayStr": "Aucune connexion réseau, vérifiez l'état de votre réseau",
@@ -114,5 +100,21 @@ const Map<String, String> frFR = {
   "Videos": "Vidéos",
   "Albums": "Albums",
   "Artists": "Artistes",
-  "playlists": "Playlists de la communauté"
+  "playlists": "Playlists de la communauté",
+  "year": "An",
+  "week": "Semaine",
+  "lifeTime": "À vie",
+  "restore": "Restaurer",
+  "autoRenewal": "Renouvellement automatique : @price par an. Annulable à tout moment.",
+  "continue": "Continuer",
+  "subscriptionFail": "Échec de l’abonnement ! Veuillez réessayer !",
+  "subscribedSuc": "Abonnement réussi ! Profitez de vos avantages de membre !",
+  "canceled": "Annulé",
+  "failedGetProduct": "Échec de l’obtention des informations du produit !",
+  "noProducts": "Aucun produit pour le moment !",
+  "unlimitedDownload": "Téléchargements illimités",
+  "adFree": "Sans publicité",
+  "watchVideoOffline": "Regarder des vidéos YouTube hors ligne",
+  "playMusicBackground": "Lire la musique en arrière-plan",
+  "unlockedAllFunctions": "Toutes les fonctionnalités VIP débloquées"
 };

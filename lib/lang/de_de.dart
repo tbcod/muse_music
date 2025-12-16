@@ -100,5 +100,21 @@ const Map<String, String> deDE = {
   "Videos": "Videos",
   "Albums": "Alben",
   "Artists": "Künstler",
-  "playlists": "Playlists"
+  "playlists": "Playlists",
+  "year": "Jahr",
+  "week": "Woche",
+  "lifeTime": "Lebenslang",
+  "restore": "Wiederherstellen",
+  "autoRenewal": "Automatische Verlängerung: @price pro Jahr. Jederzeit kündbar.",
+  "continue": "Weiter",
+  "subscriptionFail": "Abonnement fehlgeschlagen! Bitte versuche es erneut!",
+  "subscribedSuc": "Erfolgreich abonniert! Genieße deine Mitgliedsvorteile!",
+  "canceled": "Storniert",
+  "failedGetProduct": "Produktinformationen konnten nicht abgerufen werden!",
+  "noProducts": "Noch keine Produkte!",
+  "unlimitedDownload": "Unbegrenzte Downloads",
+  "adFree": "Werbefrei",
+  "watchVideoOffline": "YouTube-Videos offline ansehen",
+  "playMusicBackground": "Musik im Hintergrund abspielen",
+  "unlockedAllFunctions": "Alle VIP-Funktionen freigeschaltet"
 };

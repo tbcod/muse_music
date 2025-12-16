@@ -321,7 +321,7 @@ class LaunchPageController extends GetxController {
   toMainPage() async {
     int diff = DateTime.now().difference(bus.startTime!).inSeconds;
     if (isA && diff < 5) {
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
       toMainPage();
       return;
     }

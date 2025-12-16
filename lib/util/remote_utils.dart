@@ -18,6 +18,10 @@ const String mmOpenAd = "mmOpenAd";
 
 const String museSongRecommonedKey = "museSongRecommonedKeys";
 
+const String keyFirebaseVipShow = "keyFirebaseVipShow";
+
+enum VipShowType { A, B }
+
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
 
@@ -35,16 +39,16 @@ class RemoteUtil {
 
   bool isInitSuc = false;
 
-
+  String _vipShow = '';
 
   init() async {
     isp = await SharedPreferences.getInstance();
 
     final jsonString = museSp.getString(mmAdJsonKey) ?? "";
-    if(jsonString.isNotEmpty){
+    if (jsonString.isNotEmpty) {
       Map oldMap = jsonDecode(jsonString);
       _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
-    }else{
+    } else {
       _adJson = MuseConfig.adJsonIos;
     }
 
@@ -54,6 +58,7 @@ class RemoteUtil {
 
     _openAdStr = isp.getString(mmOpenAd) ?? "";
 
+    _vipShow = isp.getString(keyFirebaseVipShow) ?? "";
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -118,17 +123,22 @@ class RemoteUtil {
       isp.setString(mmOpenAd, openAdStr);
       _openAdStr = openAdStr;
 
+      final vipShow = FirebaseRemoteConfig.instance.getString("musicmuse_vip_enter");
+      if (vipShow.isNotEmpty) {
+        _vipShow = vipShow;
+        isp.setString(keyFirebaseVipShow, _vipShow);
+      }
 
-    } catch (e,s) {
+      AppLog.e("初始化firebase成功：${FirebaseRemoteConfig.instance.getAll().keys}");
+
+    } catch (e, s) {
       AppLog.e("初始化firebase失败：${e.toString()}, \n$s");
     }
   }
 
-
-
   Map<String, dynamic> get adJson {
     if (kDebugMode) return MuseConfig.adJsonIos;
-    if(bus.isFirstAppLaunch) return MuseConfig.adJsonIos;
+    if (bus.isFirstAppLaunch) return MuseConfig.adJsonIos;
     return _adJson;
   }
 
@@ -159,10 +169,15 @@ class RemoteUtil {
     return DataConfig.listenMusic;
   }
 
-  bool get isShowOpenAd{
-    if(_openAdStr == "close"){
+  bool get isShowOpenAd {
+    if (_openAdStr == "close") {
       return false;
     }
     return true;
+  }
+
+  VipShowType get vipShowType {
+    if (_vipShow.toUpperCase() == "B") return VipShowType.B;
+    return VipShowType.A;
   }
 }

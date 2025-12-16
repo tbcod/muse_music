@@ -49,10 +49,6 @@ class UPurchasePageController extends GetxController {
     _subscription = purchaseUpdated.listen((purchaseDetailsList) async {
       for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
         String? transactionDate = purchaseDetails.transactionDate;
-        // DateTime? dateTime;
-        // if (transactionDate != null) {
-        //   dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(transactionDate));
-        // }
         AppLog.i("purchaseUpdated listen productID：${purchaseDetails.productID}, status:${purchaseDetails.status.name} ,$transactionDate, ${purchaseDetails.verificationData.serverVerificationData}");
         if (purchaseDetails.status == PurchaseStatus.pending) {
           LoadingUtil.showLoading();
@@ -75,8 +71,10 @@ class UPurchasePageController extends GetxController {
               Get.back();
               return;
             } else {
-              ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
-              EventUtils.instance.addEvent("premium_fail", data: {"error": purchaseDetails.status.name});
+              if (purchaseDetails.status == PurchaseStatus.restored) {
+                ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
+              }
+              EventUtils.instance.addEvent("premium_fail", data: {"error": "service verify fail!"});
             }
           } else if (purchaseDetails.status == PurchaseStatus.canceled) {
             ToastUtil.showToast(msg: 'canceled'.tr, type: IconType.error);
@@ -91,13 +89,14 @@ class UPurchasePageController extends GetxController {
       _subscription.cancel();
     }, onError: (error) {
       AppLog.e("purchaseUpdated error:${error.toString()}");
+      EventUtils.instance.addEvent("premium_fail", data: {"error": "other error:${error.toString()}"});
     });
     super.onInit();
   }
 
   @override
   void onReady() {
-    EventUtils.instance.addEvent("premium_page", data: {"station": station, "load": "true", "load_page": MuseConfig.isUser ? "b" : "a"});
+    synProductInfoFormAppstore();
     super.onReady();
   }
 
@@ -105,6 +104,39 @@ class UPurchasePageController extends GetxController {
   void onClose() {
     _subscription.cancel();
     super.onClose();
+  }
+
+  Future<void> synProductInfoFormAppstore() async {
+    List<String> kProductIds = [];
+    for (Map map in _products) {
+      kProductIds.add(map["id"]);
+    }
+
+    bool loadSuc = false;
+    LoadingUtil.showLoading();
+
+    /// 查询后台返回的ProductId是否在苹果服务器上注册了
+    final ProductDetailsResponse productDetailResponse = await _inAppPurchase.queryProductDetails(kProductIds.toSet());
+    List<ProductDetails> productList = productDetailResponse.productDetails;
+    if (_products.length == productList.length) {
+      loadSuc = true;
+      for (int i = 0; i < productList.length; i++) {
+        ProductDetails productDetails = productList[i];
+        PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+        currencySymbol = purchaseParam.productDetails.currencySymbol;
+        for (Map map in _products) {
+          if (map["id"] == purchaseParam.productDetails.id) {
+            map["price"] = purchaseParam.productDetails.rawPrice;
+            break;
+          }
+        }
+      }
+    }
+    _products.refresh();
+    curPlanIndex.value = yearIndex;
+    AppLog.i("getProductInfo:${productList.length}");
+    EventUtils.instance.addEvent("premium_page", data: {"station": station, "load": loadSuc ? "suc" : "fail", "load_page": MuseConfig.isUser ? "b" : "a"});
+    LoadingUtil.hideAllLoading();
   }
 
   Future<void> payWithProductId(String id) async {
@@ -139,20 +171,22 @@ class UPurchasePageController extends GetxController {
 
     List<ProductDetails> products = productDetailResponse.productDetails;
 
-    /// 查询成功
-    ProductDetails productDetails = products[0];
-    // FlutterKeychain.put(key: "iosPrice", value: productDetails.price);
-
-    /// 添加自己服务器上生成的订单
-    PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
-
-    AppLog.i("获取内购产品成功, 发起支付: ${productDetails.title}, ${productDetails.description}, ${productDetails.price}");
-
     // 向苹果服务器发起支付请求
     try {
+      /// 查询成功
+      ProductDetails productDetails = products[0];
+      // FlutterKeychain.put(key: "iosPrice", value: productDetails.price);
+
+      /// 添加自己服务器上生成的订单
+      PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+
+      AppLog.i("获取产品成功, 发起支付: ${productDetails.title}, ${productDetails.description}, ${productDetails.price}");
+
       LoadingUtil.showLoading();
-      await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+
+      await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam); //非消耗性购买
     } catch (e) {
+      await _inAppPurchase.restorePurchases();
       AppLog.e('购买出错：${e.toString()}');
     }
     LoadingUtil.hideAllLoading();
@@ -186,12 +220,12 @@ class UPurchasePageController extends GetxController {
   Future<void> onClickRestore() async {
     EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "restore"});
 
-    LoadingUtil.showLoading(msg: "Restoring...");
+    LoadingUtil.showLoading(msg: "${'restore'.tr}...");
     Future.delayed(const Duration(seconds: 10)).then((value) => LoadingUtil.hideAllLoading());
     try {
       await _inAppPurchase.restorePurchases();
     } catch (e) {
-      AppLog.i(e.toString());
+      AppLog.e(e.toString());
     }
     LoadingUtil.hideAllLoading();
   }
@@ -204,5 +238,36 @@ class UPurchasePageController extends GetxController {
   void onClickTermsService() {
     EventUtils.instance.addEvent("premium_page_click_ot", data: {"type": "other"});
     Get.to(() => const OnlyWeb(), arguments: 1);
+  }
+
+  List<String> get contentTips {
+    List<String> texts = [];
+    if (MuseConfig.isUser) {
+      texts = ["unlimitedDownload".tr, "adFree".tr, "watchVideoOffline".tr, "playMusicBackground".tr];
+    } else {
+      texts = ["playMusicBackground".tr, "adFree".tr, "unlockedAllFunctions".tr];
+    }
+    return texts;
+  }
+
+  int get yearIndex{
+    int index = 0;
+    for (Map map in products) {
+      if (map['id'] == 'year_b1' || map['id'] == 'com.musicmuse.subscription.yearly') {
+        return index;
+      }
+      index++;
+    }
+    return index;
+  }
+
+
+  String get yearPriceStr {
+    for (Map map in products) {
+      if (map['id'] == 'year_b1' || map['id'] == 'com.musicmuse.subscription.yearly') {
+        return "$currencySymbol${map['price']}";
+      }
+    }
+    return '\$24.9';
   }
 }
