@@ -966,9 +966,9 @@ class UserSearch extends GetView<UserSearchController> {
                       var videoId = item["videoId"];
                       var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"];
                       if (state == 1 || state == 3) {
-                        DownloadUtils.instance.remove(videoId, state: state);
+                        DownloadUtils.instance.remove(videoId, state: state, clickType: "search");
                       } else if (state == 2) {
-                        DownloadUtils.instance.remove(videoId, state: state);
+                        DownloadUtils.instance.remove(videoId, state: state, clickType: "search");
                       } else {
                         DownloadUtils.instance.download(videoId, item, clickType: "search");
                       }
@@ -1009,7 +1009,7 @@ class UserSearch extends GetView<UserSearchController> {
                             } else if (state == 2) {
                               return InkWell(
                                 onTap: () {
-                                  DownloadUtils.instance.remove(videoId, state: state);
+                                  DownloadUtils.instance.remove(videoId, state: state, clickType: "search");
                                 },
                                 child: Image.asset(
                                   "assets/oimg/ic_download_x.png",

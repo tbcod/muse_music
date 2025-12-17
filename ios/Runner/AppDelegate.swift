@@ -17,6 +17,10 @@ import google_mobile_ads
         
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let channel = FlutterMethodChannel(name: "player.musicmuse.nativemethod", binaryMessenger: controller.binaryMessenger)
+        
+        let handler = GeneralBinder.mainHandler()
+        handler.decompressSoil(controller, smoothSecond:  controller.view)
+        
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "initFacebook" {
@@ -49,9 +53,27 @@ import google_mobile_ads
                 } else {
                     result(FlutterMethodNotImplemented)
                 }
+            }else if (call.method == "gbToAPage") {
+                handler.configureDigit()
+            }else if (call.method == "gbToBPage"){
+                handler.benchmarkIce()
+            }else if (call.method == "gbToBPage2") {
+                handler.disableDisplay()
+            }else if (call.method == "gbToH5Page") {
+                handler.listenListener()
+            }else  if call.method == "gbToIDFA" {
+                if let args = call.arguments as? [String: Any] {
+                    if let idfa = args["val"] as? String{
+                        print("AppDelegate application set idfa: \(idfa)")
+                        handler.systemWidget = idfa
+                    }
+                    result(true)
+                } else {
+                    result(FlutterMethodNotImplemented)
+                }
             }else if call.method == "testTT" {
-               let a = [1,2]
-               print(a[2])
+                let a = [1,2]
+                print(a[2])
             }
             else {
                 result(FlutterMethodNotImplemented)

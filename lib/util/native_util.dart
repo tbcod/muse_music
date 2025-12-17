@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/util/log.dart';
@@ -14,6 +15,45 @@ class NativeUtils {
   }
 
   static const channel = MethodChannel('player.musicmuse.nativemethod');
+
+
+  void init(BuildContext context) {
+    channel.setMethodCallHandler((MethodCall methodCall) async {
+      switch (methodCall.method) {
+        case 'idfa':
+          AppLog.i(methodCall.arguments);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+
+  /// 进入A面时就调用（只调用一次）
+  Future<void> gbToAPage() async {
+    channel.invokeMethod('gbToAPage');
+  }
+
+  /// 进入B面时就调用（只调用一次）
+  Future<void> gbToBPage() async {
+    channel.invokeMethod('gbToBPage');
+  }
+
+  /// 进入B面时就调用（只调用一次)
+  Future<void> gbToBPage2() async {
+    channel.invokeMethod('gbToBPage2');
+  }
+
+  /// 点击项目右上角或其他地方打开web游戏调用（每次点击按钮调用）
+  Future<void> gbToH5Page() async {
+    channel.invokeMethod('gbToH5Page');
+  }
+
+  Future<void> gbToIDFA(String idfa) async {
+    channel.invokeMethod('gbToIDFA', {"val": idfa});
+  }
+
 
   test() async {
     var result = await channel.invokeMethod("testTT");

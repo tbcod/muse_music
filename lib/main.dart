@@ -13,10 +13,12 @@ import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/status_util.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'muse_config.dart';
+import 'util/native_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +33,7 @@ class MyApp extends GetView {
   @override
   Widget build(BuildContext context) {
     // bindData();
+    NativeUtils.instance.init(context);
     Get.put(AppController());
     final botToastBuilder = BotToastInit();
     return ScreenUtilInit(
@@ -126,6 +129,8 @@ class AppController extends SuperController {
 
     AppLog.i("是否已经安装上报:$isPostInstall");
 
+    VipUtil.instance.init();
+
     if (!isPostInstall) {
       // var isNewUser = false;
       //安装时间
@@ -176,6 +181,7 @@ class AppController extends SuperController {
           TbaUtils.instance.checkUnFinishedEvent();
           TbaUtils.instance.postSession();
 
+          VipUtil.instance.requestVipStatus();
           //判断新老用户
           var isNewUser = false;
           var installTimeMs = sp.getInt("installTimeMs") ?? 0;

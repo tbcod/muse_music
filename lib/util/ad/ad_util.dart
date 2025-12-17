@@ -13,6 +13,7 @@ import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as admob;
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/launch_loading.dart';
 
 import '../../app.dart';
@@ -215,6 +216,9 @@ class AdUtils {
 
   //load
   Future<bool> loadAd(String key, {LoadCallback? onLoad}) async {
+
+    if(VipUtil.instance.isVip) return false;
+
     if (!bus.isBMode && key == 'open') {
       key = "muse_local_int";
     }
@@ -283,10 +287,14 @@ class AdUtils {
 
       AppLog.i("广告开始加载：$key， $source, $type, $ad_id, adweight:$adweight");
 
+      EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+
+      String reason = "";
       Completer<bool> isCompleter = Completer();
       loadTimer?.cancel();
       loadTimer = Timer(Duration(seconds: oneAdLoadTimeOut), () {
         if (!isCompleter.isCompleted) {
+          reason = "time out";
           AppLog.e("广告加载超时：$key， $source, $type, $ad_id, adweight:$adweight");
           isCompleter.complete(false);
         }
@@ -316,6 +324,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }),
           );
@@ -342,6 +351,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }),
           );
@@ -370,6 +380,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
             ),
@@ -395,6 +406,7 @@ class AdUtils {
               if (onLoad != null) {
                 onLoad(ad_id, false, e);
               }
+              reason = e.toString();
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             }, onAdClicked: (ad) {
               bannerNativeAdClicked.refresh();
@@ -490,6 +502,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -518,6 +531,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
+                reason = e.toString();
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -527,7 +541,8 @@ class AdUtils {
               onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {}));
           AppLovinMAX.loadRewardedAd(ad_id);
         }
-      }else{
+      } else {
+        reason = "no type";
         AppLog.e("广告加载失败：$key， $source, $type, $ad_id, 不支持类型");
         if (!isCompleter.isCompleted) isCompleter.complete(false);
       }
@@ -598,8 +613,11 @@ class AdUtils {
 
       await isCompleter.future;
       if (isLoadSuc) {
+        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
         AppLog.i("广告瀑布流请求完成：$key，index:$curIndex/${configList.length}, adweight: $adweight, $source, $type, $ad_id");
         break;
+      } else {
+        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "ad_weight": adweight, "reason": reason});
       }
       curIndex++;
     }
@@ -614,6 +632,8 @@ class AdUtils {
     //   onShow.onShowFail!("", AdError(-1, "", "show key error"));
     // }
     // return false;
+
+    if(VipUtil.instance.isVip) return false;
 
     if (adIsShowing) {
       if (onShow != null) {
@@ -1266,7 +1286,11 @@ class MyNativeAdViewController extends GetxController {
   Ad? admobAd;
 
   loadAd(String key, String positionKey) async {
+
+    if(VipUtil.instance.isVip) return;
+
     adView.value = Container();
+
 
     var adJson = AdUtils.instance.adJson;
     if (!adJson.containsKey(key)) {

@@ -897,53 +897,64 @@ class UserArtistInfoController extends GetxController with StateMixin {
   bindData() async {
     var result = await ApiMain.instance.getData(browseId);
     if (result.code == HttpCode.success) {
+
+      List oldList = [];
       //标题
-      var title = result.data["header"]["musicImmersiveHeaderRenderer"]["title"]["runs"].first["text"];
-      var cover = result.data["header"]["musicImmersiveHeaderRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
-      var description = result.data["header"]["musicImmersiveHeaderRenderer"]["description"]?["runs"].first["text"] ?? "";
+      try{
+        var title = result.data["header"]["musicImmersiveHeaderRenderer"]["title"]["runs"].first["text"];
+        var cover = result.data["header"]["musicImmersiveHeaderRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
+        var description = result.data["header"]["musicImmersiveHeaderRenderer"]["description"]?["runs"].first["text"] ?? "";
 
-      var fansNumStr = result.data["header"]["musicImmersiveHeaderRenderer"]["subscriptionButton"]["subscribeButtonRenderer"]["subscriberCountText"]["runs"].first["text"];
+        var fansNumStr = result.data["header"]["musicImmersiveHeaderRenderer"]["subscriptionButton"]["subscribeButtonRenderer"]["subscriberCountText"]["runs"].first["text"];
 
-      info = {"cover": cover, "title": title, "description": description, "subtitle": fansNumStr, "browseId": browseId};
+        info = {"cover": cover, "title": title, "description": description, "subtitle": fansNumStr, "browseId": browseId};
 
-      //所有数据列表
-      List oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+        //所有数据列表
+        oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+      }catch(e){
+        AppLog.e(e.toString());
+      }
 
       var newList = [];
-      for (Map item in oldList) {
-        if (item.containsKey("musicShelfRenderer")) {
-          //歌曲列表
-          var bigTitle = item["musicShelfRenderer"]["title"]["runs"][0]["text"];
-          //点击更多信息
-          var moreBrowseId = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
-          var moreParams = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
-          //歌曲列表
-          List musicOldList = item["musicShelfRenderer"]["contents"];
 
-          var newMusicData = FormatMyData.instance.getMusicList(musicOldList);
+      try{
+        for (Map item in oldList) {
+          if (item.containsKey("musicShelfRenderer")) {
+            //歌曲列表
+            var bigTitle = item["musicShelfRenderer"]["title"]["runs"][0]["text"];
+            //点击更多信息
+            var moreBrowseId = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
+            var moreParams = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
+            //歌曲列表
+            List musicOldList = item["musicShelfRenderer"]["contents"];
 
-          newList.add({"title": bigTitle, "list": newMusicData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "music"});
-        } else if (item.containsKey("musicDescriptionShelfRenderer")) {
-          //关于歌手
-        } else if (item.containsKey("musicCarouselShelfRenderer")) {
-          //其他列表
-          var bigTitle = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"];
+            var newMusicData = FormatMyData.instance.getMusicList(musicOldList);
 
-          var moreBrowseId = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]
-                  ?["browseId"] ??
-              "";
-          var moreParams =
-              item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
+            newList.add({"title": bigTitle, "list": newMusicData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "music"});
+          } else if (item.containsKey("musicDescriptionShelfRenderer")) {
+            //关于歌手
+          } else if (item.containsKey("musicCarouselShelfRenderer")) {
+            //其他列表
+            var bigTitle = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"];
 
-          List otherOldList = item["musicCarouselShelfRenderer"]["contents"];
-          var newOtherData = FormatMyData.instance.getOtherList(otherOldList);
-          newList.add({"title": bigTitle, "list": newOtherData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": newOtherData.first["type"]});
+            var moreBrowseId = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]
+            ?["browseId"] ??
+                "";
+            var moreParams =
+                item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
+
+            List otherOldList = item["musicCarouselShelfRenderer"]["contents"];
+            var newOtherData = FormatMyData.instance.getOtherList(otherOldList);
+            newList.add({"title": bigTitle, "list": newOtherData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": newOtherData.first["type"]});
+          }
         }
+      }catch(e){
+        AppLog.e(e.toString());
       }
 
       list = newList;
 
-      if (newList.isNotEmpty && newList[0]["title"] != "Songs") {
+      if (newList.isNotEmpty && newList.firstOrNull?["title"] != "Songs") {
         hasSong.value = false;
       } else {
         hasSong.value = true;

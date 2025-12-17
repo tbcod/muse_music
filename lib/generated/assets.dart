@@ -2,6 +2,15 @@
 class Assets {
   Assets._();
 
+  static const String iapIpBg1 = 'assets/iap/ip_bg1.png';
+  static const String iapIpBg2 = 'assets/iap/ip_bg2.png';
+  static const String iapIpClose = 'assets/iap/ip_close.png';
+  static const String iapIpPriceBg1 = 'assets/iap/ip_price_bg1.png';
+  static const String iapIpPriceBg2 = 'assets/iap/ip_price_bg2.png';
+  static const String iapIpSelect = 'assets/iap/ip_select.png';
+  static const String iapIpSelected = 'assets/iap/ip_selected.png';
+  static const String iapIpSure = 'assets/iap/ip_sure.png';
+  static const String iapIpText = 'assets/iap/ip_text.png';
   static const String imgAllAppbarBg = 'assets/img/all_appbar_bg.png';
   static const String imgBgRecoring = 'assets/img/bg_recoring.png';
   static const String imgHomeItemBg = 'assets/img/home_item_bg.png';
@@ -108,5 +117,7 @@ class Assets {
   static const String oimgIconShuffleOn = 'assets/oimg/icon_shuffle_on.png';
   static const String oimgIconWifi = 'assets/oimg/icon_wifi.png';
   static const String oimgImgDownloadGuide = 'assets/oimg/img_download_guide.png';
+  static const String oimgIpaPro = 'assets/oimg/ipa_pro.png';
+  static const String oimgSetH5 = 'assets/oimg/set_h5.png';
 
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:music_muse/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -58,7 +60,6 @@ class UserMain extends GetView<UserMainController> {
             currentIndex: controller.nowIndex.value,
             backgroundColor: Colors.white,
             onTap: (index) {
-              IdfaUtil.instance.showIdfaDialog();
               if (controller.nowIndex.value == index) {
                 return;
               }
@@ -163,6 +164,7 @@ class UserMainController extends GetxController {
           // Get.find<UserPlayInfoController>().reLoadAndPlay();
         }
         lastResult = ConnectivityResult.wifi;
+        VipUtil.instance.requestVipStatus();
       } else if (result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "The current network is mobile");
         if (lastResult == ConnectivityResult.none) {
@@ -180,6 +182,7 @@ class UserMainController extends GetxController {
         }
 
         lastResult = ConnectivityResult.mobile;
+        VipUtil.instance.requestVipStatus();
       } else if (!result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "Network interruption, check the network");
         if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
@@ -227,7 +230,16 @@ class UserMainController extends GetxController {
 
   @override
   Future<void> onReady() async {
+    NativeUtils.instance.gbToBPage();
+    NativeUtils.instance.gbToBPage2();
     await ConsentRequest.instance.startRequest();
+    await VipUtil.instance.requestVipStatus();
+    VipUtil.instance.autoEnterPurchasePage();
+
+    // final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    // if (status == TrackingStatus.authorized) {
+    //   var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    // }
   }
 
   initData() async {

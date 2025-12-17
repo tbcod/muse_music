@@ -126,7 +126,7 @@ class TbaIos extends BaseApi {
     var isNewUser = false;
 
     var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-    var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
+    var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
     isNewUser = tempD.inHours < 24;
 
     generalMap["hammock"] = {"new_user": isNewUser ? "new" : "old", "type_so": Get.find<Application>().typeSo};

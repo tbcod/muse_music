@@ -40,7 +40,7 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
               //下载中\下载暂停
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId,state: state);
+                  DownloadUtils.instance.remove(videoId,state: state, clickType: type);
                 },
                 child: Container(
                   height: iconHeight,
@@ -63,7 +63,7 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
             } else if (state == 2) {
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId,state: state);
+                  DownloadUtils.instance.remove(videoId,state: state, clickType: type);
                 },
                 child: Container(
                   height: iconHeight,

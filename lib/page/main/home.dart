@@ -11,16 +11,20 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:music_muse/const/app_color.dart';
 import 'package:music_muse/const/db_key.dart';
+import 'package:music_muse/generated/assets.dart';
 import 'package:music_muse/page/main/home/add_lyrics.dart';
 import 'package:music_muse/page/main/home/create_music_lyrics.dart';
 import 'package:music_muse/page/main/home/list_info.dart';
 import 'package:music_muse/page/main/home/lyrics_info.dart';
 import 'package:music_muse/page/main/home/play.dart';
 import 'package:music_muse/page/main/home/search.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 import '../../util/idfa_util.dart';
@@ -63,6 +67,20 @@ class HomePage extends GetView<HomePageController> {
                         });
                       },
                     ),
+                    Obx(() {
+                      if (!VipUtil.instance.isVip) {
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 12, right: 0),
+                            child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                          ),
+                        );
+                      }
+                      return Container();
+                    }),
                     SizedBox(width: 12.w),
                   ],
                 ),

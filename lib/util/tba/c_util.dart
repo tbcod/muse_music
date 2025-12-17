@@ -22,7 +22,7 @@ class CUtil extends BaseApi {
 
   Future<BaseModel> checkCloak() async {
 
-    // if (kDebugMode) {
+    // if (kDebugMode && !MuseConfig.isUser) {
     //   await museSp.setBool("isOpenUser", false);
     //   return BaseModel(code: -1, data: "excerpt1");
     // }
@@ -36,7 +36,7 @@ class CUtil extends BaseApi {
     // var netResult = await Connectivity().checkConnectivity();
 
 
-    if (GetPlatform.isAndroid) {
+    if (GetPlatform.isAndroid ) {
       return BaseModel(code: -1);
     } else {
       var iosInfo = await DeviceInfoPlugin().iosInfo;

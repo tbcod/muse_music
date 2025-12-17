@@ -5,31 +5,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:music_muse/api/api_main.dart';
-import 'package:music_muse/const/env.dart';
+import 'package:music_muse/generated/assets.dart';
 import 'package:music_muse/muse_config.dart';
+import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
 import 'package:music_muse/u_page/main/u_debug_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
-import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/native_util.dart';
-import 'package:music_muse/util/tba/tba_util.dart';
 import 'package:music_muse/util/toast.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
-import '../../app.dart';
 import '../../lang/my_tr.dart';
-import '../../main.dart';
 import '../../page/main/setting/feedback.dart';
 import '../../page/main/setting/only_web.dart';
 import '../../util/ad/ad_util.dart';
 import '../../util/cache_util.dart';
-import '../../util/dialog_util.dart';
 import '../../util/log.dart';
 import '../../view/base_dialog.dart';
 import 'home/u_play.dart';
+import 'home/u_purchase_page.dart';
 
 class UserSetting extends GetView<UserSettingController> {
   const UserSetting({super.key});
@@ -38,7 +34,7 @@ class UserSetting extends GetView<UserSettingController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserSettingController());
     return VisibilityDetector(
-      key: Key("UserSettingPage"),
+      key: const Key("UserSettingPage"),
       onVisibilityChanged: (VisibilityInfo info) async {
         if (info.visibleFraction != 0) {
           //每次显示刷新缓存大小
@@ -46,7 +42,7 @@ class UserSetting extends GetView<UserSettingController> {
         }
       },
       child: Container(
-        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+        decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -67,18 +63,45 @@ class UserSetting extends GetView<UserSettingController> {
                     width: 100,
                     height: 44,
                   )),
+              const SizedBox(width: 6),
+              Obx(() {
+                return Visibility(
+                  visible: !VipUtil.instance.isVip,
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.setting.name);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
-          body: Obx(() => ListView.separated(
-              itemBuilder: (_, i) {
-                return getItem(i);
-              },
-              separatorBuilder: (_, i) {
-                return SizedBox(
-                  height: 1,
-                );
-              },
-              itemCount: controller.listTitle.length)),
+          body: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  NativeUtils.instance.gbToH5Page();
+                },
+                child: Image.asset(Assets.oimgSetH5, width: ScreenUtil().screenWidth - 16, fit: BoxFit.fitWidth),
+              ),
+              Expanded(
+                child: Obx(() => ListView.separated(
+                    itemBuilder: (_, i) {
+                      return getItem(i);
+                    },
+                    separatorBuilder: (_, i) {
+                      return const SizedBox(
+                        height: 1,
+                      );
+                    },
+                    itemCount: controller.listTitle.length)),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -113,7 +136,7 @@ class UserSetting extends GetView<UserSettingController> {
               controller.listTitle[i],
               style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
             ),
-            Spacer(),
+            const Spacer(),
             isRightText
                 ? Obx(() => Text(
                       rightText.value,
@@ -133,11 +156,11 @@ class UserSetting extends GetView<UserSettingController> {
           //   NativeUtils.instance.test();
           // }
           //反馈
-          Get.to(FeedbackPage());
+          Get.to(const FeedbackPage());
         } else if (itemTitle == "Privacy Policy".tr) {
-          Get.to(OnlyWeb(), arguments: 2);
+          Get.to(const OnlyWeb(), arguments: 2);
         } else if (itemTitle == "Terms of Service".tr) {
-          Get.to(OnlyWeb(), arguments: 1);
+          Get.to(const OnlyWeb(), arguments: 1);
         } else if (itemTitle == "pops".tr) {
           Get.dialog(BaseDialog(
             title: "pops".tr,
@@ -166,22 +189,22 @@ class UserSetting extends GetView<UserSettingController> {
                             Get.back();
                           },
                           child: Text("Cancel".tr)),
-                      Spacer(),
+                      const Spacer(),
                       TextButton(
                           onPressed: () async {
                             var listLocale = [
                               Get.deviceLocale,
-                              Locale("zh", "CN"),
-                              Locale("en", "US"),
-                              Locale("fr", "FR"),
-                              Locale("es", "ES"),
-                              Locale("pt", "PT"),
-                              Locale("de", "DE"),
+                              const Locale("zh", "CN"),
+                              const Locale("en", "US"),
+                              const Locale("fr", "FR"),
+                              const Locale("es", "ES"),
+                              const Locale("pt", "PT"),
+                              const Locale("de", "DE"),
                             ];
 
                             AppLog.e(nowIndex);
 
-                            var nowLocale = listLocale[nowIndex] ?? Locale("en", "US");
+                            var nowLocale = listLocale[nowIndex] ?? const Locale("en", "US");
                             MyTranslations.locale = nowLocale;
                             await Get.updateLocale(nowLocale);
                             controller.langStr.value = listLocale[nowIndex].toString();
@@ -203,7 +226,7 @@ class UserSetting extends GetView<UserSettingController> {
                         onSelectedItemChanged: (index) {
                           nowIndex = index;
                         },
-                        children: [
+                        children: const [
                           Text("system"),
                           Text("zh_CN"),
                           Text("en_US"),

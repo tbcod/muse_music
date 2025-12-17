@@ -14,6 +14,7 @@ import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/c_util.dart';
 import 'package:music_muse/util/tba/event_util.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LaunchPage extends GetView<LaunchPageController> {
@@ -207,6 +208,7 @@ class LaunchPageController extends GetxController {
   }
 
   loadAndShowAAd() {
+    if(VipUtil.instance.isVip) return;
     AdUtils.instance.loadAd("muse_local_int", onLoad: (adId, isOk, e) {
       AppLog.i("启动页加载广告A结果:$isOk, $adId, $e");
 
@@ -239,6 +241,7 @@ class LaunchPageController extends GetxController {
   }
 
   loadAndShowBAd() async {
+    if(VipUtil.instance.isVip) return;
     AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
       AppLog.i("启动页加载B广告结果:$isOk, $adId, $e");
       if (isOk) {
@@ -257,7 +260,7 @@ class LaunchPageController extends GetxController {
           adScene: AdScene.openCool,
           onShow: ShowCallback(
             onShowFail: (adId, e) {
-              AppLog.e("open onShowFail:$adId,$e");
+              // AppLog.e("open onShowFail:$adId,$e");
               // toMainPage();
             },
             onClose: (adId) {
@@ -280,6 +283,10 @@ class LaunchPageController extends GetxController {
     //倒计时7秒加载进度条
 
     int timeout = AdUtils.instance.adJson["open_timeout"] ?? 10;
+    if(VipUtil.instance.isVip){
+      timeout = 1;
+    }
+
     int diff = DateTime.now().difference(bus.startTime ?? DateTime.now()).inSeconds;
     int seconds = timeout;
     if (timeout > diff) {
@@ -314,7 +321,7 @@ class LaunchPageController extends GetxController {
   toMainPage() async {
     int diff = DateTime.now().difference(bus.startTime!).inSeconds;
     if (isA && diff < 5) {
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
       toMainPage();
       return;
     }

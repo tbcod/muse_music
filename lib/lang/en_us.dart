@@ -101,5 +101,21 @@ const Map<String, String> enUS = {
   "Videos": "Videos",
   "Albums": "Albums",
   "Artists": "Artists",
-  "playlists": "playlists"
+  "playlists": "playlists",
+  "year": "Year",
+  "week": "Week",
+  "lifeTime": "Life Time",
+  "restore": "Restore",
+  "autoRenewal" : "Auto-renewal: @price per year. Cancel anytime.",
+  "continue": "Continue",
+  "subscriptionFail": "Subscription failed! Please attempt the process again!",
+  "subscribedSuc":"Subscribed successfully! Enjoy your membership perks!",
+  "canceled": "Canceled",
+  "failedGetProduct": "Failed to get product information!",
+  "noProducts": "No products yet!",
+  "unlimitedDownload":"Unlimited Downloads",
+  "adFree":"Ad-Free",
+  "watchVideoOffline" : "Watch Youtube video offline",
+  "playMusicBackground":"Play music background",
+  "unlockedAllFunctions":"Unlocked all vip functions"
 };

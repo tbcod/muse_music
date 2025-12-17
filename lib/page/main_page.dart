@@ -16,6 +16,8 @@ import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/consent_request.dart';
 import 'package:music_muse/util/keep_view.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/native_util.dart';
+import 'package:music_muse/util/vip_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/ad/ad_util.dart';
@@ -36,8 +38,7 @@ class MainPage extends GetView<MainPageController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent =
-            const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
+        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -120,12 +121,16 @@ class MainPageController extends GetxController {
 
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
-      var result = await CUtil.instance.checkCloak();
+      if (result.contains(ConnectivityResult.wifi) || result.contains(ConnectivityResult.mobile)) {
+        VipUtil.instance.requestVipStatus();
+      }
+
+      var cloakRes = await CUtil.instance.checkCloak();
 
       //监听到网络变化重新请求一次
       var okStr = GetPlatform.isIOS ? "excerpt" : "";
 
-      if (result.data == okStr) {
+      if (cloakRes.data == okStr) {
         //缓存
         var sp = await SharedPreferences.getInstance();
         await sp.setBool("isOpenUser", true);
@@ -137,8 +142,11 @@ class MainPageController extends GetxController {
 
   @override
   Future<void> onReady() async {
+    NativeUtils.instance.gbToAPage();
     await ConsentRequest.instance.startRequest();
     _requestIDFA();
+    await VipUtil.instance.requestVipStatus();
+    VipUtil.instance.autoEnterPurchasePage();
   }
 
   _requestIDFA() async {
@@ -149,6 +157,10 @@ class MainPageController extends GetxController {
         _requestIDFA();
       });
     }
+    // else{
+    //   var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
+    //   NativeUtils.instance.gbToIDFA(idfa);
+    // }
   }
 
   Future _requestCloak() async {
