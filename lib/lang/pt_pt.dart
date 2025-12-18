@@ -116,5 +116,6 @@ const Map<String, String> ptPT = {
   "adFree": "Sem anúncios",
   "watchVideoOffline": "Assistir a vídeos do YouTube offline",
   "playMusicBackground": "Reproduzir música em segundo plano",
-  "unlockedAllFunctions": "Todas as funções VIP desbloqueadas"
+  "unlockedAllFunctions": "Todas as funções VIP desbloqueadas",
+  "noSubscriptions": "Sem assinaturas"
 };

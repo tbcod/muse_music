@@ -115,5 +115,6 @@ const Map<String, String> zhCN = {
   "adFree": "无广告",
   "watchVideoOffline": "离线观看 YouTube 视频",
   "playMusicBackground": "后台播放音乐",
-  "unlockedAllFunctions": "解锁所有 VIP 功能"
+  "unlockedAllFunctions": "解锁所有 VIP 功能",
+  "noSubscriptions": "无订阅信息"
 };

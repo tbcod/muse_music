@@ -116,5 +116,8 @@ const Map<String, String> esES = {
   "adFree": "Sin anuncios",
   "watchVideoOffline": "Ver videos de YouTube sin conexión",
   "playMusicBackground": "Reproducir música en segundo plano",
-  "unlockedAllFunctions": "Todas las funciones VIP desbloqueadas"
+  "unlockedAllFunctions": "Todas las funciones VIP desbloqueadas",
+  "noSubscriptions": "Sin suscripciones"
 };
+
+

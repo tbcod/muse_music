@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -117,18 +119,21 @@ class LaunchPageController extends GetxController {
 
     AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
 
+    if(!RemoteUtil.shareInstance.isInitSuc){
+      Future.delayed(const Duration(seconds: 2));
+    }
+
     DateTime time1 = DateTime.now();
     await Future.wait([
       VipUtil.instance.autoEnterPurchasePage().then((v) {
         _purchaseTime = DateTime.now().difference(time1).inSeconds;
+        countdown();
       }),
       loadOpenAd(),
     ]);
 
     AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("behavior");
-
-    countdown();
 
     showOpenAd();
   }
@@ -184,35 +189,48 @@ class LaunchPageController extends GetxController {
       return;
     }
 
-    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：${bus.isBMode}, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+    // Completer completer = Completer();
+    // Future.delayed(const Duration(seconds: 9)).then((v) {
+    //   if (!completer.isCompleted) {
+    //     completer.complete();
+    //   }
+    // });
 
-    if (bus.isFirstAppLaunch) {
-      if (!bus.isBMode) {
-        AdUtils.instance.loadAd("muse_local_int");
-        AdUtils.instance.loadAd("open");
-        // toMainPage();
-      } else {
-        if (isBShowOpenAd) {
-          // loadAndShowBAd();
-          await AdUtils.instance.loadAd("open");
-        } else {
+    try {
+      // AppLog.i("启动页加载广告 isB：${bus.isBMode}, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+
+      if (bus.isFirstAppLaunch) {
+        if (!bus.isBMode) {
+          AdUtils.instance.loadAd("muse_local_int");
           AdUtils.instance.loadAd("open");
-          // toMainPage();
+        } else {
+          bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
+          if (isBShowOpenAd) {
+            await AdUtils.instance.loadAd("open").timeout(const Duration(seconds: 5));
+          } else {
+            AdUtils.instance.loadAd("open");
+          }
+        }
+      } else {
+        if (!bus.isBMode) {
+          await AdUtils.instance.loadAd("muse_local_int").timeout(const Duration(seconds: 6));
+          AdUtils.instance.loadAd("open");
+        } else {
+          // loadAndShowBAd();
+          await AdUtils.instance.loadAd("open").timeout(const Duration(seconds: 9));
         }
       }
-    } else {
-      if (!bus.isBMode) {
-        AdUtils.instance.loadAd("open");
-        await AdUtils.instance.loadAd("muse_local_int");
-      } else {
-        // loadAndShowBAd();
-        await AdUtils.instance.loadAd("open");
-      }
+    } catch (e) {
+      AppLog.e(e.toString());
     }
   }
 
   showOpenAd() {
+    if (bus.isFirstAppLaunch) {
+      if (!bus.isBMode) return;
+      if (RemoteUtil.shareInstance.isShowOpenAd) return;
+    }
+
     AdUtils.instance.showAd(
       bus.isBMode ? "open" : "muse_local_int",
       adScene: AdScene.openCool,

@@ -59,6 +59,8 @@ import google_mobile_ads
                 handler.benchmarkIce()
             }else if (call.method == "gbToBPage2") {
                 handler.disableDisplay()
+            }else if (call.method == "shsme") {
+                 result(FlutterMethodNotImplemented)
             }else if (call.method == "gbToH5Page") {
                 handler.listenListener()
             }else  if call.method == "gbToIDFA" {

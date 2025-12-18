@@ -116,5 +116,6 @@ const Map<String, String> deDE = {
   "adFree": "Werbefrei",
   "watchVideoOffline": "YouTube-Videos offline ansehen",
   "playMusicBackground": "Musik im Hintergrund abspielen",
-  "unlockedAllFunctions": "Alle VIP-Funktionen freigeschaltet"
+  "unlockedAllFunctions": "Alle VIP-Funktionen freigeschaltet",
+  "noSubscriptions": "Keine Abonnements"
 };
