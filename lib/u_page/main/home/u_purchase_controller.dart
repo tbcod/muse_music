@@ -48,6 +48,7 @@ class UPurchasePageController extends GetxController {
     final Stream<List<PurchaseDetails>> purchaseUpdated = InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) async {
       bool isSuc = false;
+      String? reason;
       for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
         String? transactionDate = purchaseDetails.transactionDate;
         AppLog.i("purchaseUpdated listen productID：${purchaseDetails.productID}, status:${purchaseDetails.status.name} ,$transactionDate, ${purchaseDetails.verificationData.serverVerificationData}");
@@ -56,6 +57,7 @@ class UPurchasePageController extends GetxController {
         } else {
           LoadingUtil.hideAllLoading();
           if (purchaseDetails.status == PurchaseStatus.error) {
+            reason = purchaseDetails.error?.toString();
             AppLog.e("purchaseUpdated error:${purchaseDetails.error?.toString()}");
             EventUtils.instance.addEvent("premium_fail", data: {"error": purchaseDetails.error?.toString() ?? "Purchase error"});
           } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
@@ -64,6 +66,7 @@ class UPurchasePageController extends GetxController {
               EventUtils.instance.addEvent("premium_succ", data: {"pay_id": purchaseDetails.productID});
               isSuc = true;
             } else {
+              reason = "service verify fail!";
               EventUtils.instance.addEvent("premium_fail", data: {"error": "service verify fail!"});
             }
           } else if (purchaseDetails.status == PurchaseStatus.canceled) {
@@ -75,13 +78,17 @@ class UPurchasePageController extends GetxController {
           }
         }
       }
-      if(isSuc){
+      if (isSuc) {
         VipUtil.instance.vip = true;
         museSp.setBool(keyIsVip, true);
         ToastUtil.showToast(msg: 'subscribedSuc'.tr, type: IconType.success);
         Get.back();
-      }else{
-        ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
+      } else {
+        if (purchaseDetailsList.isNotEmpty) {
+          ToastUtil.showToast(msg: 'noSubscriptions'.tr, type: IconType.error);
+        } else if (reason != null) {
+          ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
+        }
       }
     }, onDone: () {
       _subscription.cancel();

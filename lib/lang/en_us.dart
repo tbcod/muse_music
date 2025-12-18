@@ -117,5 +117,6 @@ const Map<String, String> enUS = {
   "adFree":"Ad-Free",
   "watchVideoOffline" : "Watch Youtube video offline",
   "playMusicBackground":"Play music background",
-  "unlockedAllFunctions":"Unlocked all vip functions"
+  "unlockedAllFunctions":"Unlocked all vip functions",
+  "noSubscriptions": "No subscriptions"
 };

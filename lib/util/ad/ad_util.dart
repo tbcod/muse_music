@@ -216,8 +216,10 @@ class AdUtils {
 
   //load
   Future<bool> loadAd(String key, {LoadCallback? onLoad}) async {
-
-    if(VipUtil.instance.isVip) return false;
+    if (VipUtil.instance.isVip) {
+      onLoad?.call("", false, null);
+      false;
+    }
 
     if (!bus.isBMode && key == 'open') {
       key = "muse_local_int";
@@ -633,7 +635,7 @@ class AdUtils {
     // }
     // return false;
 
-    if(VipUtil.instance.isVip) {
+    if (VipUtil.instance.isVip) {
       if (onShow != null) {
         onShow.onShowFail("", AdError(-1, "", "$key, vip not show"));
       }
@@ -1291,11 +1293,9 @@ class MyNativeAdViewController extends GetxController {
   Ad? admobAd;
 
   loadAd(String key, String positionKey) async {
-
-    if(VipUtil.instance.isVip) return;
+    if (VipUtil.instance.isVip) return;
 
     adView.value = Container();
-
 
     var adJson = AdUtils.instance.adJson;
     if (!adJson.containsKey(key)) {

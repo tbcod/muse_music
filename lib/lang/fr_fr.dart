@@ -116,5 +116,6 @@ const Map<String, String> frFR = {
   "adFree": "Sans publicité",
   "watchVideoOffline": "Regarder des vidéos YouTube hors ligne",
   "playMusicBackground": "Lire la musique en arrière-plan",
-  "unlockedAllFunctions": "Toutes les fonctionnalités VIP débloquées"
+  "unlockedAllFunctions": "Toutes les fonctionnalités VIP débloquées",
+  "noSubscriptions": "Aucun abonnement"
 };

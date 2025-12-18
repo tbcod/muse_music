@@ -99,8 +99,7 @@ class RemoteUtil {
 
       //使用json
       var jsonString = FirebaseRemoteConfig.instance.getString(GetPlatform.isIOS ? "ad_json_ios" : "ad_json_and");
-      AppLog.i("获取云控广告");
-      AppLog.i(jsonString);
+      AppLog.i("获取云控广告:$jsonString");
 
       if (jsonString.isNotEmpty) {
         museSp.setString(mmAdJsonKey, jsonString);
@@ -129,7 +128,7 @@ class RemoteUtil {
         isp.setString(keyFirebaseVipShow, _vipShow);
       }
 
-      AppLog.e("初始化firebase成功：${FirebaseRemoteConfig.instance.getAll().keys}");
+      AppLog.i("初始化firebase成功：${FirebaseRemoteConfig.instance.getAll().keys}");
 
     } catch (e, s) {
       AppLog.e("初始化firebase失败：${e.toString()}, \n$s");
