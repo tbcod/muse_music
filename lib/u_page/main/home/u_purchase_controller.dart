@@ -84,7 +84,7 @@ class UPurchasePageController extends GetxController {
         ToastUtil.showToast(msg: 'subscribedSuc'.tr, type: IconType.success);
         Get.back();
       } else {
-        if (purchaseDetailsList.isNotEmpty) {
+        if (purchaseDetailsList.isEmpty) {
           ToastUtil.showToast(msg: 'noSubscriptions'.tr, type: IconType.error);
         } else if (reason != null) {
           ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
