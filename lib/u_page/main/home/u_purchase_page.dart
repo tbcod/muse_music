@@ -74,7 +74,7 @@ class UPurchasePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 36.h),
                   _textSection(context),
                   _priceSection(context),
                   Expanded(child: _bottomView(context)),
@@ -95,7 +95,7 @@ class UPurchasePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(Assets.iapIpText, width: 188, height: 52),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           ...texts.map((text) {
             return Padding(
               padding: EdgeInsets.only(top: 16.h),
@@ -118,7 +118,7 @@ class UPurchasePage extends StatelessWidget {
 
   Widget _priceSection(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 40),
+      margin: EdgeInsets.only(left: 20, right: 20, top: 40.h),
       child: Obx(() {
         return Column(
           children: List.generate(controller.products.length, (index) {
@@ -193,9 +193,8 @@ class UPurchasePage extends StatelessWidget {
   Widget _bottomView(BuildContext context) {
     return Container(
       alignment: Alignment.bottomCenter,
-      // height: 80.h + max(ScreenUtil().bottomBarHeight, 20),
       width: ScreenUtil().screenWidth,
-      padding: EdgeInsets.only(bottom: 20.h + max(ScreenUtil().bottomBarHeight, 20)),
+      padding: EdgeInsets.only(bottom: 20.h + max(ScreenUtil().bottomBarHeight, 20.h)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:get/get.dart' hide Response;
 
 import '../util/log.dart';

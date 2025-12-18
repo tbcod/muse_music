@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +8,7 @@ import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/main/home/u_purchase_controller.dart';
 import 'package:music_muse/u_page/main/home/u_purchase_page.dart';
+import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/idfa_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
@@ -24,6 +24,12 @@ class VipUtil {
 
   final _isVip = false.obs;
 
+  var _curVipStatusText = '';
+
+  get curVipStatusText => _curVipStatusText;
+
+  bool _isInitVipState = false;
+
   bool get isVip {
     return _isVip.value;
   }
@@ -37,9 +43,13 @@ class VipUtil {
     _isVip.value = vip;
   }
 
-  Future requestVipStatus() async {
+  Future initVipStatus() async {
     try {
-      if (kDebugMode) return;
+      // if (kDebugMode) return;
+      if (_isInitVipState) return;
+
+      _isInitVipState = true;
+
       await SKRequestMaker().startRefreshReceiptRequest();
       String data = await SKReceiptManager.retrieveReceiptData();
 
@@ -47,14 +57,80 @@ class VipUtil {
       if (val != null) {
         _isVip.value = val;
         museSp.setBool(keyIsVip, val);
+      } else {
+        _isInitVipState = false;
       }
+      AppLog.i("初始化VIP结果:$val");
     } catch (e) {
+      _isInitVipState = false;
       // _isVip.value = false;
-      AppLog.e("error:${e.toString()}");
+      AppLog.e("当前VIP状态 error:${e.toString()}");
     }
   }
 
-  Future<dynamic> getIapReceiptVerifier(String receiptData, {String? productId}) async {
+  Future<bool?> requestIapReceiptVerifier(String receiptData, {String? productId}) async {
+    final response = await _verifierVipReceipt(receiptData, productId: productId);
+    if (response == null || response.data == null) {
+      return null;
+    }
+    if (response.statusCode != 200) return null;
+    // bool ok = response.data["entity"]?["ok"] ?? false;
+    //
+    // List latestReceiptInfo = response.data["entity"]?["latest_receipt_info"] ?? [];
+    //
+    // AppLog.i("request receiptVerifier is vip : $ok");
+    //
+    // if (ok && latestReceiptInfo.isNotEmpty) {
+    //   String? productId = latestReceiptInfo.first["product_id"];
+    //   String? expiresDate = latestReceiptInfo.first["expires_date"];
+    //   String? purchaseDate = latestReceiptInfo.first["purchase_date"];
+    //   AppLog.i("vip详情： productId:$productId, purchaseDate:$purchaseDate, expiresDate:$expiresDate");
+    // }
+
+    bool ok = false;
+    if (MuseConfig.isUser) {
+      ok = response.data["foodstuff"]?["prevailers"] ?? false;
+
+      List latestReceiptInfo = response.data["entity"]?["monaurally"] ?? [];
+
+      AppLog.i("request receiptVerifier is vip : $ok");
+
+      if (ok && latestReceiptInfo.isNotEmpty) {
+        String? productId = latestReceiptInfo.first["fellahs"];
+        String? expiresDate = latestReceiptInfo.first["palomino"];
+        String? purchaseDate = latestReceiptInfo.first["ordinately"];
+        AppLog.i("订阅结果：productId:$productId, expiresDate:$expiresDate, purchaseDate:$purchaseDate,");
+        _curVipStatusText = "$productId, expiresDate:$expiresDate";
+      } else {
+        _curVipStatusText = "$ok";
+      }
+    } else {
+      ok = response.data["sporocyte"]?["dispositor"] ?? false;
+
+      List latestReceiptInfo = response.data["sporocyte"]?["mormaordom"] ?? [];
+
+      AppLog.i("request receiptVerifier is vip : $ok");
+      _curVipStatusText = "$ok";
+      if (latestReceiptInfo.isNotEmpty) {
+        for (Map recInfo in latestReceiptInfo) {
+          String? productId = recInfo["or7qcykugi"];
+          String? expiresDate = recInfo["skindiver"];
+          String? purchaseDate = recInfo["6xejkwksqw"];
+          AppLog.i("订阅结果：$ok, productId:$productId, expiresDate:$expiresDate, purchaseDate:$purchaseDate,");
+          _curVipStatusText = "$_curVipStatusText, \n$productId, expiresDate:$expiresDate";
+        }
+        // String? productId = latestReceiptInfo.first["or7qcykugi"];
+        // String? expiresDate = latestReceiptInfo.first["skindiver"];
+        // String? purchaseDate = latestReceiptInfo.first["6xejkwksqw"];
+        // AppLog.i("订阅结果：$ok, productId:$productId, expiresDate:$expiresDate, purchaseDate:$purchaseDate,");
+        // _curVipStatusText = "$_curVipStatusText, $productId, expiresDate:$expiresDate";
+      }
+    }
+
+    return ok;
+  }
+
+  Future<dynamic> _verifierVipReceipt(String receiptData, {String? productId}) async {
     String deviceId = await this.deviceId;
     String packageName = (await packageInfo).packageName;
     String idfa = await IdfaUtil.instance.idfa;
@@ -128,57 +204,6 @@ class VipUtil {
     return null;
   }
 
-  Future<bool?> requestIapReceiptVerifier(String receiptData, {String? productId}) async {
-    final response = await getIapReceiptVerifier(receiptData, productId: productId);
-    if (response == null || response.data == null) {
-      return null;
-    }
-    if (response.statusCode != 200) return null;
-    // bool ok = response.data["entity"]?["ok"] ?? false;
-    //
-    // List latestReceiptInfo = response.data["entity"]?["latest_receipt_info"] ?? [];
-    //
-    // AppLog.i("request receiptVerifier is vip : $ok");
-    //
-    // if (ok && latestReceiptInfo.isNotEmpty) {
-    //   String? productId = latestReceiptInfo.first["product_id"];
-    //   String? expiresDate = latestReceiptInfo.first["expires_date"];
-    //   String? purchaseDate = latestReceiptInfo.first["purchase_date"];
-    //   AppLog.i("vip详情： productId:$productId, purchaseDate:$purchaseDate, expiresDate:$expiresDate");
-    // }
-
-    bool ok = false;
-    if (MuseConfig.isUser) {
-      ok = response.data["foodstuff"]?["prevailers"] ?? false;
-
-      List latestReceiptInfo = response.data["entity"]?["monaurally"] ?? [];
-
-      AppLog.i("request receiptVerifier is vip : $ok");
-
-      if (ok && latestReceiptInfo.isNotEmpty) {
-        String? productId = latestReceiptInfo.first["fellahs"];
-        String? expiresDate = latestReceiptInfo.first["palomino"];
-        String? purchaseDate = latestReceiptInfo.first["ordinately"];
-        AppLog.i("订阅结果：productId:$productId, expiresDate:$expiresDate, purchaseDate:$purchaseDate,");
-      }
-    } else {
-      ok = response.data["sporocyte"]?["dispositor"] ?? false;
-
-      List latestReceiptInfo = response.data["sporocyte"]?["mormaordom"] ?? [];
-
-      AppLog.i("request receiptVerifier is vip : $ok");
-
-      if (ok && latestReceiptInfo.isNotEmpty) {
-        String? productId = latestReceiptInfo.first["or7qcykugi"];
-        String? expiresDate = latestReceiptInfo.first["skindiver"];
-        String? purchaseDate = latestReceiptInfo.first["6xejkwksqw"];
-        AppLog.i("订阅结果：productId:$productId, expiresDate:$expiresDate,purchaseDate:$purchaseDate,");
-      }
-    }
-
-    return ok;
-  }
-
   Future<PackageInfo> get packageInfo async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo;
@@ -199,22 +224,29 @@ class VipUtil {
   static String keyFirstInAppDate = "keyFirstInAppDateMt";
   static String keyLastShowPurchaseDate = "keyLastShowPurchaseDateMt";
 
-  bool autoEnterPurchasePage() {
-    AppLog.i("autoEnterPurchasePage isVip:$isVip, type:${RemoteUtil.shareInstance.vipShowType.name}");
+  Future<bool> autoEnterPurchasePage() async {
+    AppLog.i("autoEnterPurchasePage isVip:$isVip, firebase A/B:${RemoteUtil.shareInstance.vipShowType.name}");
 
     if (isVip) return false;
 
-    if (RemoteUtil.shareInstance.vipShowType == VipShowType.B) {
-      if (!isFirstDayInApp && !isTodayShowedPage) {
+    if (!isFirstDayInApp && !isTodayShowedPage) {
+      if (!RemoteUtil.shareInstance.isInitSuc && RemoteUtil.shareInstance.vipShowType == VipShowType.A) {
+        await Future.delayed(const Duration(seconds: 2));
+      }
+
+      if (RemoteUtil.shareInstance.vipShowType == VipShowType.B) {
         museSp.setInt(keyLastShowPurchaseDate, DateTime.now().millisecondsSinceEpoch);
-        Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.enter.name);
+        await Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.enter.name);
         return true;
       }
     }
+
     return false;
   }
 
   bool get isFirstDayInApp {
+    if (kDebugMode) return false;
+
     int dateMt = museSp.getInt(keyFirstInAppDate);
     if (dateMt == 0) {
       museSp.setInt(keyFirstInAppDate, DateTime.now().millisecondsSinceEpoch);
@@ -231,6 +263,8 @@ class VipUtil {
   }
 
   bool get isTodayShowedPage {
+    if (kDebugMode) return false;
+
     int lastShowDateMt = museSp.getInt(keyLastShowPurchaseDate);
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(lastShowDateMt);
     if (isSameDay(DateTime.now(), dateTime)) {

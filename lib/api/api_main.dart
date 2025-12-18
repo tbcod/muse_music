@@ -67,8 +67,8 @@ class ApiMain extends BaseApi {
   Future<BaseModel> getData(String browseId, {String? params, Map? nextData, String? videoId}) async {
     // String countryCode = Get.deviceLocale?.countryCode ?? "";
     // String languageCode = Get.deviceLocale?.languageCode ?? "";
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {
       "context": _webRemixContext,
@@ -171,7 +171,7 @@ class ApiMain extends BaseApi {
 
   Future<BaseModel> getSearchList(String input) {
     var url = "https://music.youtube.com/youtubei/v1/music/get_search_suggestions";
-    var nowTime = DateTime.now();
+    // var nowTime = DateTime.now();
     // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {"context": _webRemixContext, "input": input};
@@ -193,8 +193,8 @@ class ApiMain extends BaseApi {
   Future<BaseModel> getVideoNext(String videoId, {bool isMoreVideo = false, String continuation = ""}) {
     var url = "https://music.youtube.com/youtubei/v1/next";
 
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {
       "context": _webRemixContext,
@@ -210,8 +210,8 @@ class ApiMain extends BaseApi {
   }
 
   Future<BaseModel> getYoutubeData(String browseId, {String? params, Map? nextData, String? videoId}) async {
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {
       "context": {
@@ -245,8 +245,8 @@ class ApiMain extends BaseApi {
   }
 
   Future<BaseModel> getYoutubeNext(String videoId, {String continuation = ""}) async {
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {
       "context": {
@@ -271,8 +271,8 @@ class ApiMain extends BaseApi {
   }
 
   Future<BaseModel> youtubeSearch(String word, {String? continuation}) async {
-    var nowTime = DateTime.now();
-    String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    // var nowTime = DateTime.now();
+    // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {
       "context": {

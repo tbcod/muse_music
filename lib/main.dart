@@ -181,7 +181,7 @@ class AppController extends SuperController {
           TbaUtils.instance.checkUnFinishedEvent();
           TbaUtils.instance.postSession();
 
-          VipUtil.instance.requestVipStatus();
+          VipUtil.instance.initVipStatus();
           //判断新老用户
           var isNewUser = false;
           var installTimeMs = sp.getInt("installTimeMs") ?? 0;

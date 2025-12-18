@@ -47,6 +47,7 @@ class UPurchasePageController extends GetxController {
           ];
     final Stream<List<PurchaseDetails>> purchaseUpdated = InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) async {
+      bool isSuc = false;
       for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
         String? transactionDate = purchaseDetails.transactionDate;
         AppLog.i("purchaseUpdated listen productID：${purchaseDetails.productID}, status:${purchaseDetails.status.name} ,$transactionDate, ${purchaseDetails.verificationData.serverVerificationData}");
@@ -56,24 +57,13 @@ class UPurchasePageController extends GetxController {
           LoadingUtil.hideAllLoading();
           if (purchaseDetails.status == PurchaseStatus.error) {
             AppLog.e("purchaseUpdated error:${purchaseDetails.error?.toString()}");
-            ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
             EventUtils.instance.addEvent("premium_fail", data: {"error": purchaseDetails.error?.toString() ?? "Purchase error"});
           } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
             bool valid = await _verifyPurchase(purchaseDetails);
             if (valid) {
-              if (purchaseDetails.pendingCompletePurchase) {
-                await InAppPurchase.instance.completePurchase(purchaseDetails);
-              }
-              VipUtil.instance.vip = true;
-              museSp.setBool(keyIsVip, true);
-              ToastUtil.showToast(msg: 'subscribedSuc'.tr, type: IconType.success);
               EventUtils.instance.addEvent("premium_succ", data: {"pay_id": purchaseDetails.productID});
-              Get.back();
-              return;
+              isSuc = true;
             } else {
-              if (purchaseDetails.status == PurchaseStatus.restored) {
-                ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
-              }
               EventUtils.instance.addEvent("premium_fail", data: {"error": "service verify fail!"});
             }
           } else if (purchaseDetails.status == PurchaseStatus.canceled) {
@@ -84,6 +74,14 @@ class UPurchasePageController extends GetxController {
             await InAppPurchase.instance.completePurchase(purchaseDetails);
           }
         }
+      }
+      if(isSuc){
+        VipUtil.instance.vip = true;
+        museSp.setBool(keyIsVip, true);
+        ToastUtil.showToast(msg: 'subscribedSuc'.tr, type: IconType.success);
+        Get.back();
+      }else{
+        ToastUtil.showToast(msg: 'subscriptionFail'.tr, type: IconType.error);
       }
     }, onDone: () {
       _subscription.cancel();
@@ -135,7 +133,7 @@ class UPurchasePageController extends GetxController {
     _products.refresh();
     curPlanIndex.value = yearIndex;
     AppLog.i("getProductInfo:${productList.length}");
-    EventUtils.instance.addEvent("premium_page", data: {"station": station, "load": loadSuc ? "suc" : "fail", "load_page": MuseConfig.isUser ? "b" : "a"});
+    EventUtils.instance.addEvent("premium_page", data: {"station": station, "load": loadSuc ? "suc" : "fail", "load_page": bus.isBMode ? "b" : "a"});
     LoadingUtil.hideAllLoading();
   }
 
@@ -242,7 +240,7 @@ class UPurchasePageController extends GetxController {
 
   List<String> get contentTips {
     List<String> texts = [];
-    if (MuseConfig.isUser) {
+    if (bus.isBMode) {
       texts = ["unlimitedDownload".tr, "adFree".tr, "watchVideoOffline".tr, "playMusicBackground".tr];
     } else {
       texts = ["playMusicBackground".tr, "adFree".tr, "unlockedAllFunctions".tr];
@@ -250,7 +248,7 @@ class UPurchasePageController extends GetxController {
     return texts;
   }
 
-  int get yearIndex{
+  int get yearIndex {
     int index = 0;
     for (Map map in products) {
       if (map['id'] == 'year_b1' || map['id'] == 'com.musicmuse.subscription.yearly') {
@@ -260,7 +258,6 @@ class UPurchasePageController extends GetxController {
     }
     return index;
   }
-
 
   String get yearPriceStr {
     for (Map map in products) {
