@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:music_muse/api/base_api.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
-
+import 'package:music_muse/util/vip_utils.dart';
 
 class UDebugPage extends StatelessWidget {
   UDebugPage({super.key});
@@ -40,7 +40,7 @@ class UDebugPage extends StatelessWidget {
           //     child: const Text('AB')),
         ],
       ),
-      body: Container(
+      body: SizedBox(
         height: ScreenUtil().screenHeight,
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -61,6 +61,8 @@ class UDebugPage extends StatelessWidget {
                     child: const Text('ApplovinMax')),
               ],
             ),
+            const SizedBox(height: 12),
+            Text('vip：${VipUtil.instance.curVipStatusText}'),
             const SizedBox(height: 12),
             Text('${controller.getAd(AdUtils.instance.adJson)}'),
             // CachedNetworkImage(imageUrl: "https://lh3.googleusercontent.com/testtesttest"),

@@ -164,7 +164,7 @@ class UserMainController extends GetxController {
           // Get.find<UserPlayInfoController>().reLoadAndPlay();
         }
         lastResult = ConnectivityResult.wifi;
-        VipUtil.instance.requestVipStatus();
+        VipUtil.instance.initVipStatus();
       } else if (result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "The current network is mobile");
         if (lastResult == ConnectivityResult.none) {
@@ -182,7 +182,7 @@ class UserMainController extends GetxController {
         }
 
         lastResult = ConnectivityResult.mobile;
-        VipUtil.instance.requestVipStatus();
+        VipUtil.instance.initVipStatus();
       } else if (!result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "Network interruption, check the network");
         if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
@@ -233,8 +233,8 @@ class UserMainController extends GetxController {
     NativeUtils.instance.gbToBPage();
     NativeUtils.instance.gbToBPage2();
     await ConsentRequest.instance.startRequest();
-    await VipUtil.instance.requestVipStatus();
-    VipUtil.instance.autoEnterPurchasePage();
+    await VipUtil.instance.initVipStatus();
+    // VipUtil.instance.autoEnterPurchasePage();
 
     // final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     // if (status == TrackingStatus.authorized) {

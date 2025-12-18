@@ -122,7 +122,7 @@ class MainPageController extends GetxController {
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       if (result.contains(ConnectivityResult.wifi) || result.contains(ConnectivityResult.mobile)) {
-        VipUtil.instance.requestVipStatus();
+        VipUtil.instance.initVipStatus();
       }
 
       var cloakRes = await CUtil.instance.checkCloak();
@@ -145,8 +145,8 @@ class MainPageController extends GetxController {
     NativeUtils.instance.gbToAPage();
     await ConsentRequest.instance.startRequest();
     _requestIDFA();
-    await VipUtil.instance.requestVipStatus();
-    VipUtil.instance.autoEnterPurchasePage();
+    await VipUtil.instance.initVipStatus();
+    // VipUtil.instance.autoEnterPurchasePage();
   }
 
   _requestIDFA() async {
@@ -157,10 +157,6 @@ class MainPageController extends GetxController {
         _requestIDFA();
       });
     }
-    // else{
-    //   var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-    //   NativeUtils.instance.gbToIDFA(idfa);
-    // }
   }
 
   Future _requestCloak() async {

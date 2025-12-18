@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,19 +15,14 @@ import 'package:music_muse/lang/my_tr.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/u_page/main/u_home.dart';
 import 'package:music_muse/u_page/main/u_library.dart';
-import 'package:music_muse/util/ad/ad_util.dart';
 import 'package:music_muse/util/ad/admob_util.dart';
 import 'package:music_muse/util/ad/max_util.dart';
-
-// import 'package:music_muse/util/ad/topon_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
-import 'package:music_muse/util/toast.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,7 +32,6 @@ import 'package:appsflyer_sdk/appsflyer_sdk.dart';
 
 import 'const/bus.dart';
 import 'const/db_key.dart';
-import 'const/env.dart';
 
 ///可存放所有全局变量（如token,启动图等），跟随应用生命周期，不重启不会被销毁
 class Application extends GetxService {

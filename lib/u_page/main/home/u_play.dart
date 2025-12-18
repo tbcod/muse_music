@@ -2336,8 +2336,8 @@ class UserPlayInfoController extends GetxController {
       //没有上次的数据使用默认第一首歌
       await HistoryUtil.instance.initData();
       List dList = List.of(HistoryUtil.instance.songHistoryList);
-      AppLog.e("使用默认播放");
-      AppLog.e(dList);
+      // AppLog.e("使用默认播放");
+      // AppLog.e(dList);
       setDataAndPlayItem(dList, dList[0], clickType: "appOpen");
       return;
     }

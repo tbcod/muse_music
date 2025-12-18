@@ -1,15 +1,11 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:music_muse/const/bus.dart';
-import 'package:music_muse/const/env.dart';
 import 'package:music_muse/muse_config.dart';
 import 'package:music_muse/page/main_page.dart';
 import 'package:music_muse/u_page/u_main.dart';
 import 'package:music_muse/util/ad/ad_util.dart';
-import 'package:music_muse/util/idfa_util.dart';
 import 'package:music_muse/util/log.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/c_util.dart';
@@ -100,11 +96,13 @@ class LaunchPage extends GetView<LaunchPageController> {
 class LaunchPageController extends GetxController {
   var progress = 0.0.obs;
 
-  var isB = false;
-
-  bool get isA => !isB;
+  // var _isB = false;
+  //
+  // bool get _isA => !_isB;
 
   bool _isCloakComplete = false;
+
+  int _purchaseTime = 0;
 
   @override
   void onInit() {
@@ -119,12 +117,20 @@ class LaunchPageController extends GetxController {
 
     AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
 
-    loadOpenAd();
+    DateTime time1 = DateTime.now();
+    await Future.wait([
+      VipUtil.instance.autoEnterPurchasePage().then((v) {
+        _purchaseTime = DateTime.now().difference(time1).inSeconds;
+      }),
+      loadOpenAd(),
+    ]);
 
     AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("behavior");
 
     countdown();
+
+    showOpenAd();
   }
 
   bindData() async {
@@ -137,7 +143,7 @@ class LaunchPageController extends GetxController {
       _isCloakComplete = true;
       //已经是用户模式，不用再请求
       bus.isBMode = true;
-      isB = true;
+      // _isB = true;
       return;
     }
 
@@ -155,24 +161,17 @@ class LaunchPageController extends GetxController {
     if (result.data == okStr) {
       //缓存
       bus.isBMode = true;
-      isB = true;
+      // _isB = true;
       await sp.setBool("isOpenUser", true);
     } else {
-      isB = false;
+      bus.isBMode = false;
+
+      // _isB = false;
     }
   }
 
-  loadOpenAd() async {
+  Future loadOpenAd() async {
     isAdShow = false;
-
-    // var openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
-    // if (openAdStr.isEmpty) {
-    //   //默认为open,
-    //   openAdStr = "open";
-    // }
-
-
-    // if (isToMain) return;
 
     if (!_isCloakComplete) {
       await Future.delayed(const Duration(seconds: 1));
@@ -180,110 +179,170 @@ class LaunchPageController extends GetxController {
       return;
     }
 
-    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：$isB, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
-
-    if (bus.isFirstAppLaunch) {
-      if (isA) {
-        AdUtils.instance.loadAd("muse_local_int");
-        AdUtils.instance.loadAd("open");
-        toMainPage();
-      } else {
-        if (isBShowOpenAd) {
-          loadAndShowBAd();
-        } else {
-          AdUtils.instance.loadAd("open");
-          toMainPage();
-        }
-      }
+    if (VipUtil.instance.isVip) {
+      isAdShow = true;
       return;
     }
 
-    if (isA) {
-      AdUtils.instance.loadAd("open");
-      loadAndShowAAd();
+    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
+    AppLog.i("启动页加载广告 isB：${bus.isBMode}, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+
+    if (bus.isFirstAppLaunch) {
+      if (!bus.isBMode) {
+        AdUtils.instance.loadAd("muse_local_int");
+        AdUtils.instance.loadAd("open");
+        // toMainPage();
+      } else {
+        if (isBShowOpenAd) {
+          // loadAndShowBAd();
+          await AdUtils.instance.loadAd("open");
+        } else {
+          AdUtils.instance.loadAd("open");
+          // toMainPage();
+        }
+      }
     } else {
-      loadAndShowBAd();
+      if (!bus.isBMode) {
+        AdUtils.instance.loadAd("open");
+        await AdUtils.instance.loadAd("muse_local_int");
+      } else {
+        // loadAndShowBAd();
+        await AdUtils.instance.loadAd("open");
+      }
     }
   }
 
-  loadAndShowAAd() {
-    if(VipUtil.instance.isVip) return;
-    AdUtils.instance.loadAd("muse_local_int", onLoad: (adId, isOk, e) {
-      AppLog.i("启动页加载广告A结果:$isOk, $adId, $e");
-
-      if (isOk) {
-        if (isAdShow) {
-          AppLog.e("已经显示过广告");
-          return;
-        }
-        if (isToMain) {
-          AppLog.e("已经跳转到首页");
-          return;
-        }
-
-        //显示广告
-        isAdShow = true;
-        AdUtils.instance.showAd("muse_local_int",
-            adScene: AdScene.openCool,
-            onShow: ShowCallback(onShowFail: (adId, e) {
-              toMainPage();
-            }, onClose: (adId) {
-              toMainPage();
-            }, onShow: (adId) {
-              isAdShow = true;
-            }));
-      } else {
-        isAdShow = true;
-        toMainPage();
-      }
-    });
+  showOpenAd() {
+    AdUtils.instance.showAd(
+      bus.isBMode ? "open" : "muse_local_int",
+      adScene: AdScene.openCool,
+      onShow: ShowCallback(
+        onShowFail: (adId, e) {
+          toMainPage();
+        },
+        onClose: (adId) {
+          toMainPage();
+        },
+        onShow: (adId) {
+          isAdShow = true;
+        },
+      ),
+    );
   }
 
-  loadAndShowBAd() async {
-    if(VipUtil.instance.isVip) return;
-    AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
-      AppLog.i("启动页加载B广告结果:$isOk, $adId, $e");
-      if (isOk) {
-        if (isAdShow) {
-          AppLog.e("已经显示过广告");
-          return;
-        }
-        if (isToMain) {
-          AppLog.e("已经跳转到首页");
-          return;
-        }
-        //显示广告
-        isAdShow = true;
-        AdUtils.instance.showAd(
-          "open",
-          adScene: AdScene.openCool,
-          onShow: ShowCallback(
-            onShowFail: (adId, e) {
-              // AppLog.e("open onShowFail:$adId,$e");
-              // toMainPage();
-            },
-            onClose: (adId) {
-              toMainPage();
-            },
-            onShow: (adId) {
-              isAdShow = true;
-            },
-          ),
-        );
-        return;
-      } else {
-        // isAdShow = true;
-        // toMainPage();
-      }
-    });
-  }
+  // Future loadOpenAd() async {
+  //    isAdShow = false;
+  //
+  //    if (!_isCloakComplete) {
+  //      await Future.delayed(const Duration(seconds: 1));
+  //      loadOpenAd();
+  //      return;
+  //    }
+  //
+  //    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
+  //    AppLog.i("启动页加载广告 isB：${bus.isBMode}, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+  //
+  //    if (bus.isFirstAppLaunch) {
+  //      if (!bus.isBMode) {
+  //        AdUtils.instance.loadAd("muse_local_int");
+  //        AdUtils.instance.loadAd("open");
+  //        toMainPage();
+  //      } else {
+  //        if (isBShowOpenAd) {
+  //          loadAndShowBAd();
+  //        } else {
+  //          AdUtils.instance.loadAd("open");
+  //          toMainPage();
+  //        }
+  //      }
+  //      return;
+  //    }
+  //
+  //    if (!bus.isBMode) {
+  //      AdUtils.instance.loadAd("open");
+  //      loadAndShowAAd();
+  //    } else {
+  //      loadAndShowBAd();
+  //    }
+  //  }
+  //
+  //  loadAndShowAAd() {
+  //    if (VipUtil.instance.isVip) return;
+  //    AdUtils.instance.loadAd("muse_local_int", onLoad: (adId, isOk, e) {
+  //      AppLog.i("启动页加载广告A结果:$isOk, $adId, $e");
+  //
+  //      if (isOk) {
+  //        if (isAdShow) {
+  //          AppLog.e("已经显示过广告");
+  //          return;
+  //        }
+  //        if (isToMain) {
+  //          AppLog.e("已经跳转到首页");
+  //          return;
+  //        }
+  //
+  //        //显示广告
+  //        isAdShow = true;
+  //        AdUtils.instance.showAd("muse_local_int",
+  //            adScene: AdScene.openCool,
+  //            onShow: ShowCallback(onShowFail: (adId, e) {
+  //              toMainPage();
+  //            }, onClose: (adId) {
+  //              toMainPage();
+  //            }, onShow: (adId) {
+  //              isAdShow = true;
+  //            }));
+  //      } else {
+  //        isAdShow = true;
+  //        toMainPage();
+  //      }
+  //    });
+  //  }
+  //
+  //  loadAndShowBAd() async {
+  //    if (VipUtil.instance.isVip) return;
+  //    AdUtils.instance.loadAd("open", onLoad: (adId, isOk, e) {
+  //      AppLog.i("启动页加载B广告结果:$isOk, $adId, $e");
+  //      if (isOk) {
+  //        if (isAdShow) {
+  //          AppLog.e("已经显示过广告");
+  //          return;
+  //        }
+  //        if (isToMain) {
+  //          AppLog.e("已经跳转到首页");
+  //          return;
+  //        }
+  //        //显示广告
+  //        isAdShow = true;
+  //        AdUtils.instance.showAd(
+  //          "open",
+  //          adScene: AdScene.openCool,
+  //          onShow: ShowCallback(
+  //            onShowFail: (adId, e) {
+  //              // AppLog.e("open onShowFail:$adId,$e");
+  //              // toMainPage();
+  //            },
+  //            onClose: (adId) {
+  //              toMainPage();
+  //            },
+  //            onShow: (adId) {
+  //              isAdShow = true;
+  //            },
+  //          ),
+  //        );
+  //        return;
+  //      } else {
+  //        // isAdShow = true;
+  //        // toMainPage();
+  //      }
+  //    });
+  //  }
 
   Future countdown() async {
     //倒计时7秒加载进度条
 
-    int timeout = AdUtils.instance.adJson["open_timeout"] ?? 10;
-    if(VipUtil.instance.isVip){
+    int timeout = (AdUtils.instance.adJson["open_timeout"] ?? 10) + _purchaseTime;
+    if (VipUtil.instance.isVip) {
       timeout = 1;
     }
 
@@ -294,7 +353,7 @@ class LaunchPageController extends GetxController {
     } else {
       seconds = 0;
     }
-    AppLog.i("启动时间 countdown diff：${diff}s， timeout：$timeout, seconds：$seconds");
+    AppLog.i("启动时间 countdown diff：${diff}s， timeout：$timeout, seconds：$seconds, purchaseTime:$_purchaseTime");
 
     // seconds = seconds * 1000;
     for (int i = 0; i < seconds * 100; i++) {
@@ -320,7 +379,7 @@ class LaunchPageController extends GetxController {
 
   toMainPage() async {
     int diff = DateTime.now().difference(bus.startTime!).inSeconds;
-    if (isA && diff < 5) {
+    if (!bus.isBMode && diff < 5) {
       await Future.delayed(const Duration(seconds: 2));
       toMainPage();
       return;
