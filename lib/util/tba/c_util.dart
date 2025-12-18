@@ -13,30 +13,27 @@ import '../../app.dart';
 import '../log.dart';
 
 class CUtil extends BaseApi {
-  CUtil._internal()
-      : super(GetPlatform.isIOS ? "https://jocose.littlemusicmuse.com" : "");
+  CUtil._internal() : super(GetPlatform.isIOS ? "https://jocose.littlemusicmuse.com" : "");
   static final CUtil _instance = CUtil._internal();
+
   static CUtil get instance {
     return _instance;
   }
 
   Future<BaseModel> checkCloak() async {
-
     // if (kDebugMode && !MuseConfig.isUser) {
     //   await museSp.setBool("isOpenUser", false);
     //   return BaseModel(code: -1, data: "excerpt1");
     // }
-    
+
     // httpClient.baseUrl =
     //     GetPlatform.isIOS ? "https://jocose.littlemusicmuse.com" : "";
-
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;
     // var netResult = await Connectivity().checkConnectivity();
 
-
-    if (GetPlatform.isAndroid ) {
+    if (GetPlatform.isAndroid) {
       return BaseModel(code: -1);
     } else {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
@@ -66,7 +63,7 @@ class CUtil extends BaseApi {
         //app_version
         "brent": packageInfo.version,
       });
-      AppLog.i("cloak请求结果：${model.data}(excerpt)");
+      AppLog.i("cloak请求结果：${model.data}, ${model.data == 'excerpt' ? 'b' : 'a'}");
       return model;
     }
   }
