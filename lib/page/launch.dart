@@ -119,9 +119,9 @@ class LaunchPageController extends GetxController {
 
     AppLog.i("启动时间 Launch onReady：${DateTime.now().difference(bus.startTime!).inSeconds}s");
 
-    if(!RemoteUtil.shareInstance.isInitSuc){
-      Future.delayed(const Duration(seconds: 2));
-    }
+    // if(!RemoteUtil.shareInstance.isInitSuc){
+    //   await Future.delayed(const Duration(seconds: 2));
+    // }
 
     DateTime time1 = DateTime.now();
     await Future.wait([
@@ -185,7 +185,6 @@ class LaunchPageController extends GetxController {
     }
 
     if (VipUtil.instance.isVip) {
-      isAdShow = true;
       return;
     }
 
@@ -206,7 +205,7 @@ class LaunchPageController extends GetxController {
         } else {
           bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
           if (isBShowOpenAd) {
-            await AdUtils.instance.loadAd("open").timeout(const Duration(seconds: 5));
+            await AdUtils.instance.loadAd("open").timeout(const Duration(seconds: 6));
           } else {
             AdUtils.instance.loadAd("open");
           }
@@ -228,7 +227,7 @@ class LaunchPageController extends GetxController {
   showOpenAd() {
     if (bus.isFirstAppLaunch) {
       if (!bus.isBMode) return;
-      if (RemoteUtil.shareInstance.isShowOpenAd) return;
+      if (!RemoteUtil.shareInstance.isShowOpenAd) return;
     }
 
     AdUtils.instance.showAd(

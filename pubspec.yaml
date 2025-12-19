@@ -37,7 +37,7 @@ dependencies:
   permission_handler: ^11.3.1
   #  file_picker: ^10.1.2
   file_picker: ^8.0.7
-  appsflyer_sdk: ^6.15.2
+  appsflyer_sdk: ^6.17.3
   flutter_media_metadata: ^1.0.0+1
   audioplayers: ^6.0.0
   image_picker: ^1.1.2
