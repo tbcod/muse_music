@@ -289,7 +289,14 @@ class AdUtils {
 
       AppLog.i("广告开始加载：$key， $source, $type, $ad_id, adweight:$adweight");
 
-      EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+      // EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+
+      EventUtils.instance.addEvent("ad_request", data: {
+        "ad_sense": key,
+        "ad_code_id": ad_id,
+        "ad_format": type,
+        "ad_source_client": source,
+      });
 
       String reason = "";
       Completer<bool> isCompleter = Completer();
@@ -615,11 +622,26 @@ class AdUtils {
 
       await isCompleter.future;
       if (isLoadSuc) {
-        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+        EventUtils.instance.addEvent("ad_return", data: {
+          "ad_sense": key,
+          "ad_code_id": ad_id,
+          "ad_format": type,
+          "ad_source_client": source,
+        });
+
+        // EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
         AppLog.i("广告瀑布流请求完成：$key，index:$curIndex/${configList.length}, adweight: $adweight, $source, $type, $ad_id");
         break;
       } else {
-        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "ad_weight": adweight, "reason": reason});
+        EventUtils.instance.addEvent("ad_return_fail", data: {
+          "ad_sense": key,
+          "ad_code_id": ad_id,
+          "ad_format": type,
+          "ad_source_client": source,
+          "reason": reason,
+        });
+
+        // EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "ad_weight": adweight, "reason": reason});
       }
       curIndex++;
     }
@@ -1333,6 +1355,13 @@ class MyNativeAdViewController extends GetxController {
       String ad_id = item["placementid"];
       AppLog.e("开始加载原生广告:$type,$source,$positionKey,$ad_id");
 
+      EventUtils.instance.addEvent("ad_request", data: {
+        "ad_sense": positionKey,
+        "ad_code_id": ad_id,
+        "ad_format": type,
+        "ad_source_client": source,
+      });
+
       var isOk = false;
       if (source == "admob") {
         if (type == "native") {
@@ -1370,6 +1399,13 @@ class MyNativeAdViewController extends GetxController {
       AppLog.e("结束加载原生广告:${isOk ? "成功" : "失败"}---$type,$source");
       if (isOk) {
         //加载成功跳出循环
+        EventUtils.instance.addEvent("ad_return", data: {
+          "ad_sense": positionKey,
+          "ad_code_id": ad_id,
+          "ad_format": type,
+          "ad_source_client": source,
+        });
+
         break;
       } else {
         //加载失败加载下一条
