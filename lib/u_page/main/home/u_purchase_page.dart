@@ -95,10 +95,10 @@ class UPurchasePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(Assets.iapIpText, width: 188, height: 52),
-          SizedBox(height: 16.h),
+          SizedBox(height: controller.isSmallScreen(context) ? 8 : 16.h),
           ...texts.map((text) {
             return Padding(
-              padding: EdgeInsets.only(top: 16.h),
+              padding: EdgeInsets.only(top:  controller.isSmallScreen(context) ? 8 : 16.h),
               child: Row(
                 children: [
                   Image.asset(Assets.iapIpSure, width: 20),
@@ -118,7 +118,7 @@ class UPurchasePage extends StatelessWidget {
 
   Widget _priceSection(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 20, right: 20, top: controller.isSmallScreen(context) ? 20 : 40),
+      margin: EdgeInsets.only(left: 20, right: 20, top: controller.isSmallScreen(context) ? 12 : 40),
       child: Obx(() {
         return Column(
           children: List.generate(controller.products.length, (index) {
