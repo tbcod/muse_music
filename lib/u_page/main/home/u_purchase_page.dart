@@ -74,7 +74,7 @@ class UPurchasePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 36.h),
+                  SizedBox(height: controller.isSmallScreen(context) ? 16 : 36),
                   _textSection(context),
                   _priceSection(context),
                   Expanded(child: _bottomView(context)),
@@ -118,7 +118,7 @@ class UPurchasePage extends StatelessWidget {
 
   Widget _priceSection(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 20, right: 20, top: 40.h),
+      margin: EdgeInsets.only(left: 20, right: 20, top: controller.isSmallScreen(context) ? 20 : 40),
       child: Obx(() {
         return Column(
           children: List.generate(controller.products.length, (index) {
@@ -130,14 +130,14 @@ class UPurchasePage extends StatelessWidget {
     );
   }
 
-  Widget _priceItem(int index, String title, double price, {String? detail}) {
+  Widget _priceItem(int index, String title, double price, { String? detail}) {
     return Obx(() {
       int curIndex = controller.curPlanIndex.value;
       return GestureDetector(
         onTap: () => controller.onClickPrice(index),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          margin: EdgeInsets.only(top: 22.h, bottom: 0),
+          margin: EdgeInsets.only(top:  controller.isSmallScreen(Get.context!) ? 16 :  22.h, bottom: 0),
           height: (ScreenUtil().screenWidth - 40) / 5,
           width: ScreenUtil().screenWidth - 40,
           decoration: curIndex == index
