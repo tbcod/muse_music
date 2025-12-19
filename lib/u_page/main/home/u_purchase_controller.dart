@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:music_muse/const/bus.dart';
@@ -273,5 +274,10 @@ class UPurchasePageController extends GetxController {
       }
     }
     return '\$24.9';
+  }
+
+  bool isSmallScreen(BuildContext context) {
+    bool small = MediaQuery.of(context).size.height < 700;
+    return small;
   }
 }
