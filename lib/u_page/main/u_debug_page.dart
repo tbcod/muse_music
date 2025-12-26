@@ -62,7 +62,7 @@ class UDebugPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text('vip：${VipUtil.instance.curVipStatusText}'),
+            // Text('vip：${VipUtil.instance.curVipStatusText}'),
             const SizedBox(height: 12),
             Text('${controller.getAd(AdUtils.instance.adJson)}'),
             // CachedNetworkImage(imageUrl: "https://lh3.googleusercontent.com/testtesttest"),

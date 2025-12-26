@@ -66,20 +66,20 @@ class SettingPage extends GetView<SettingPageController> {
                           width: 100,
                           height: 44,
                         )),
-                    Obx(() {
-                      if (!VipUtil.instance.isVip) {
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16),
-                            child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                          ),
-                        );
-                      }
-                      return Container();
-                    }),
+                    // Obx(() {
+                    //   if (!VipUtil.instance.isVip) {
+                    //     return GestureDetector(
+                    //       onTap: () {
+                    //         Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+                    //       },
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(left: 16, right: 16),
+                    //         child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                    //       ),
+                    //     );
+                    //   }
+                    //   return Container();
+                    // }),
                   ],
                 ),
                 GestureDetector(

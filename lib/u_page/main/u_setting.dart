@@ -64,20 +64,20 @@ class UserSetting extends GetView<UserSettingController> {
                     height: 44,
                   )),
               const SizedBox(width: 6),
-              Obx(() {
-                return Visibility(
-                  visible: !VipUtil.instance.isVip,
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.setting.name);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                    ),
-                  ),
-                );
-              }),
+              // Obx(() {
+              //   return Visibility(
+              //     visible: !VipUtil.instance.isVip,
+              //     child: GestureDetector(
+              //       onTap: () {
+              //         Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.setting.name);
+              //       },
+              //       child: Padding(
+              //         padding: const EdgeInsets.only(right: 12),
+              //         child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+              //       ),
+              //     ),
+              //   );
+              // }),
             ],
           ),
           body: Column(

@@ -97,22 +97,22 @@ class UserHome extends GetView<UserHomeController> {
               ),
             ),
           ),
-          actions: [
-            Obx(() {
-              if (!VipUtil.instance.isVip) {
-                return GestureDetector(
-                  onTap: () {
-                    Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                  ),
-                );
-              }
-              return Container();
-            }),
-          ],
+          // actions: [
+          //   Obx(() {
+          //     if (!VipUtil.instance.isVip) {
+          //       return GestureDetector(
+          //         onTap: () {
+          //           Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+          //         },
+          //         child: Padding(
+          //           padding: const EdgeInsets.only(right: 12),
+          //           child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+          //         ),
+          //       );
+          //     }
+          //     return Container();
+          //   }),
+          // ],
         ),
         body: controller.obxView(
             (state) => EasyRefresh.builder(

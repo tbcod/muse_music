@@ -657,12 +657,12 @@ class AdUtils {
     // }
     // return false;
 
-    if (VipUtil.instance.isVip) {
-      if (onShow != null) {
-        onShow.onShowFail("", AdError(-1, "", "$key, vip not show"));
-      }
-      return false;
-    }
+    // if (VipUtil.instance.isVip) {
+    //   if (onShow != null) {
+    //     onShow.onShowFail("", AdError(-1, "", "$key, vip not show"));
+    //   }
+    //   return false;
+    // }
 
     if (adIsShowing) {
       if (onShow != null) {

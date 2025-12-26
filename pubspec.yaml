@@ -3,7 +3,7 @@ description: "A new Flutter project."
 #android
 #version: 1.0.1+1001
 #ios
-version: 1.4.5+1
+version: 1.4.6+1
 
 environment:
   sdk: '>=3.3.2 <4.0.0'
@@ -70,7 +70,7 @@ dependencies:
   google_mobile_ads: ^5.2.0
 #  applovin_max: 4.3.0
   applovin_max: 4.2.1
-  in_app_purchase: ^3.2.0
+#  in_app_purchase: ^3.2.0
 
 flutter_icons:
   android: true

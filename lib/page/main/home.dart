@@ -67,20 +67,20 @@ class HomePage extends GetView<HomePageController> {
                         });
                       },
                     ),
-                    Obx(() {
-                      if (!VipUtil.instance.isVip) {
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 12, right: 0),
-                            child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                          ),
-                        );
-                      }
-                      return Container();
-                    }),
+                    // Obx(() {
+                    //   if (!VipUtil.instance.isVip) {
+                    //     return GestureDetector(
+                    //       onTap: () {
+                    //         Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.home.name);
+                    //       },
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(left: 12, right: 0),
+                    //         child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+                    //       ),
+                    //     );
+                    //   }
+                    //   return Container();
+                    // }),
                     SizedBox(width: 12.w),
                   ],
                 ),

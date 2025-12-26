@@ -46,22 +46,22 @@ class UserLibrary extends GetView<UserLibraryController> {
             style: TextStyle(fontSize: 20.w),
           ),
           titleSpacing: 12.w,
-          actions: [
-            Obx(() {
-              if (!VipUtil.instance.isVip) {
-                return GestureDetector(
-                  onTap: () {
-                    Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.library.name);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
-                  ),
-                );
-              }
-              return Container();
-            }),
-          ],
+          // actions: [
+          //   Obx(() {
+          //     if (!VipUtil.instance.isVip) {
+          //       return GestureDetector(
+          //         onTap: () {
+          //           Get.to(() => UPurchasePage(), arguments: PurchasePageFrom.library.name);
+          //         },
+          //         child: Padding(
+          //           padding: const EdgeInsets.only(right: 12),
+          //           child: Image.asset(Assets.oimgIpaPro, width: 56, height: 26),
+          //         ),
+          //       );
+          //     }
+          //     return Container();
+          //   }),
+          // ],
         ),
         body: Container(
           child: ListView(

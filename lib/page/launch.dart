@@ -124,13 +124,17 @@ class LaunchPageController extends GetxController {
     // }
 
     DateTime time1 = DateTime.now();
-    await Future.wait([
-      VipUtil.instance.autoEnterPurchasePage().then((v) {
-        _purchaseTime = DateTime.now().difference(time1).inSeconds;
-        countdown();
-      }),
-      loadOpenAd(),
-    ]);
+    // await Future.wait([
+    //   VipUtil.instance.autoEnterPurchasePage().then((v) {
+    //     _purchaseTime = DateTime.now().difference(time1).inSeconds;
+    //     countdown();
+    //   }),
+    //   loadOpenAd(),
+    // ]);
+
+    countdown();
+
+    await loadOpenAd();
 
     AdUtils.instance.loadAd("level_h");
     AdUtils.instance.loadAd("behavior");
@@ -235,7 +239,10 @@ class LaunchPageController extends GetxController {
       adScene: AdScene.openCool,
       onShow: ShowCallback(
         onShowFail: (adId, e) {
-          toMainPage();
+          String err = e?.message ?? "";
+          if (err.isEmpty || !err.contains("level_h")) {
+            toMainPage();
+          }
         },
         onClose: (adId) {
           toMainPage();
