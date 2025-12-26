@@ -1032,7 +1032,7 @@ class UserPlayInfoController extends GetxController {
   }
 
   ///  loadNextData. 范围：搜索结果、首页单曲推荐（包括MV）、音乐人 video 模块、（音乐人主页热门歌曲，为热门歌曲【更多内容】为歌单）
-  setDataAndPlayItem(List list, Map item, {required String clickType, bool loadNextData = false, String pid = ""}) async {
+  setDataAndPlayItem(var list, var item, {required String clickType, bool loadNextData = false, String pid = ""}) async {
     if (player != null) {
       player?.dispose();
       player = null;
@@ -1043,7 +1043,7 @@ class UserPlayInfoController extends GetxController {
     //设置歌单id
     playlistId = pid;
 
-    if (list.isNotEmpty) {
+    if (list is List && list.isNotEmpty && item is Map) {
       playList.value = list;
       try {
         nowIndex = list.map((e) => e["videoId"]).toList().indexOf(item["videoId"]);
