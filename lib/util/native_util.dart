@@ -54,6 +54,9 @@ class NativeUtils {
     channel.invokeMethod('gbToIDFA', {"val": idfa});
   }
 
+  Future<void> gbToDistinctId(String distinctId) async {
+    channel.invokeMethod('gbToDistinctId', {"val": distinctId});
+  }
 
   test() async {
     var result = await channel.invokeMethod("testTT");

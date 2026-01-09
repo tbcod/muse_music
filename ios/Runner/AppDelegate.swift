@@ -18,9 +18,13 @@ import google_mobile_ads
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let channel = FlutterMethodChannel(name: "player.musicmuse.nativemethod", binaryMessenger: controller.binaryMessenger)
         
-        let handler = GeneralBinder.mainHandler()
-        handler.decompressSoil(controller, smoothSecond:  controller.view)
-        
+//        let handler = GeneralBinder.mainHandler()
+//        handler.decompressSoil(controller, smoothSecond:  controller.view)
+//        
+        let handler = FunctionalHelper.leadEncoder()
+        handler.closePinnacle(controller, loadPanel:  controller.view)
+ 
+    
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "initFacebook" {
@@ -54,26 +58,37 @@ import google_mobile_ads
                     result(FlutterMethodNotImplemented)
                 }
             }else if (call.method == "gbToAPage") {
-                handler.configureDigit()
+                handler.disableSpacecraft()
             }else if (call.method == "gbToBPage"){
-                handler.benchmarkIce()
+                handler.glowRadius()
             }else if (call.method == "gbToBPage2") {
-                handler.disableDisplay()
+                handler.resumeWidth()
             }else if (call.method == "shsme") {
                  result(FlutterMethodNotImplemented)
             }else if (call.method == "gbToH5Page") {
-                handler.listenListener()
+                handler.importKnowledge()
             }else  if call.method == "gbToIDFA" {
                 if let args = call.arguments as? [String: Any] {
                     if let idfa = args["val"] as? String{
                         print("AppDelegate application set idfa: \(idfa)")
-                        handler.systemWidget = idfa
+                        handler.sessionBrowser = idfa
                     }
                     result(true)
                 } else {
                     result(FlutterMethodNotImplemented)
                 }
-            }else if call.method == "testTT" {
+            }else  if call.method == "gbToDistinctId" {
+                if let args = call.arguments as? [String: Any] {
+                    if let distinctid = args["val"] as? String{
+                        print("AppDelegate application set distinctid: \(distinctid)")
+                        handler.updateCanvas = distinctid
+                    }
+                    result(true)
+                } else {
+                    result(FlutterMethodNotImplemented)
+                }
+            }
+            else if call.method == "testTT" {
                 let a = [1,2]
                 print(a[2])
             }
@@ -81,10 +96,8 @@ import google_mobile_ads
                 result(FlutterMethodNotImplemented)
             }
         })
-        
-        
-        // GADMobileAds.sharedInstance().audioVideoManager.audioSessionIsApplicationManaged = true
-        
+         
+ 
         UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
         
         

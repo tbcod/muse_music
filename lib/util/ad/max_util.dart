@@ -21,7 +21,7 @@ class MaxUtils {
     MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize(
         "POzCPzJAQ_vi7vlPr0v6dpTw1giLvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U");
     AppLovinMAX.setMuted(true);
-    AppLog.e(sdkConfiguration?.toString());
+    AppLog.i(sdkConfiguration?.toString());
 
     //IDFA或gaid
     // AppLovinMAX.setTestDeviceAdvertisingIds([""]);

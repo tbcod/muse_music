@@ -1,0 +1,6 @@
+framework module FunctionalHelper {
+  umbrella header "FunctionalHelper.h"
+  export *
+
+  module * { export * }
+}

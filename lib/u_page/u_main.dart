@@ -230,8 +230,14 @@ class UserMainController extends GetxController {
 
   @override
   Future<void> onReady() async {
-    NativeUtils.instance.gbToBPage();
-    NativeUtils.instance.gbToBPage2();
+    Future.wait([
+      NativeUtils.instance.gbToBPage(),
+      NativeUtils.instance.gbToBPage2(),
+    ]).then((v) {
+      String distinctId = Get.find<Application>().userAppUuid;
+      NativeUtils.instance.gbToDistinctId(distinctId);
+    });
+
     await ConsentRequest.instance.startRequest();
     await VipUtil.instance.initVipStatus();
     // VipUtil.instance.autoEnterPurchasePage();

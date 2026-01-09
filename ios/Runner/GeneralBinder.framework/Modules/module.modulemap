@@ -1,6 +1,0 @@
-framework module GeneralBinder {
-  umbrella header "GeneralBinder.h"
-  export *
-
-  module * { export * }
-}
