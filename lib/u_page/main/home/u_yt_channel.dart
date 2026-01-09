@@ -21,11 +21,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserYoutubeChannelController());
     return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: const BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
@@ -41,9 +37,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                     // backgroundColor: Colors.red,
                     pinned: true,
                     centerTitle: true,
-                    title: Obx(() => controller.isHeaderExpanded.value
-                        ? Container()
-                        : Text(controller.info["title"])),
+                    title: Obx(() => controller.isHeaderExpanded.value ? Container() : Text(controller.info["title"])),
                     expandedHeight: 200.w + Get.mediaQuery.padding.top,
                     leading: Obx(() => IconButton(
                         onPressed: () {
@@ -53,29 +47,22 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                           "assets/oimg/icon_back.png",
                           width: 24.w,
                           height: 24.w,
-                          color: controller.isHeaderExpanded.value
-                              ? Colors.white
-                              : Colors.black,
+                          color: controller.isHeaderExpanded.value ? Colors.white : Colors.black,
                         ))),
                     actions: [
                       Obx(() {
-                        var isLike = LikeUtil.instance.allArtistMap
-                            .containsKey(controller.browseId);
+                        var isLike = LikeUtil.instance.allArtistMap.containsKey(controller.browseId);
 
                         return IconButton(
                             onPressed: () {
                               if (isLike) {
-                                LikeUtil.instance
-                                    .unlikeArtist(controller.browseId);
+                                LikeUtil.instance.unlikeArtist(controller.browseId);
                               } else {
-                                LikeUtil.instance.likeArtist(
-                                    controller.browseId, controller.info);
+                                LikeUtil.instance.likeArtist(controller.browseId, controller.info);
                               }
                             },
                             icon: Image.asset(
-                              isLike
-                                  ? "assets/oimg/icon_like_on.png"
-                                  : "assets/oimg/icon_like_off.png",
+                              isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png",
                               width: 24.w,
                               height: 24.w,
                               color: isLike
@@ -102,13 +89,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                             Positioned.fill(
                               child: Container(
                                 decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                        begin: Alignment.bottomCenter,
-                                        end: Alignment.topCenter,
-                                        colors: [
-                                      Color(0xff0D0D0D).withOpacity(0.69),
-                                      Color(0xff474747).withOpacity(0)
-                                    ])),
+                                    gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Color(0xff0D0D0D).withOpacity(0.69), Color(0xff474747).withOpacity(0)])),
                               ),
                             ),
 
@@ -120,10 +101,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                   controller.info["title"] ?? "",
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 24.w,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
+                                  style: TextStyle(fontSize: 24.w, color: Colors.white, fontWeight: FontWeight.w500),
                                 ))
                           ],
                         ),
@@ -156,30 +134,17 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                           AppLog.e(controller.moreList.length);
                                           return;
                                         }
-                                        EventUtils.instance.addEvent(
-                                            "det_artist_click",
-                                            data: {"detail_click": "play"});
+                                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "play"});
 
-                                        Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                                controller.moreList,
-                                                controller.moreList.first,
-                                                pid:
-                                                    "browseId-${controller.browseId}",
-                                                clickType: false
-                                                    ? "s_detail_playlist"
-                                                    : "h_detail_playlist");
+                                        Get.find<UserPlayInfoController>().setDataAndPlayItem(controller.moreList, controller.moreList.first,
+                                            pid: "browseId-${controller.browseId}", clickType: false ? "s_detail_playlist" : "h_detail_playlist");
                                         // Get.to(UserPlayInfo());
                                       },
                                       child: Container(
                                         height: 42.w,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(21.w),
-                                            color: Color(0xff7453FF)),
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: Color(0xff7453FF)),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             Image.asset(
                                               "assets/oimg/icon_play.png",
@@ -192,10 +157,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                             ),
                                             Text(
                                               "Play",
-                                              style: TextStyle(
-                                                  fontSize: 16.w,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.white),
+                                              style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Colors.white),
                                             )
                                           ],
                                         ),
@@ -211,51 +173,27 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                           AppLog.e(controller.moreList.length);
                                           return;
                                         }
-                                        EventUtils.instance.addEvent(
-                                            "det_artist_click",
-                                            data: {"detail_click": "shuffle"});
+                                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "shuffle"});
 
-                                        List playList =
-                                            List.of(controller.moreList)
-                                              ..shuffle();
+                                        List playList = List.of(controller.moreList)..shuffle();
 
                                         Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                                playList, playList.first,
-                                                pid:
-                                                    "browseId-${controller.browseId}",
-                                                clickType: false
-                                                    ? "s_detail_playlist"
-                                                    : "h_detail_playlist");
+                                            .setDataAndPlayItem(playList, playList.first, pid: "browseId-${controller.browseId}", clickType: false ? "s_detail_playlist" : "h_detail_playlist");
                                         // Get.to(UserPlayInfo());
                                       },
                                       child: Container(
                                         height: 42.w,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(21.w),
-                                            border: Border.all(
-                                                color: Color(0xff7453FF),
-                                                width: 2.w),
-                                            color: Colors.white),
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), border: Border.all(color: Color(0xff7453FF), width: 2.w), color: Colors.white),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Image.asset(
-                                                "assets/oimg/icon_shuffle1.png",
-                                                width: 24.w,
-                                                height: 24.w,
-                                                color: Color(0xff7453FF)),
+                                            Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: Color(0xff7453FF)),
                                             SizedBox(
                                               width: 8.w,
                                             ),
                                             Text(
                                               "Shuffle",
-                                              style: TextStyle(
-                                                  fontSize: 16.w,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff7453FF)),
+                                              style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
                                             )
                                           ],
                                         ),
@@ -270,9 +208,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
               body: Container(
                 color: Color(0xfffafafa),
                 child: ListView.separated(
-                    padding: EdgeInsets.only(
-                        top: 10.w,
-                        bottom: Get.mediaQuery.padding.bottom + 100.w),
+                    padding: EdgeInsets.only(top: 10.w, bottom: Get.mediaQuery.padding.bottom + 100.w),
                     itemBuilder: (_, i) {
                       return getBigItem(i);
                     },
@@ -301,10 +237,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
             children: [
               Text(
                 bigItem["title"] ?? "",
-                style: TextStyle(
-                    fontSize: 20.w,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5),
+                style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5),
               ),
               Spacer(),
               (bigItem["moreBrowseId"] ?? "") == ""
@@ -319,8 +252,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                         children: [
                           Text(
                             "More".tr,
-                            style: TextStyle(
-                                fontSize: 12.w, color: Color(0xffa6a6a6)),
+                            style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6)),
                           ),
                           SizedBox(
                             width: 4.w,
@@ -350,18 +282,12 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck = childItem["videoId"] ==
-                          Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
                           AppLog.e(childItem);
-                          Get.find<UserPlayInfoController>().setDataAndPlayItem(
-                              [childItem], childItem,
-                              pid: "browseId-${controller.browseId}",
-                              clickType: false
-                                  ? "s_detail_playlist"
-                                  : "h_detail_playlist",
-                              loadNextData: true);
+                          Get.find<UserPlayInfoController>()
+                              .setDataAndPlayItem([childItem], childItem, pid: "browseId-${controller.browseId}", clickType: false ? "s_detail_playlist" : "h_detail_playlist", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
                         child: Container(
@@ -373,8 +299,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                   width: 248.w,
                                   height: 140.w,
                                   clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6.w)),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
@@ -408,12 +333,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: isCheck
-                                        ? Color(0xffA491F7)
-                                        : Colors.black,
-                                    fontSize: 14.w,
-                                    fontWeight: FontWeight.w500),
+                                style: TextStyle(color: isCheck ? Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -502,8 +422,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                     return GestureDetector(
                       onTap: () {
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent("det_playlist_show",
-                            data: {"from": "artist_playlist"});
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_playlist"});
                         Get.to(UserPlayListInfo(), arguments: childItem);
                       },
                       child: Container(
@@ -515,8 +434,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                                 width: 140.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w)),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
@@ -579,8 +497,7 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
     bindData();
 
     scrollC.addListener(() {
-      isHeaderExpanded.value =
-          scrollC.offset < 200.w - Get.mediaQuery.padding.top - kToolbarHeight;
+      isHeaderExpanded.value = scrollC.offset < 200.w - Get.mediaQuery.padding.top - kToolbarHeight;
       // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       //     statusBarIconBrightness:
       //         isHeaderExpanded.value ? Brightness.light : Brightness.dark));
@@ -599,85 +516,57 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
       "browseId": browseId
     };
 
-    var result = await ApiMain.instance
-        .getYoutubeData(browseId, params: "EgZ2aWRlb3PyBgQKAjoA");
-    var result2 = await ApiMain.instance
-        .getYoutubeData(browseId, params: "EghyZWxlYXNlc_IGBQoDsgEA");
-    var result3 = await ApiMain.instance
-        .getYoutubeData(browseId, params: "EglwbGF5bGlzdHPyBgQKAkIA");
+    var result = await ApiMain.instance.getYoutubeData(browseId, params: "EgZ2aWRlb3PyBgQKAjoA");
+    var result2 = await ApiMain.instance.getYoutubeData(browseId, params: "EghyZWxlYXNlc_IGBQoDsgEA");
+    var result3 = await ApiMain.instance.getYoutubeData(browseId, params: "EglwbGF5bGlzdHPyBgQKAkIA");
 
     //解析视频
     if (result.code == HttpCode.success) {
       //设置封面图
-      info["cover"] = result
-          .data["header"]["pageHeaderRenderer"]["content"]
-              ["pageHeaderViewModel"]["image"]["decoratedAvatarViewModel"]
-              ["avatar"]["avatarViewModel"]["image"]["sources"]
-          .last["url"];
-      // info["cover"] = result
-      //     .data["header"]["pageHeaderRenderer"]["content"]
-      //         ["pageHeaderViewModel"]["banner"]["imageBannerViewModel"]["image"]
-      //         ["sources"]
-      //     .last["url"];
+      try {
+        info["cover"] = result.data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["image"]["decoratedAvatarViewModel"]["avatar"]["avatarViewModel"]["image"]["sources"].last["url"];
+      } catch (_) {
+        info["cover"] = "";
+      }
 
-      List tabs = result.data["contents"]["twoColumnBrowseResultsRenderer"]
-              ["tabs"] ??
-          [];
+      List tabs = result.data?["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
       for (Map tab in tabs) {
-        if (tab["tabRenderer"]["selected"] == true) {
+        if (tab["tabRenderer"]?["selected"] == true) {
           // AppLog.e(tab["tabRenderer"]["content"]);
           // Map oldData=tab["tabRenderer"]["content"];
 
-          //获取数据
-          List oldList = tab["tabRenderer"]["content"]["richGridRenderer"]
-                  ["contents"] ??
-              [];
+          try {
+            //获取数据
+            List oldList = tab["tabRenderer"]["content"]["richGridRenderer"]["contents"] ?? [];
 
-          //
+            //解析list
+            var newList = [];
 
-          //解析list
-          var newList = [];
-
-          for (Map oldItem in oldList) {
-            try {
-              var videoId = oldItem["richItemRenderer"]["content"]
-                      ["videoRenderer"]["videoId"] ??
-                  "";
-              var title = oldItem["richItemRenderer"]["content"]
-                      ["videoRenderer"]["title"]["runs"][0]["text"] ??
-                  "";
-              var cover = oldItem["richItemRenderer"]["content"]
-                      ["videoRenderer"]["thumbnail"]["thumbnails"]
-                  .last["url"];
-              newList.add({
-                "title": title,
-                "subtitle": "",
-                "cover": cover,
-                "videoId": videoId,
-              });
-            } catch (e) {
-              print(e);
-              AppLog.e(oldItem);
-              //加载更多
+            for (Map oldItem in oldList) {
+              try {
+                var videoId = oldItem["richItemRenderer"]["content"]["videoRenderer"]["videoId"] ?? "";
+                var title = oldItem["richItemRenderer"]["content"]["videoRenderer"]["title"]["runs"][0]["text"] ?? "";
+                var cover = oldItem["richItemRenderer"]["content"]["videoRenderer"]["thumbnail"]["thumbnails"].last["url"];
+                newList.add({
+                  "title": title,
+                  "subtitle": "",
+                  "cover": cover,
+                  "videoId": videoId,
+                });
+              } catch (e) {
+                print(e);
+                AppLog.e(oldItem);
+                //加载更多
+              }
             }
-          }
 
-          var bigTitle = tab["tabRenderer"]["title"] ?? "";
+            var bigTitle = tab["tabRenderer"]["title"] ?? "";
 
-          var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["browseId"] ??
-              "";
-          var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["params"] ??
-              "";
+            var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["browseId"] ?? "";
+            var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["params"] ?? "";
 
-          list.add({
-            "title": bigTitle,
-            "list": newList,
-            "moreBrowseId": moreBrowseId,
-            "moreParams": moreParams,
-            "type": "video"
-          });
+            list.add({"title": bigTitle, "list": newList, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "video"});
+          } catch (_) {}
 
           break;
         }
@@ -690,15 +579,11 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
 
     //解析发布作品
     if (result2.code == HttpCode.success) {
-      List tabs = result2.data["contents"]["twoColumnBrowseResultsRenderer"]
-              ["tabs"] ??
-          [];
+      List tabs = result2.data?["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
       for (Map tab in tabs) {
-        if (tab["tabRenderer"]["selected"] == true) {
+        if (tab["tabRenderer"]?["selected"] == true) {
           //获取数据
-          List oldList = tab["tabRenderer"]["content"]["richGridRenderer"]
-                  ?["contents"] ??
-              [];
+          List oldList = tab["tabRenderer"]?["content"]?["richGridRenderer"]?["contents"] ?? [];
 
           //
 
@@ -707,16 +592,9 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
 
           for (Map oldItem in oldList) {
             try {
-              var playlistId = oldItem["richItemRenderer"]["content"]
-                      ["playlistRenderer"]["playlistId"] ??
-                  "";
-              var title = oldItem["richItemRenderer"]["content"]
-                      ["playlistRenderer"]["title"]["simpleText"] ??
-                  "";
-              var cover = oldItem["richItemRenderer"]["content"]
-                          ["playlistRenderer"]["thumbnails"][0]["thumbnails"]
-                      .last["url"] ??
-                  "";
+              var playlistId = oldItem["richItemRenderer"]["content"]["playlistRenderer"]["playlistId"] ?? "";
+              var title = oldItem["richItemRenderer"]["content"]["playlistRenderer"]["title"]["simpleText"] ?? "";
+              var cover = oldItem["richItemRenderer"]["content"]["playlistRenderer"]["thumbnails"][0]["thumbnails"].last["url"] ?? "";
 
               newList.add({
                 "title": title,
@@ -732,21 +610,11 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
 
           var bigTitle = tab["tabRenderer"]["title"] ?? "";
 
-          var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["browseId"] ??
-              "";
-          var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["params"] ??
-              "";
+          var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["browseId"] ?? "";
+          var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["params"] ?? "";
 
           if (newList.isNotEmpty) {
-            list.add({
-              "title": bigTitle,
-              "list": newList,
-              "moreBrowseId": moreBrowseId,
-              "moreParams": moreParams,
-              "type": "album"
-            });
+            list.add({"title": bigTitle, "list": newList, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "album"});
           }
 
           // AppLog.e(list);
@@ -758,16 +626,15 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
 
     //解析播放列表
     if (result3.code == HttpCode.success) {
-      List tabs = result3.data["contents"]["twoColumnBrowseResultsRenderer"]
-              ["tabs"] ??
-          [];
+      List tabs = result3.data?["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"] ?? [];
       for (Map tab in tabs) {
-        if (tab["tabRenderer"]["selected"] == true) {
+        if (tab["tabRenderer"]?["selected"] == true) {
           //获取数据
-          List oldList = tab["tabRenderer"]["content"]["sectionListRenderer"]
-                      ["contents"][0]["itemSectionRenderer"]["contents"][0]
-                  ["gridRenderer"]["items"] ??
-              [];
+          List oldList = [];
+          try {
+            List contents = tab["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ?? [];
+            oldList = contents.firstOrNull?["itemSectionRenderer"]?["contents"]?[0]["gridRenderer"]["items"] ?? [];
+          } catch (_) {}
 
           //
 
@@ -777,13 +644,8 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
           for (Map oldItem in oldList) {
             try {
               var playlistId = oldItem["lockupViewModel"]["contentId"] ?? "";
-              var title = oldItem["lockupViewModel"]["metadata"]
-                      ["lockupMetadataViewModel"]["title"]["content"] ??
-                  "";
-              var cover = oldItem["lockupViewModel"]["contentImage"]
-                          ["collectionThumbnailViewModel"]["primaryThumbnail"]
-                      ["thumbnailViewModel"]["image"]["sources"]
-                  .last["url"];
+              var title = oldItem["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["title"]["content"] ?? "";
+              var cover = oldItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"].last["url"];
 
               newList.add({
                 "title": title,
@@ -799,20 +661,10 @@ class UserYoutubeChannelController extends GetxController with StateMixin {
 
           var bigTitle = tab["tabRenderer"]["title"] ?? "";
 
-          var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["browseId"] ??
-              "";
-          var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]
-                  ?["params"] ??
-              "";
+          var moreBrowseId = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["browseId"] ?? "";
+          var moreParams = tab["tabRenderer"]?["endpoint"]?["browseEndpoint"]?["params"] ?? "";
           if (newList.isNotEmpty) {
-            list.add({
-              "title": bigTitle,
-              "list": newList,
-              "moreBrowseId": moreBrowseId,
-              "moreParams": moreParams,
-              "type": "playlist"
-            });
+            list.add({"title": bigTitle, "list": newList, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "playlist"});
           }
 
           break;

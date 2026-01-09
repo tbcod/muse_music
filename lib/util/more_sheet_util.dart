@@ -417,8 +417,8 @@ class MoreSheetUtil {
                   );
                   LoadingUtil.hideAllLoading();
 
-                  String channelId = result1.data["videoDetails"]?["channelId"] ?? "";
-                  String author = result1.data["videoDetails"]?["author"] ?? "";
+                  String channelId = result1.data?["videoDetails"]?["channelId"] ?? "";
+                  String author = result1.data?["videoDetails"]?["author"] ?? "";
                   if (channelId.isEmpty) {
                     ToastUtil.showToast(msg: "Failed to get artist".tr);
                     return;

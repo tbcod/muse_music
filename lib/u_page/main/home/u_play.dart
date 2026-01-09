@@ -111,24 +111,22 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                       //视频
 
                       Expanded(
-                          child: Obx(() => controller.isLoaded.value && controller.player != null
-                              ? Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-                                  //设置最高高度
-                                  child: AspectRatio(
-                                    aspectRatio: controller.videoAspectRatio,
-                                    child: VideoPlayer(controller.player!),
-                                  ),
-                                )
-                              : const SizedBox(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ))),
+                        child: Obx(() {
+                          if (!controller.isLoaded.value) {
+                            return const SizedBox(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator(strokeWidth: 3)));
+                          }
+                          if (controller.player != null) {
+                            return Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              alignment: Alignment.center,
+                              //设置最高高度
+                              child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: VideoPlayer(controller.player!)),
+                            );
+                          }
+                          return SizedBox(width: double.infinity, height: double.infinity, child: NetImageView(imgUrl: controller.nowData["cover"] ?? "", fit: BoxFit.cover));
+                        }),
+                      ),
 
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -739,7 +737,7 @@ class UserPlayInfoController extends GetxController {
 
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
-     // 3. 设置激活（处理异常）
+    // 3. 设置激活（处理异常）
     try {
       await session.setActive(true);
     } catch (e) {
@@ -805,9 +803,9 @@ class UserPlayInfoController extends GetxController {
       }
     });
 
-    try{
+    try {
       myHandler = await AudioService.init(builder: () => MyVideoHandler());
-    }catch(e,s){
+    } catch (e, s) {
       AppLog.e(e.toString());
     }
 
@@ -1038,7 +1036,6 @@ class UserPlayInfoController extends GetxController {
       player = null;
     }
 
-
     isLoaded.value = false;
     //设置歌单id
     playlistId = pid;
@@ -1054,7 +1051,6 @@ class UserPlayInfoController extends GetxController {
     if (playList.isEmpty) {
       return;
     }
-
 
     if (clickType == "appOpen") {
       try {
@@ -1112,24 +1108,28 @@ class UserPlayInfoController extends GetxController {
         }
 
         for (Map itemMap in oldList) {
-          if (itemMap.containsKey("compactVideoRenderer")) {
-            //歌曲
-            String cover = itemMap["compactVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
-            String title = itemMap["compactVideoRenderer"]["title"]["simpleText"] ?? "";
-            String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
-            String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
+          try {
+            if (itemMap.containsKey("compactVideoRenderer")) {
+              //歌曲
+              String cover = itemMap["compactVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
+              String title = itemMap["compactVideoRenderer"]["title"]["simpleText"] ?? "";
+              String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+              String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
 
-            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
-          } else if (itemMap.containsKey("lockupViewModel")) {
-            //歌曲
-            String? videoId = itemMap["lockupViewModel"]["contentId"];
-            if (videoId == null) continue;
-            String? cover = itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
-            cover ??= itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
-            String? title = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]?["title"]?["content"];
-            String? subtitle = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["metadata"]["contentMetadataViewModel"]["metadataRows"][0]["metadataParts"][0]["text"]["content"];
+              playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+            } else if (itemMap.containsKey("lockupViewModel")) {
+              //歌曲
+              String? videoId = itemMap["lockupViewModel"]["contentId"];
+              if (videoId == null) continue;
+              String? cover = itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
+              cover ??= itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
+              String? title = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]?["title"]?["content"];
+              String? subtitle = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["metadata"]["contentMetadataViewModel"]["metadataRows"][0]["metadataParts"][0]["text"]["content"];
 
-            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+              playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+            }
+          } catch (e) {
+            AppLog.e(e.toString());
           }
         }
 
@@ -1144,34 +1144,24 @@ class UserPlayInfoController extends GetxController {
 
     var result = await ApiMain.instance.getVideoNext(nowData["videoId"], isMoreVideo: true);
     if (result.code == HttpCode.success) {
-      List oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
-              ["content"]["playlistPanelRenderer"]["contents"] ??
-          [];
-
-      // try {
-      //   moreContinuation =
-      //       result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]
-      //                                   ["tabbedRenderer"]
-      //                               ["watchNextTabbedResultsRenderer"]
-      //                           ["tabs"][0]["tabRenderer"]["content"]
-      //                       ["musicQueueRenderer"]["content"]
-      //                   ["playlistPanelRenderer"]["continuations"][0]
-      //               ["nextRadioContinuationData"]["continuation"] ??
-      //           "";
-      // } catch (e) {
-      //   print(e);
-      //   moreContinuation = "";
-      // }
+      List oldList = [];
+      try {
+        oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+                ["content"]["playlistPanelRenderer"]["contents"] ??
+            [];
+      } catch (_) {}
 
       for (Map itemMap in oldList) {
         if (itemMap.containsKey("playlistPanelVideoRenderer")) {
-          //歌曲
-          String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
-          String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
-          String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
-          String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
+          try {
+            //歌曲
+            String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
+            String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
+            String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+            String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
 
-          playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+          } catch (_) {}
         }
       }
       canNext.value = canPlayNext();
@@ -1205,12 +1195,14 @@ class UserPlayInfoController extends GetxController {
       for (Map itemMap in oldList) {
         if (itemMap.containsKey("playlistPanelVideoRenderer")) {
           //歌曲
-          String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
-          String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
-          String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
-          String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
+          try {
+            String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
+            String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
+            String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+            String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
 
-          playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+          } catch (_) {}
         }
       }
       canNext.value = canPlayNext();
@@ -1232,9 +1224,10 @@ class UserPlayInfoController extends GetxController {
     if (result.code == HttpCode.success) {
       //解析数据
 
-      List oldList = result.data["onResponseReceivedEndpoints"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
+      List oldList = [];
 
       try {
+        oldList = result.data["onResponseReceivedEndpoints"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
         moreContinuation = oldList.last["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
       } catch (e) {
         moreContinuation = "";
@@ -1243,13 +1236,15 @@ class UserPlayInfoController extends GetxController {
 
       for (Map itemMap in oldList) {
         if (itemMap.containsKey("compactVideoRenderer")) {
-          //歌曲
-          String cover = itemMap["compactVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
-          String title = itemMap["compactVideoRenderer"]["title"]["simpleText"] ?? "";
-          String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
-          String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
+          try {
+            //歌曲
+            String cover = itemMap["compactVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
+            String title = itemMap["compactVideoRenderer"]["title"]["simpleText"] ?? "";
+            String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+            String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
 
-          playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+          } catch (_) {}
         }
       }
 
@@ -1319,11 +1314,17 @@ class UserPlayInfoController extends GetxController {
 
     canLast.value = canPlayLast();
     canNext.value = canPlayNext();
-    if (isOpenShowBar) {
-      showFloatingWidget();
-      isLoaded.value = true;
-      return;
-    }
+    // if (isOpenShowBar) {
+    //   showFloatingWidget();
+    //   isLoaded.value = true;
+    //   return;
+    // }
+    maxD = Duration.zero;
+
+    //更新播放
+    var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: Duration.zero, artUri: Uri.parse(nowData["cover"] ?? ""));
+    myHandler?.showItem(item);
+    myHandler?._updateState(isLoading: true);
 
     //黑名单歌曲
     var blackVideoIds = FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
@@ -1369,6 +1370,11 @@ class UserPlayInfoController extends GetxController {
       } else {
         //请求播放数据
         // AppLog.e("请求播放数据");
+        //加载和播放
+        if (player != null) {
+          player?.removeListener(playListener);
+          player?.dispose();
+        }
 
         var lasthttpvideoId = nowData["videoId"];
         var result = await ApiMain.instance.getVideoInfo(nowData["videoId"]);
@@ -1378,24 +1384,25 @@ class UserPlayInfoController extends GetxController {
           // ToastUtil.showToast(msg: result.message ?? "error");
           AppLog.e(result.code);
           //如果不是当前
+          bool hasNetwork = true;
           if (lasthttpvideoId == nowData["videoId"]) {
             // ToastUtil.showToast(msg: "network error");
             //播放下一个
 
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-            AppLog.e("播放网络：$connectivityResult");
-            bool hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
+            AppLog.i("当前网络：$connectivityResult");
+            hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
 
             //没有网络
-            AppLog.e("没有网络，不切换下一曲");
             if (!hasNetwork) {
-              EventUtils.instance.addEvent("play_num", data: {
-                "song_id": nowData["videoId"],
-                "song_name": nowData["title"],
-                "artist_name": nowData["subtitle"],
-              });
-              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
+              AppLog.e("没有网络，不切换下一曲");
+              // EventUtils.instance.addEvent("play_num", data: {
+              //   "song_id": nowData["videoId"],
+              //   "song_name": nowData["title"],
+              //   "artist_name": nowData["subtitle"],
+              // });
+              // EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
             }
 
             //如果是首页初始化，不播放下一首
@@ -1403,10 +1410,18 @@ class UserPlayInfoController extends GetxController {
               if (_playNextCount < 5) {
                 _playNextCount++;
                 playNext(isAutoNext: true);
+                return;
               }
             }
           }
-
+          if (!isOpenShowBar) {
+            if (!isAutoNext) {
+              ToastUtil.showToast(msg: "Play failed, Please try again");
+            }
+            EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
+            EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": hasNetwork ? "url http fail" : "no network"});
+          }
+          _playerReset();
           return;
         }
         //获取url
@@ -1417,38 +1432,31 @@ class UserPlayInfoController extends GetxController {
         // //视频比例
         // videoAspectRatio = width / height;
 
-        //加载和播放
-        if (player != null) {
-          player?.removeListener(playListener);
-          player?.dispose();
-        }
-
         if (nowPlayUrl.isEmpty) {
-          EventUtils.instance.addEvent("play_num", data: {
-            "song_id": nowData["videoId"],
-            "song_name": nowData["title"],
-            "artist_name": nowData["subtitle"],
-          });
-          EventUtils.instance.addEvent("play_fail", data: {
-            "song_id": nowData["videoId"],
-            "song_name": nowData["title"],
-            "artist_name": nowData["subtitle"],
-            "reason": "Get url error",
-          });
-          if (!isAutoNext) {
-            ToastUtil.showToast(msg: "Get url error".tr);
-          } else {
-            // AppLog.e(result.data);
-          }
           //播放下一个
           if (!isOpenShowBar) {
             if (_playNextCount < 5) {
               _playNextCount++;
               playNext(isAutoNext: true);
+              return;
+            }
+
+            EventUtils.instance.addEvent("play_num", data: {
+              "song_id": nowData["videoId"],
+              "song_name": nowData["title"],
+              "artist_name": nowData["subtitle"],
+            });
+            EventUtils.instance.addEvent("play_fail", data: {
+              "song_id": nowData["videoId"],
+              "song_name": nowData["title"],
+              "artist_name": nowData["subtitle"],
+              "reason": "Get url error",
+            });
+            if (!isAutoNext) {
+              ToastUtil.showToast(msg: "Get url error".tr);
             }
           }
-          // playNext(isAutoNext: true);
-
+          _playerReset();
           return;
         }
 
@@ -1482,7 +1490,11 @@ class UserPlayInfoController extends GetxController {
         });
         EventUtils.instance
             .addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "initialize error", "detail": errorCode});
+        if (!isAutoNext) {
+          ToastUtil.showToast(msg: "Get url error".tr);
+        }
       }
+      _playerReset();
       AppLog.e("initialize error:${e.toString()}");
     });
 
@@ -1491,31 +1503,34 @@ class UserPlayInfoController extends GetxController {
     player?.addListener(playListener);
     isLoaded.value = true;
 
-    if (isOpenShowBar) {
-      //更新播放
-      var item = MediaItem(
-        id: nowData["videoId"],
-        title: nowData["title"],
-        duration: maxD,
-        artUri: Uri.parse(nowData["cover"] ?? ""),
-      );
-      myHandler?.showItem(item);
-      myHandler?._updateState();
-      return;
-    }
+    // if (isOpenShowBar) {
+    //   //更新播放
+    //   var item = MediaItem(
+    //     id: nowData["videoId"],
+    //     title: nowData["title"],
+    //     duration: maxD,
+    //     artUri: Uri.parse(nowData["cover"] ?? ""),
+    //   );
+    //   myHandler?.showItem(item);
+    //   myHandler?._updateState();
+    //   return;
+    // }
 
     player?.play();
     //保存播放列表和当前播放数据，下次打开app显示
     saveBarData();
 
     //更新播放
-    var item = MediaItem(
-      id: nowData["videoId"],
-      title: nowData["title"],
-      duration: maxD,
-      artUri: Uri.parse(nowData["cover"] ?? ""),
-    );
+    item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: player?.value.duration, artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
+
+    if (isOpenShowBar) {
+      player?.pause();
+      myHandler?._updateState();
+      return;
+    } else {
+      myHandler?._updateState(isLoading: true);
+    }
 
     isPlaying.value = true;
 
@@ -1548,6 +1563,15 @@ class UserPlayInfoController extends GetxController {
 
     ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: false);
     _startTimer();
+  }
+
+  _playerReset() {
+    isLoaded.value = true;
+    sliderValue.value = 0;
+    playTime.value = formatDuration(Duration.zero);
+    maxTime.value = formatDuration(Duration.zero);
+    isPlaying.value = false;
+    _playNextCount = 0;
   }
 
   //播放监听
@@ -2446,23 +2470,27 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   @override
-  Future<void> skipToNext() {
-    return Get.find<UserPlayInfoController>().playNext(isNotif: true);
+  Future<void> skipToNext() async {
+    if (Get.find<UserPlayInfoController>().canNext.value) {
+      Get.find<UserPlayInfoController>().playNext(isNotif: true);
+    }
   }
 
   @override
-  Future<void> skipToPrevious() {
-    return Get.find<UserPlayInfoController>().playLast(isNotif: true);
+  Future<void> skipToPrevious() async {
+    if (Get.find<UserPlayInfoController>().canLast.value) {
+      return Get.find<UserPlayInfoController>().playLast(isNotif: true);
+    }
   }
 
-  _updateState() async {
+  _updateState({bool isLoading = false}) async {
     // AppLog.e("更新进度");
 
     playbackState.add(PlaybackState(
       controls: [
-        if (Get.find<UserPlayInfoController>().canLast.value) MediaControl.skipToPrevious,
+        MediaControl.skipToPrevious,
         _player?.value.isPlaying ?? false ? MediaControl.pause : MediaControl.play,
-        if (Get.find<UserPlayInfoController>().canNext.value) MediaControl.skipToNext,
+        MediaControl.skipToNext,
       ],
       // Which other actions should be enabled in the notification
       systemActions: {
@@ -2473,7 +2501,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       // Which controls to show in Android's compact view.
       // androidCompactActionIndices: const [0, 1, 3],
       // Whether audio is ready, buffering, ...
-      processingState: AudioProcessingState.ready,
+      processingState: isLoading ? AudioProcessingState.loading : AudioProcessingState.ready,
       // Whether audio is playing
       playing: _player?.value.isPlaying ?? false,
       // The current position as of this update. You should not broadcast

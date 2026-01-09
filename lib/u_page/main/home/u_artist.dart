@@ -108,8 +108,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               Positioned.fill(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                      gradient:
-                                          LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [const Color(0xff0D0D0D).withOpacity(0.69), const Color(0xff474747).withOpacity(0)])),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [const Color(0xff0D0D0D).withOpacity(0.69), const Color(0xff474747).withOpacity(0)])),
                                 ),
                               ),
 
@@ -772,7 +772,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       onTap: () {
                         AppLog.e("点击：${childItem["browseId"]}, ${childItem["title"]}");
                         EventUtils.instance.addEvent("det_artist_show", data: {"form": "artist_fans_like"});
-                        Get.to(() =>  UserArtistInfo(), arguments: childItem, preventDuplicates: false);
+                        Get.to(() => UserArtistInfo(), arguments: childItem, preventDuplicates: false);
                       },
                       child: Container(
                         width: 100.w,
@@ -897,10 +897,9 @@ class UserArtistInfoController extends GetxController with StateMixin {
   bindData() async {
     var result = await ApiMain.instance.getData(browseId);
     if (result.code == HttpCode.success) {
-
       List oldList = [];
       //标题
-      try{
+      try {
         var title = result.data["header"]["musicImmersiveHeaderRenderer"]["title"]["runs"].first["text"];
         var cover = result.data["header"]["musicImmersiveHeaderRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
         var description = result.data["header"]["musicImmersiveHeaderRenderer"]["description"]?["runs"].first["text"] ?? "";
@@ -911,13 +910,13 @@ class UserArtistInfoController extends GetxController with StateMixin {
 
         //所有数据列表
         oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
-      }catch(e){
+      } catch (e) {
         AppLog.e(e.toString());
       }
 
       var newList = [];
 
-      try{
+      try {
         for (Map item in oldList) {
           if (item.containsKey("musicShelfRenderer")) {
             //歌曲列表
@@ -938,17 +937,18 @@ class UserArtistInfoController extends GetxController with StateMixin {
             var bigTitle = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"];
 
             var moreBrowseId = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]
-            ?["browseId"] ??
+                    ?["browseId"] ??
                 "";
-            var moreParams =
-                item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
+            var moreParams = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]
+                    ?["params"] ??
+                "";
 
             List otherOldList = item["musicCarouselShelfRenderer"]["contents"];
             var newOtherData = FormatMyData.instance.getOtherList(otherOldList);
             newList.add({"title": bigTitle, "list": newOtherData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": newOtherData.first["type"]});
           }
         }
-      }catch(e){
+      } catch (e) {
         AppLog.e(e.toString());
       }
 
@@ -972,26 +972,27 @@ class UserArtistInfoController extends GetxController with StateMixin {
 
   bindMoreSongList() async {
     AppLog.e("请求更多歌曲");
+
     //先设为5首歌
-    moreList = list[0]["list"];
+    moreList = list.firstOrNull?["list"] ?? [];
 
-    BaseModel result = await ApiMain.instance.getData(list[0]["moreBrowseId"], params: list[0]["moreParams"]);
-    if (result.code != HttpCode.success) {
-      return;
+    if (list.isEmpty) return;
+    if (list.firstOrNull?["moreBrowseId"] == null) return;
+
+    try {
+      BaseModel result = await ApiMain.instance.getData(list[0]["moreBrowseId"], params: list[0]["moreParams"]);
+      if (result.code != HttpCode.success) {
+        return;
+      }
+
+      //解析
+      List oldList =
+          result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ?? [];
+      var newMusicData = FormatMyData.instance.getMusicList(oldList);
+
+      moreList = newMusicData;
+    } catch (e) {
+      AppLog.i("e:${e.toString()}");
     }
-
-    //解析
-    List oldList =
-        result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ?? [];
-
-    // nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-    // ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-    // ["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]
-    // ?[0]?["nextContinuationData"] ??
-    //     {};
-
-    var newMusicData = FormatMyData.instance.getMusicList(oldList);
-
-    moreList = newMusicData;
   }
 }

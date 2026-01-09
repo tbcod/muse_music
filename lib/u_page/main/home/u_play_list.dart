@@ -917,30 +917,33 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     // }
 
     var result = await ApiMain.instance.getData(browseId, nextData: nextData);
-
-    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]?["contents"] ?? [];
-
-    nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ?? {};
-
     var newList = [];
-    for (Map item in oldList) {
-      var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
-      var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var subtitle =
-          item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var timeStr =
-          item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
 
-      var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+    try{
+      List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]?["contents"] ?? [];
 
-      newList.add({
-        "cover": cover,
-        "title": title,
-        "subtitle": subtitle,
-        "timeStr": timeStr,
-        "videoId": videoId,
-      });
-    }
+      nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ?? {};
+
+      for (Map item in oldList) {
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var subtitle =
+        item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var timeStr =
+        item["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+
+        var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+
+        newList.add({
+          "cover": cover,
+          "title": title,
+          "subtitle": subtitle,
+          "timeStr": timeStr,
+          "videoId": videoId,
+        });
+      }
+
+    }catch(_){}
 
     list.addAll(newList);
     await bindNextData();
@@ -1057,33 +1060,37 @@ class UserPlayListInfoController extends GetxController with StateMixin {
       // };
 
       //排行榜数据不一样
-      var cover = result
-          .data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["heroImage"]["contentPreviewImageViewModel"]["image"]["sources"]
-          .last["url"];
-      var title = result.data["header"]["pageHeaderRenderer"]["pageTitle"];
+      try{
+        var cover = result
+            .data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["heroImage"]["contentPreviewImageViewModel"]["image"]["sources"]
+            .last["url"];
+        var title = result.data["header"]["pageHeaderRenderer"]["pageTitle"];
 
-      String subtitle = result.data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["metadata"]["contentMetadataViewModel"]
-          ["metadataRows"][1]["metadataParts"][1]["text"]["content"];
+        String subtitle = result.data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["metadata"]["contentMetadataViewModel"]
+        ["metadataRows"][1]["metadataParts"][1]["text"]["content"];
 
-      info = {
-        "cover": cover,
-        "title": title,
-        "subtitle": subtitle,
-        // "description": description,
-        "songNumStr": subtitle,
-        // "browseId":"",
-        "playlistId": playlistId
-        // "yearStr": yearStr,
-        // "browseId": browseId
-      };
+        info = {
+          "cover": cover,
+          "title": title,
+          "subtitle": subtitle,
+          // "description": description,
+          "songNumStr": subtitle,
+          // "browseId":"",
+          "playlistId": playlistId
+          // "yearStr": yearStr,
+          // "browseId": browseId
+        };
+      }catch(_){}
     }
 
     var oldList = [];
     var newList = [];
 
-    oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]?["contents"][0]
-            ["itemSectionRenderer"]?["contents"][0]["playlistVideoListRenderer"]?["contents"] ??
-        [];
+    try{
+      oldList = result.data?["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]?["contents"][0]
+      ["itemSectionRenderer"]?["contents"][0]["playlistVideoListRenderer"]?["contents"] ??
+          [];
+    }catch(_){}
 
     for (var item in oldList) {
       try {
@@ -1136,7 +1143,10 @@ class UserPlayListInfoController extends GetxController with StateMixin {
     var result = await ApiMain.instance.getYoutubeData("VL$playlistId", nextData: {"continuation": moreToken});
     // AppLog.e(result.);
 
-    List oldList = result.data["onResponseReceivedActions"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
+    List oldList = [];
+    try{
+      oldList = result.data["onResponseReceivedActions"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
+    }catch(_){}
 
     var newList = [];
     for (var item in oldList) {

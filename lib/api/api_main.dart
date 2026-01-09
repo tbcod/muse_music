@@ -95,7 +95,7 @@ class ApiMain extends BaseApi {
       //请求成功
       // AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
 
-      if(nextData == null){
+      if (nextData == null) {
         EventUtils.instance.addEvent("source_get");
       }
     }
@@ -209,9 +209,10 @@ class ApiMain extends BaseApi {
     return httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
   }
 
-  Future<BaseModel> getYoutubeData(String browseId, {String? params, Map? nextData, String? videoId}) async {
+  Future<BaseModel> getYoutubeData(String? browseId, {String? params, Map? nextData, String? videoId}) async {
     // var nowTime = DateTime.now();
     // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
+    if (browseId == null) return BaseModel(code: -1);
 
     Map<String, dynamic> body = {
       "context": {
@@ -385,13 +386,12 @@ class ApiMain extends BaseApi {
       }
       if (isFirstRequest) {
         isFirstRequest = false;
-        if(Get.isRegistered<UserHomeController>()){
+        if (Get.isRegistered<UserHomeController>()) {
           Future.delayed(const Duration(seconds: 2)).then((v) {
             UserHomeController controller = Get.find<UserHomeController>();
             controller.bindYoutubeMusicData(source: "visitor_play");
           });
         }
-
       }
     }
   }
@@ -424,8 +424,7 @@ class ApiMain extends BaseApi {
     // AppLog.i("postPlaybackUrl:$url, header:$header， result:${result.code}");
   }
 
-  _postWatchTime(String? url,
-      {required String cpn, required String vid, String? playlistId, bool isPlaying = true, required double st, required double et}) async {
+  _postWatchTime(String? url, {required String cpn, required String vid, String? playlistId, bool isPlaying = true, required double st, required double et}) async {
     if (url == null || !url.contains("http")) return;
     url = url.replaceFirst("s.youtube.com", "music.youtube.com");
     var path = "&cpn=$cpn"

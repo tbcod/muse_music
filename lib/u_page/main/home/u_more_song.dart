@@ -18,18 +18,14 @@ import '../../../view/net_img.dart';
 class UserMoreSong extends GetView<UserMoreSongController> {
   final String barTitle;
   final bool isFormSearch;
-  const UserMoreSong(
-      {super.key, required this.barTitle, this.isFormSearch = false});
+
+  const UserMoreSong({super.key, required this.barTitle, this.isFormSearch = false});
 
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserMoreSongController());
     return Container(
-      decoration: const BoxDecoration(
-          color: Color(0xfff1ffff),
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: const BoxDecoration(color: Color(0xfff1ffff), image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -51,13 +47,10 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                 return EasyRefresh(
                   onLoad: () async {
                     await controller.bindMoreData();
-                    return controller.nextData.isEmpty
-                        ? IndicatorResult.noMore
-                        : IndicatorResult.success;
+                    return controller.nextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
                   },
                   child: ListView.separated(
-                      padding: EdgeInsets.only(
-                          bottom: Get.mediaQuery.padding.bottom + 60.w),
+                      padding: EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
                       itemBuilder: (_, i) {
                         return getItem(i);
                       },
@@ -80,29 +73,24 @@ class UserMoreSong extends GetView<UserMoreSongController> {
     var item = controller.list[index];
     return InkWell(
       onTap: () {
-        Get.find<UserPlayInfoController>().setDataAndPlayItem(
-            controller.list, item,
-            clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist");
+        Get.find<UserPlayInfoController>().setDataAndPlayItem(controller.list, item, clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist");
         // Get.to(UserPlayInfo());
       },
       child: Obx(() {
-        var isCheck = item["videoId"] ==
-            Get.find<UserPlayInfoController>().nowData["videoId"];
+        var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
 
         return Container(
           // color: Colors.red,
           height: 70.w,
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          decoration: BoxDecoration(
-              color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
+          decoration: BoxDecoration(color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
           child: Row(
             children: [
               Container(
                 width: 54.w,
                 height: 54.w,
                 clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                 child: NetImageView(
                   imgUrl: item["cover"],
                   fit: BoxFit.cover,
@@ -133,8 +121,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                   Row(
                     children: [
                       Obx(() {
-                        var isLike = LikeUtil.instance.allVideoMap
-                            .containsKey(item["videoId"]);
+                        var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
                         if (isLike) {
                           return Container(
                             width: 16.w,
@@ -162,9 +149,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.w,
-                          color: isCheck
-                              ? Color(0xff8569FF)
-                              : Colors.black.withOpacity(0.75),
+                          color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                         ),
                       ))
                     ],
@@ -271,28 +256,25 @@ class UserMoreSongController extends GetxController with StateMixin {
   }
 
   Future bindData() async {
-    BaseModel result = await ApiMain.instance
-        .getData(moreData["browseId"], params: moreData["params"]);
+    BaseModel result = await ApiMain.instance.getData(moreData["browseId"], params: moreData["params"]);
     if (result.code != HttpCode.success) {
       change("", status: RxStatus.error());
       return;
     }
 
-    //解析
-    List oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-                ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-            ["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ??
-        [];
+    try {
+      //解析
+      List oldList =
+          result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ?? [];
 
-    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-                    ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-                ["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]
-            ?[0]?["nextContinuationData"] ??
-        {};
+      nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]
+              ?[0]?["nextContinuationData"] ??
+          {};
 
-    var newMusicData = FormatMyData.instance.getMusicList(oldList);
+      var newMusicData = FormatMyData.instance.getMusicList(oldList);
 
-    list.value = newMusicData;
+      list.value = newMusicData;
+    } catch (_) {}
     change("", status: RxStatus.success());
 
     //
@@ -322,24 +304,20 @@ class UserMoreSongController extends GetxController with StateMixin {
   }
 
   Future bindMoreData() async {
-    BaseModel result = await ApiMain.instance.getData(moreData["browseId"],
-        params: moreData["params"], nextData: nextData);
+    BaseModel result = await ApiMain.instance.getData(moreData["browseId"], params: moreData["params"], nextData: nextData);
     if (result.code != HttpCode.success) {
       return;
     }
 
-    //解析
-    List oldList = result.data["continuationContents"]
-            ["musicPlaylistShelfContinuation"]["contents"] ??
-        [];
+    try {
+      //解析
+      List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["contents"] ?? [];
 
-    nextData = result.data["continuationContents"]
-                ["musicPlaylistShelfContinuation"]["continuations"]?[0]
-            ?["nextContinuationData"] ??
-        {};
+      nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ?? {};
 
-    var newMusicData = FormatMyData.instance.getMusicList(oldList);
+      var newMusicData = FormatMyData.instance.getMusicList(oldList);
 
-    list.addAll(newMusicData);
+      list.addAll(newMusicData);
+    } catch (_) {}
   }
 }

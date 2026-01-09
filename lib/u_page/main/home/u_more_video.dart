@@ -165,21 +165,18 @@ class UserMoreVideoController extends GetxController with StateMixin {
       return;
     }
 
-    //解析
-    List tabs = result.data?["contents"]?["singleColumnBrowseResultsRenderer"]?["tabs"] ?? [];
-    List contents = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
-    List oldList = contents.firstOrNull?["musicPlaylistShelfRenderer"]?["contents"] ?? [];
-    if(oldList.isEmpty){
-      oldList = contents.firstOrNull?["musicShelfRenderer"]?["contents"] ?? [];
-    }
-    // nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-    //                 ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-    //             ["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]
-    //         ?[0]?["nextContinuationData"] ??
-    //     {};
+    try {
+      //解析
+      List tabs = result.data?["contents"]?["singleColumnBrowseResultsRenderer"]?["tabs"] ?? [];
+      List contents = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
+      List oldList = contents.firstOrNull?["musicPlaylistShelfRenderer"]?["contents"] ?? [];
+      if (oldList.isEmpty) {
+        oldList = contents.firstOrNull?["musicShelfRenderer"]?["contents"] ?? [];
+      }
+      var newListData = FormatMyData.instance.getMusicList(oldList);
+      list.value = newListData;
+    } catch (_) {}
 
-    var newListData = FormatMyData.instance.getMusicList(oldList);
-    list.value = newListData;
     change("", status: RxStatus.success());
   }
 }

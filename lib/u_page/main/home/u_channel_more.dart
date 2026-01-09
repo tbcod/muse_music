@@ -199,7 +199,7 @@ class UserChannelMoreController extends GetxController with StateMixin {
 
   bindData() async {
     var result = await ApiMain.instance
-        .getYoutubeData(info["moreBrowseId"], params: info["moreParams"]);
+        .getYoutubeData(info["moreBrowseId"] ?? "", params: info["moreParams"]);
     //解析数据
     if (result.code == HttpCode.success) {
       if (info["type"] == "video") {

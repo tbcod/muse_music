@@ -14,17 +14,14 @@ import '../../../view/net_img.dart';
 
 class UserMoreAlbum extends GetView<UserMoreAlbumController> {
   final String barTitle;
+
   const UserMoreAlbum({super.key, required this.barTitle});
 
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserMoreAlbumController());
     return Container(
-      decoration: const BoxDecoration(
-          color: Color(0xfff1ffff),
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: const BoxDecoration(color: Color(0xfff1ffff), image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -42,15 +39,8 @@ class UserMoreAlbum extends GetView<UserMoreAlbumController> {
         body: PlayerBottomBarView(
           child: controller.obxView((state) => Container(
                 child: Obx(() => GridView.builder(
-                      padding: EdgeInsets.only(
-                          left: 24.w,
-                          right: 24.w,
-                          bottom: Get.mediaQuery.padding.bottom + 100.w),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 0.75,
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 16.w,
-                          crossAxisSpacing: 16.w),
+                      padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: Get.mediaQuery.padding.bottom + 100.w),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.75, crossAxisCount: 2, mainAxisSpacing: 16.w, crossAxisSpacing: 16.w),
                       itemBuilder: (BuildContext context, int index) {
                         return getItem(index);
                       },
@@ -68,8 +58,7 @@ class UserMoreAlbum extends GetView<UserMoreAlbumController> {
     return GestureDetector(
       onTap: () {
         AppLog.e(childItem);
-        EventUtils.instance
-            .addEvent("det_playlist_show", data: {"from": "artist_album"});
+        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_album"});
         Get.to(UserPlayListInfo(), arguments: childItem);
       },
       child: Container(
@@ -82,8 +71,7 @@ class UserMoreAlbum extends GetView<UserMoreAlbumController> {
                 width: double.infinity,
                 height: (Get.width - 16.w - 48.w) / 2,
                 clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -115,6 +103,7 @@ class UserMoreAlbumController extends GetxController with StateMixin {
 
   var list = [].obs;
   Map nextData = {};
+
   @override
   void onInit() {
     super.onInit();
@@ -123,24 +112,17 @@ class UserMoreAlbumController extends GetxController with StateMixin {
   }
 
   bindData() async {
-    BaseModel result = await ApiMain.instance
-        .getData(moreData["browseId"], params: moreData["params"]);
+    BaseModel result = await ApiMain.instance.getData(moreData["browseId"], params: moreData["params"]);
     if (result.code != HttpCode.success) {
       change("", status: RxStatus.error());
       return;
     }
 
     //解析
-    List oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-                ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-            ["contents"][0]["gridRenderer"]["items"] ??
-        [];
-
-    // nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-    //                 ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-    //             ["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]
-    //         ?[0]?["nextContinuationData"] ??
-    //     {};
+    List oldList = [];
+    try {
+      oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["gridRenderer"]["items"] ?? [];
+    } catch (_) {}
 
     var newListData = FormatMyData.instance.getOtherList(oldList);
     list.value = newListData;

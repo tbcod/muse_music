@@ -20,11 +20,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserMoreArtistController());
     return Container(
-      decoration: BoxDecoration(
-          color: Color(0xfff1ffff),
-          image: DecorationImage(
-              image: AssetImage("assets/oimg/all_page_bg.png"),
-              fit: BoxFit.fill)),
+      decoration: const BoxDecoration(color: Color(0xfff1ffff), image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -42,8 +38,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
         body: PlayerBottomBarView(
           child: Container(
             child: controller.obxView((s) => ListView.separated(
-                padding:
-                    EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
+                padding: EdgeInsets.only(bottom: Get.mediaQuery.padding.bottom + 60.w),
                 itemBuilder: (_, i) {
                   return getItem(i);
                 },
@@ -76,8 +71,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
               width: 54.w,
               height: 54.w,
               clipBehavior: Clip.hardEdge,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
               child: NetAvatarView(
                 imgUrl: item["cover"],
                 size: 52.w,
@@ -117,8 +111,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
                       item["subtitle"] ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5)),
                     ))
                   ],
                 ),
@@ -137,9 +130,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
                   }
                 },
                 child: Image.asset(
-                  isLike
-                      ? "assets/oimg/icon_like_on.png"
-                      : "assets/oimg/icon_like_off_g.png",
+                  isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off_g.png",
                   width: 24.w,
                   height: 24.w,
                 ),
@@ -156,6 +147,7 @@ class UserMoreArtistController extends GetxController with StateMixin {
   var dArtistList = [];
 
   var list = [].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -175,67 +167,50 @@ class UserMoreArtistController extends GetxController with StateMixin {
     }
 
     //解析
-
-    List oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]
-                ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
-            ["contents"][2]["musicCarouselShelfRenderer"]["contents"] ??
-        [];
-
     var newList = [];
-    for (var item in oldList) {
-      var browseId = item["musicResponsiveListItemRenderer"]
-          ["navigationEndpoint"]["browseEndpoint"]["browseId"];
+    try {
+      List oldList =
+          result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][2]["musicCarouselShelfRenderer"]["contents"] ?? [];
 
-      var bidList = dArtistList.map((e) => e["browseId"].toString()).toList();
-      if (bidList.contains(browseId)) {
-        //是默认的6个歌手，跳过
-        var index = bidList.indexOf(browseId);
+      for (var item in oldList) {
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-        //更新歌手粉丝信息
-        var newAItem = Map.of(dArtistList[index]);
-        var newSubtitle = item["musicResponsiveListItemRenderer"]["flexColumns"]
-                [1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-            [0]["text"];
-        newAItem["subtitle"] = newSubtitle;
-        dArtistList[index] = newAItem;
-        AppLog.e("第$index个,更新为$newAItem");
+        var bidList = dArtistList.map((e) => e["browseId"].toString()).toList();
+        if (bidList.contains(browseId)) {
+          //是默认的6个歌手，跳过
+          var index = bidList.indexOf(browseId);
 
-        continue;
+          //更新歌手粉丝信息
+          var newAItem = Map.of(dArtistList[index]);
+          var newSubtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          newAItem["subtitle"] = newSubtitle;
+          dArtistList[index] = newAItem;
+          AppLog.e("第$index个,更新为$newAItem");
+
+          continue;
+        }
+
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var subTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
+
+        var itemData = {"title": title, "subtitle": subTitle, "cover": cover, "type": "MUSIC_PAGE_TYPE_ARTIST", "browseId": browseId};
+        newList.add(itemData);
       }
-
-      var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
-              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
-          ["text"];
-      var subTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
-              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
-          ["text"];
-      var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]
-          ["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
-
-      var itemData = {
-        "title": title,
-        "subtitle": subTitle,
-        "cover": cover,
-        "type": "MUSIC_PAGE_TYPE_ARTIST",
-        "browseId": browseId
-      };
-      newList.add(itemData);
-    }
+    } catch (_) {}
 
     for (int i = 0; i < dArtistList.length; i++) {
-      if (dArtistList[i]["subtitle"]?.toString().isEmpty ?? true) {
-        //更新默认歌手的粉丝数量
-        var itemResult =
-            await ApiMain.instance.getData(dArtistList[i]["browseId"]);
-        if (itemResult.code == HttpCode.success) {
-          var newAItem = Map.of(dArtistList[i]);
-          newAItem["subtitle"] = itemResult.data["header"]
-                      ["musicImmersiveHeaderRenderer"]["subscriptionButton"]
-                  ["subscribeButtonRenderer"]["longSubscriberCountText"]["runs"]
-              [0]["text"];
-          dArtistList[i] = newAItem;
+      try {
+        if (dArtistList[i]["subtitle"]?.toString().isEmpty ?? true) {
+          //更新默认歌手的粉丝数量
+          var itemResult = await ApiMain.instance.getData(dArtistList[i]["browseId"]);
+          if (itemResult.code == HttpCode.success) {
+            var newAItem = Map.of(dArtistList[i]);
+            newAItem["subtitle"] = itemResult.data["header"]["musicImmersiveHeaderRenderer"]["subscriptionButton"]["subscribeButtonRenderer"]["longSubscriberCountText"]["runs"][0]["text"];
+            dArtistList[i] = newAItem;
+          }
         }
-      }
+      } catch (_) {}
     }
 
     //添加默认

@@ -876,9 +876,11 @@ class UserSearch extends GetView<UserSearchController> {
                     List list = controller.resultList;
                     if (list.isNotEmpty) {
                       list.removeAt(0);
-                      final item = list.first;
-                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                      Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                      final item = list.firstOrNull;
+                      if(item != null){
+                        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                        Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                      }
                     }
                   }
                 } else {
