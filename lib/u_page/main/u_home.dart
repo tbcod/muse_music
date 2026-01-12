@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -1614,7 +1615,11 @@ class UserHomeController extends GetxController with StateMixin {
 
     var box = await Hive.openBox(DBKey.myLastHomeDataStr);
     box.clear();
-    box.put(0, List.of(netList));
+    try {
+      box.put(0, List.of(netList));
+    } on FileSystemException catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
   }
 
   bindLocalData() async {

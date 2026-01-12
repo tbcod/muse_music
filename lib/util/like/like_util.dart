@@ -103,19 +103,22 @@ class LikeUtil {
 
     //保存到本地歌单
 
-    var box = await Hive.openBox(DBKey.myPlayListData);
+    try {
+      var box = await Hive.openBox(DBKey.myPlayListData);
 
-    await box.put(browseId, {
-      "title": infoData["title"],
-      "date": DateTime.now(),
-      "id": browseId,
-      "browseId": infoData["browseId"],
-      "playlistId": infoData["playlistId"],
-      "type": 1,
-      "cover": infoData["cover"],
-      "list": [],
-      "subtitle": subtitle,
-    });
+      await box.put(browseId, {
+        "title": infoData["title"],
+        "date": DateTime.now(),
+        "id": browseId,
+        "browseId": infoData["browseId"],
+        "playlistId": infoData["playlistId"],
+        "type": 1,
+        "cover": infoData["cover"],
+        "list": [],
+        "subtitle": subtitle,
+      });
+    } catch (_) {}
+
     //刷新lib本地歌单
     if (Get.isRegistered<UserLibraryController>()) {
       Get.find<UserLibraryController>().bindMyPlayListData();

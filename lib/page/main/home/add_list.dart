@@ -354,7 +354,11 @@ class AddListController extends GetxController {
     }
 
     var box = await Hive.openBox(DBKey.listData);
-    await box.put(id, data);
+    try {
+      await box.put(id, data);
+    } catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
     //刷新首页数据
     Get.find<HomePageController>().bindData();
     //刷新详情数据

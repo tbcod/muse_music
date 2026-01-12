@@ -2029,7 +2029,11 @@ class UserPlayInfoController extends GetxController {
 
     var realName = getRealName(nameList, title);
 
-    await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    try {
+      await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    } catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
   }
 
   String getRealName(List nameList, String name, {int nameNum = 0}) {
@@ -2059,7 +2063,11 @@ class UserPlayInfoController extends GetxController {
         var box = await Hive.openBox(DBKey.myPlayListData);
 
         item["list"] = childList;
-        await box.put(item["id"], item);
+        try {
+          await box.put(item["id"], item);
+        } catch (e) {
+          AppLog.e('Hive write failed: $e');
+        }
 
         //刷新lib首页
         if (Get.isRegistered<UserLibraryController>()) {
@@ -2340,9 +2348,13 @@ class UserPlayInfoController extends GetxController {
   }
 
   void saveBarData() async {
-    var box = await Hive.openBox(DBKey.myLastPlayDataAndIndex);
-    await box.clear();
-    await box.put("myLastPlayDataAndIndex", {"index": nowIndex, "list": List.of(playList)});
+    try {
+      var box = await Hive.openBox(DBKey.myLastPlayDataAndIndex);
+      await box.clear();
+      await box.put("myLastPlayDataAndIndex", {"index": nowIndex, "list": List.of(playList)});
+    } catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
   }
 
   var homeIsShowBar = false;

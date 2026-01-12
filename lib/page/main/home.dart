@@ -870,7 +870,11 @@ class HomePage extends GetView<HomePageController> {
                               var id = item["id"];
                               var data = Map.of(item);
                               data["title"] = inputC.text;
-                              await box.put(id, data);
+                              try {
+                                await box.put(id, data);
+                              } on FileSystemException catch (e) {
+                                AppLog.e('Hive write failed: $e');
+                              }
                               //刷新首页数据
                               controller.bindData();
                               //刷新播放列表
@@ -1283,7 +1287,11 @@ class HomePageController extends GetxController
 
       AppLog.e(itemData["id"]);
       AppLog.e(file.bytes?.length ?? "null");
-      await box.put(id, itemData);
+      try {
+        await box.put(id, itemData);
+      } on FileSystemException catch (e) {
+        AppLog.e('Hive write failed: $e');
+      }
 
       ToastUtil.showToast(msg: "Upload successfully".tr);
       //刷新数据

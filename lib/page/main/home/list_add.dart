@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +49,11 @@ class ListAddPage extends GetView<ListAddPageController> {
                           var box = await Hive.openBox(DBKey.listData);
                           var data = Map.of(controller.infoData);
                           data["list"] = controller.checkList.value;
-                          await box.put(controller.id, data);
+                          try {
+                            await box.put(controller.id, data);
+                          } on FileSystemException catch (e) {
+                            AppLog.e('Hive write failed: $e');
+                          }
                           LoadingUtil.hideAllLoading();
                           //刷新数据
                           Get.find<HomePageController>().bindData();

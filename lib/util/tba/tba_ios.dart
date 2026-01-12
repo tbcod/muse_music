@@ -100,7 +100,7 @@ class TbaIos extends BaseApi {
         //bundle_id
         "environ": packageInfo.packageName,
         //client_ts
-        "anagram": DateTime.now().millisecondsSinceEpoch , //- 24*1000*3600*3
+        "anagram": DateTime.now().millisecondsSinceEpoch, //- 24*1000*3600*3
         //idfa
         "labour": idfa,
         //operator
@@ -162,13 +162,17 @@ class TbaIos extends BaseApi {
     if (result.code != HttpCode.success) {
       AppLog.e("TBA上报请求失败:$eventId, ${result.message}， logId:$logId");
 
-      if(result.code?.toInt() == 500){
+      if (result.code?.toInt() == 500) {
         //服务器错误
         // AppLog.e("服务器错误:${result.code}");
-      }else{
-        var box = await Hive.openBox("tbaErrorData");
-        //存下来下次提交
-        await box.put(logId, generalMap);
+      } else {
+        try {
+          var box = await Hive.openBox("tbaErrorData");
+          //存下来下次提交
+          await box.put(logId, generalMap);
+        } catch (e) {
+          AppLog.e('Hive write failed: $e');
+        }
       }
       // AppLog.e(logId);
     } else {
@@ -190,7 +194,7 @@ class TbaIos extends BaseApi {
   var isPostError = false;
 
   Future postTbaErrorData() async {
-    if(isPostError) return;
+    if (isPostError) return;
     isPostError = true;
     var box = await Hive.openBox("tbaErrorData");
     // AppLog.e("上报上次未成功的tba");

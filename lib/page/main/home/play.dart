@@ -1103,7 +1103,11 @@ class PlayPageController extends GetxService {
         var box = await Hive.openBox(DBKey.listData);
         var newMap = Map.of(item);
         newMap["list"] = newList;
-        await box.put(listid, newMap);
+        try {
+          await box.put(listid, newMap);
+        } catch (e) {
+          AppLog.e('Hive write failed: $e');
+        }
         ToastUtil.showToast(msg: "Add to ${item["title"] ?? ""}");
         Get.back();
         //刷新歌单详情

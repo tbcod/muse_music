@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -80,7 +82,11 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    await box.put(data, {"str": data, "date": DateTime.now()});
+    try {
+      await box.put(data, {"str": data, "date": DateTime.now()});
+    } on FileSystemException catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
 
     bindHistoryData();
   }

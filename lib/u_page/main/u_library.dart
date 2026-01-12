@@ -647,7 +647,11 @@ class UserLibraryController extends GetxController with StateMixin {
     var realName = getRealName(nameList, title);
     AppLog.e(realName);
 
-    await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    try {
+      await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    } catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
     bindMyPlayListData();
   }
 

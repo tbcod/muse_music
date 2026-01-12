@@ -135,7 +135,7 @@ class MoreSheetUtil {
                       //下载中
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"],state: state, clickType: clickType);
+                          DownloadUtils.instance.remove(item["videoId"], state: state, clickType: clickType);
                         },
                         child: Container(
                             height: 40.w,
@@ -167,7 +167,7 @@ class MoreSheetUtil {
                       //下载完成
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"],state: state, clickType: clickType);
+                          DownloadUtils.instance.remove(item["videoId"], state: state, clickType: clickType);
                         },
                         child: Container(
                             height: 40.w,
@@ -445,10 +445,9 @@ class MoreSheetUtil {
 
                 if (result.code == HttpCode.success) {
                   try {
-                    var browseId = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]
-                                ["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]
-                            ["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["navigationEndpoint"]
-                        ["browseEndpoint"]["browseId"];
+                    var browseId = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                            ["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]
+                        ["browseId"];
 
                     Get.back();
                     LoadingUtil.hideAllLoading();
@@ -875,9 +874,7 @@ class MoreSheetUtil {
                           child: Container(
                             height: 48.w,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
                               style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75)),
@@ -950,7 +947,11 @@ class MoreSheetUtil {
     var realName = getRealName(nameList, title);
     AppLog.e(realName);
 
-    await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    try {
+      await box.put(id, {"title": realName, "date": DateTime.now(), "id": id});
+    } catch (e) {
+      AppLog.e('Hive write failed: $e');
+    }
   }
 
   String getRealName(List nameList, String name, {int nameNum = 0}) {
@@ -985,7 +986,12 @@ class MoreSheetUtil {
         var box = await Hive.openBox(DBKey.myPlayListData);
 
         item["list"] = childList;
-        await box.put(item["id"], item);
+
+        try {
+          await box.put(item["id"], item);
+        } catch (e) {
+          AppLog.e('Hive write failed: $e');
+        }
 
         //刷新lib首页
         if (Get.isRegistered<UserLibraryController>()) {
@@ -1136,9 +1142,7 @@ class MoreSheetUtil {
                           child: Container(
                             height: 48.w,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24.w),
-                                border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
                             child: Text(
                               "Cancel".tr,
                               style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75)),
