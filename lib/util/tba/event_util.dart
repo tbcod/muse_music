@@ -16,7 +16,7 @@ class EventUtils {
     //TODO 测试时候不处理事件
     // return;
 
-    // AppLog.i("事件上报tba event name:$id, data:${data ?? ""}");
+    AppLog.i("事件上报tba event name:$id, data:${data ?? ""}");
 
     id = "mm_$id";
     //事件上报接口

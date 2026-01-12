@@ -20,6 +20,7 @@ import 'package:music_muse/util/ad/max_util.dart';
 import 'package:music_muse/util/history_util.dart';
 import 'package:music_muse/util/like/like_util.dart';
 import 'package:music_muse/util/log.dart';
+import 'package:music_muse/util/native_util.dart';
 import 'package:music_muse/util/remote_utils.dart';
 import 'package:music_muse/util/tba/event_util.dart';
 import 'package:music_muse/util/tba/tba_util.dart';
@@ -72,6 +73,8 @@ class Application extends GetxService {
       await museSp.setString("userAppUuid", userAppUuid);
     }
     RemoteUtil.shareInstance.init();
+    // String distinctId = Get.find<Application>().userAppUuid;
+    NativeUtils.instance.gbToDistinctId(userAppUuid);
 
     if (visitorData.isEmpty) {
       visitorData = museSp.getString("visitorData") ?? "";

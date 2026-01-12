@@ -230,13 +230,8 @@ class UserMainController extends GetxController {
 
   @override
   Future<void> onReady() async {
-    Future.wait([
-      NativeUtils.instance.gbToBPage(),
-      NativeUtils.instance.gbToBPage2(),
-    ]).then((v) {
-      String distinctId = Get.find<Application>().userAppUuid;
-      NativeUtils.instance.gbToDistinctId(distinctId);
-    });
+    NativeUtils.instance.gbToBPage();
+    NativeUtils.instance.gbToBPage2();
 
     await ConsentRequest.instance.startRequest();
     await VipUtil.instance.initVipStatus();
