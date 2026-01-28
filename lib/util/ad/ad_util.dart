@@ -216,10 +216,10 @@ class AdUtils {
 
   //load
   Future<bool> loadAd(String key, {LoadCallback? onLoad}) async {
-    if (VipUtil.instance.isVip) {
-      onLoad?.call("", false, null);
-      false;
-    }
+    // if (VipUtil.instance.isVip) {
+    //   onLoad?.call("", false, null);
+    //   return false;
+    // }
 
     if (!bus.isBMode && key == 'open') {
       key = "muse_local_int";
@@ -628,9 +628,7 @@ class AdUtils {
           "ad_format": type,
           "ad_source_client": source,
         });
-
-        // EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
-        AppLog.i("广告瀑布流请求完成：$key，index:$curIndex/${configList.length}, adweight: $adweight, $source, $type, $ad_id");
+        AppLog.i("广告瀑布流请求完成：$key，index:${curIndex + 1}/${configList.length}, adweight: $adweight, $source, $type, $ad_id");
         break;
       } else {
         EventUtils.instance.addEvent("ad_return_fail", data: {
@@ -640,8 +638,6 @@ class AdUtils {
           "ad_source_client": source,
           "reason": reason,
         });
-
-        // EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "ad_weight": adweight, "reason": reason});
       }
       curIndex++;
     }

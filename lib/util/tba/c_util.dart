@@ -39,11 +39,11 @@ class CUtil extends BaseApi {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
 
       var idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-      BaseModel model = await httpRequest("/elope/callus", method: HttpMethod.get, body: {
+      Map<String, dynamic> data = {
         //distinct_id
         "teapot": userAppUuid,
         //client_ts
-        "anagram": DateTime.now().millisecondsSinceEpoch,
+        // "anagram": DateTime.now().millisecondsSinceEpoch,
         //device_model
         "bunch": iosInfo.model,
         //bundle_id
@@ -62,7 +62,8 @@ class CUtil extends BaseApi {
         "labour": idfa,
         //app_version
         "brent": packageInfo.version,
-      });
+      };
+      BaseModel model = await httpRequest("/elope/callus", method: HttpMethod.get, body: data);
       AppLog.i("cloak请求结果：${model.data}, ${model.data == 'excerpt' ? 'b' : 'a'}");
       return model;
     }

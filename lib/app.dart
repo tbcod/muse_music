@@ -190,20 +190,20 @@ class Application extends GetxService {
         AppLog.e("异常【不上报】：FlutterError errorDetails2:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
-        FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+        FirebaseCrashlytics.instance.recordFlutterError(errorDetails,fatal: false);
       }
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    PlatformDispatcher.instance.onError = (error, stack) {
-      if (isIgnoreError(error)) {
-        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
-      } else {
-        //PlatformDispatcher onError:type 'Null' is not a subtype of type 'Object'
-        AppLog.e("异常上报 PlatformDispatcher onError: $error, $stack");
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      }
-      return true;
-    };
+    // PlatformDispatcher.instance.onError = (error, stack) {
+    //   if (isIgnoreError(error)) {
+    //     AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
+    //   } else {
+    //     //PlatformDispatcher onError:type 'Null' is not a subtype of type 'Object'
+    //     AppLog.e("异常上报 PlatformDispatcher onError: $error, $stack");
+    //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+    //   }
+    //   return true;
+    // };
 
     RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 
